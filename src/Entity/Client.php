@@ -48,9 +48,6 @@ class Client
     #[ORM\ManyToOne(targetEntity: Localite::class, inversedBy: 'client')]
     private $localite;
 
-    #[ORM\OneToOne(targetEntity: Utilisateur::class, cascade: ['persist', 'remove'])]
-    private $Utilisateur;
-
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Installation::class)]
     private $installation;
 
@@ -182,18 +179,6 @@ class Client
     public function setLocalite(?Localite $localite): self
     {
         $this->localite = $localite;
-
-        return $this;
-    }
-
-    public function getUtilisateur(): ?Utilisateur
-    {
-        return $this->Utilisateur;
-    }
-
-    public function setUtilisateur(?Utilisateur $Utilisateur): self
-    {
-        $this->Utilisateur = $Utilisateur;
 
         return $this;
     }
