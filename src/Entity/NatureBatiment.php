@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\NatureBatimentRepository;
 use Doctrine\ORM\Mapping as ORM;
 

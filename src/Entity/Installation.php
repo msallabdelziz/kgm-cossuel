@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\InstallationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: InstallationRepository::class)]
 class Installation
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -107,6 +110,8 @@ class Installation
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->demande = new ArrayCollection();
     }
 

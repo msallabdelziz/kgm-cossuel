@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\GrilleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GrilleRepository::class)]
 class Grille
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -16,6 +19,12 @@ class Grille
     #[ORM\Column(type: 'string', length: 255)]
     private $libelle;
 
+    public function __construct()
+    {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\RecuRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RecuRepository::class)]
 class Recu
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -25,6 +28,12 @@ class Recu
     #[ORM\ManyToOne(targetEntity: Caissier::class, inversedBy: 'recu')]
     private $caissier;
 
+    public function __construct()
+    {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

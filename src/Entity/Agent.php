@@ -2,28 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
+use App\Entity\Traits\slugTrait;
 use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-
-
-/**
- * Vehicule
- *
- * @ORM\Table(name="vehicule")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\VehiculeRepository")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="discr", type="string") 
- * @ORM\DiscriminatorMap({"daf"="DAF", "controleur"="Controleur", "comptable"="Comptable", "caissier"="Caissier","respo_front_office"="RespoFrontOffice","referent"="Referent", "accueil"="Accueil"})
-*/
- 
-
-
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
 class Agent
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -55,6 +45,8 @@ class Agent
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->affectation = new ArrayCollection();
     }
 

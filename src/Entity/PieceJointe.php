@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\PieceJointeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PieceJointeRepository::class)]
 class PieceJointe
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -22,6 +25,12 @@ class PieceJointe
     #[ORM\ManyToOne(targetEntity: Demande::class, inversedBy: 'pieceJointes')]
     private $demande;
 
+    public function __construct()
+    {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

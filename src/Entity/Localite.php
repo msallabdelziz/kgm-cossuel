@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
+use App\Entity\Traits\slugTrait;
 use App\Repository\LocaliteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: LocaliteRepository::class)]
 class Localite
 {
+    use createdAtTrait;
+    use slugTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -35,6 +40,8 @@ class Localite
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->agence = new ArrayCollection();
         $this->client = new ArrayCollection();
         $this->installation = new ArrayCollection();

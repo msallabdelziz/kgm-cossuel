@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\DossierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
 class Dossier
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -48,6 +51,8 @@ class Dossier
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->visites = new ArrayCollection();
     }
 

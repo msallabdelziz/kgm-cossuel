@@ -2,14 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
+use App\Entity\Traits\slugTrait;
 use App\Repository\AgenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\Security;
 
 #[ORM\Entity(repositoryClass: AgenceRepository::class)]
 class Agence
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -38,7 +43,10 @@ class Agence
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->affectation = new ArrayCollection();
+
     }
 
     public function getId(): ?int

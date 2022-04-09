@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\AttestationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AttestationRepository::class)]
 class Attestation
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -21,6 +24,12 @@ class Attestation
 
     #[ORM\OneToOne(targetEntity: Dossier::class, cascade: ['persist', 'remove'])]
     private $dossier;
+
+    public function __construct()
+    {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

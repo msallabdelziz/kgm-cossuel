@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\TarifRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TarifRepository::class)]
 class Tarif
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -25,6 +28,12 @@ class Tarif
     #[ORM\Column(type: 'integer')]
     private $coutDeuxiemeIns;
 
+    public function __construct()
+    {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

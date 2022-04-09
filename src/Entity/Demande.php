@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
+use App\Entity\Traits\slugTrait;
 use App\Repository\DemandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DemandeRepository::class)]
 class Demande
 {
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -39,8 +43,8 @@ class Demande
     #[ORM\OneToMany(mappedBy: 'demande', targetEntity: PieceJointe::class)]
     private $pieceJointes;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'demande')]
-    private $demande;
+    #[ORM\Column(type: 'integer', nullable:true)]
+    private $demande_parente;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'demande')]
     private $utilisateur;
@@ -50,9 +54,10 @@ class Demande
 
     public function __construct()
     {
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
         $this->pieceJointes = new ArrayCollection();
         $this->installation = new ArrayCollection();
-        $this->demande = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -175,39 +180,18 @@ class Demande
     }
 
     
-    public function getDemande(): ?self
+    public function getDemandeParente(): ?int
     {
         return $this->demande;
     }
 
-    public function setDemande(?self $demande): self
+    public function setDemande(?int $demande): self
     {
         $this->demande = $demande;
 
         return $this;
     }
 
-    public function addDemande(self $demande): self
-    {
-        if (!$this->demande->contains($demande)) {
-            $this->demande[] = $demande;
-            $demande->setDemande($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDemande(self $demande): self
-    {
-        if ($this->demande->removeElement($demande)) {
-            // set the owning side to null (unless already changed)
-            if ($demande->getDemande() === $this) {
-                $demande->setDemande(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getUtilisateur(): ?Utilisateur
     {
