@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/region" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des régions</span>
+            </a>
+            <a href="{{ path('app_region_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Régions</a>
+        </header>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+        </div>
+    </section>
+{% endblock %}

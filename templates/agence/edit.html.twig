@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/agence" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des agences</span>
+            </a>
+            <a href="{{ path('app_agence_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Agences</a>
+        </header>
+        <div class="my-3 p-3 bg-body rounded shadow-sm">
+            {{ form_start(agenceForm) }}
+                {{ form_row(agenceForm.code) }}<br>
+                {{ form_row(agenceForm.nom) }}<br>
+                {{ form_row(agenceForm.adresse) }}<br>
+                {{ form_row(agenceForm.telephone) }}<br>
+                {{ form_row(agenceForm.email) }}<br>
+            {{ form_end(agenceForm) }}
+        </div>
+    </section>
+{% endblock %}
