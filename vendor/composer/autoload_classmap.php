@@ -6,7 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Controller\\DepartementController' => $baseDir . '/src/Controller/DepartementController.php',
     'App\\Controller\\MainController' => $baseDir . '/src/Controller/MainController.php',
+    'App\\Controller\\RegionController' => $baseDir . '/src/Controller/RegionController.php',
     'App\\Controller\\RegistrationController' => $baseDir . '/src/Controller/RegistrationController.php',
     'App\\Controller\\ResetPasswordController' => $baseDir . '/src/Controller/ResetPasswordController.php',
     'App\\Controller\\SecurityController' => $baseDir . '/src/Controller/SecurityController.php',
@@ -41,11 +43,13 @@ return array(
     'App\\Entity\\Rubrique' => $baseDir . '/src/Entity/Rubrique.php',
     'App\\Entity\\Tarif' => $baseDir . '/src/Entity/Tarif.php',
     'App\\Entity\\Traits\\createdAtTrait' => $baseDir . '/src/Entity/Traits/createdAtTrait.php',
+    'App\\Entity\\Traits\\slugTrait' => $baseDir . '/src/Entity/Traits/slugTrait.php',
     'App\\Entity\\TypeConstruction' => $baseDir . '/src/Entity/TypeConstruction.php',
     'App\\Entity\\Utilisateur' => $baseDir . '/src/Entity/Utilisateur.php',
     'App\\Entity\\Verification' => $baseDir . '/src/Entity/Verification.php',
     'App\\Entity\\Visite' => $baseDir . '/src/Entity/Visite.php',
     'App\\Form\\ChangePasswordFormType' => $baseDir . '/src/Form/ChangePasswordFormType.php',
+    'App\\Form\\RegionFormType' => $baseDir . '/src/Form/RegionFormType.php',
     'App\\Form\\RegistrationFormType' => $baseDir . '/src/Form/RegistrationFormType.php',
     'App\\Form\\ResetPasswordRequestFormType' => $baseDir . '/src/Form/ResetPasswordRequestFormType.php',
     'App\\Kernel' => $baseDir . '/src/Kernel.php',
@@ -4286,8 +4290,6 @@ return array(
     'Symfony\\Component\\Intl\\Util\\IcuVersion' => $vendorDir . '/symfony/intl/Util/IcuVersion.php',
     'Symfony\\Component\\Intl\\Util\\IntlTestHelper' => $vendorDir . '/symfony/intl/Util/IntlTestHelper.php',
     'Symfony\\Component\\Intl\\Util\\Version' => $vendorDir . '/symfony/intl/Util/Version.php',
-    'Symfony\\Component\\Mailer\\Bridge\\Google\\Transport\\GmailSmtpTransport' => $vendorDir . '/symfony/google-mailer/Transport/GmailSmtpTransport.php',
-    'Symfony\\Component\\Mailer\\Bridge\\Google\\Transport\\GmailTransportFactory' => $vendorDir . '/symfony/google-mailer/Transport/GmailTransportFactory.php',
     'Symfony\\Component\\Mailer\\DataCollector\\MessageDataCollector' => $vendorDir . '/symfony/mailer/DataCollector/MessageDataCollector.php',
     'Symfony\\Component\\Mailer\\DelayedEnvelope' => $vendorDir . '/symfony/mailer/DelayedEnvelope.php',
     'Symfony\\Component\\Mailer\\Envelope' => $vendorDir . '/symfony/mailer/Envelope.php',

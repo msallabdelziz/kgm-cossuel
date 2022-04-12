@@ -23,15 +23,6 @@ return [[
         null,
         [
             'stdClass' => [
-                'name' => [
-                    'Symfony\\Component\\Form\\Form',
-                ],
-                'defaultGroup' => [
-                    'Form',
-                ],
-                'traversalStrategy' => [
-                    2,
-                ],
                 'constraints' => [
                     [
                         $o[1],
@@ -46,6 +37,15 @@ return [[
                             $o[1],
                         ],
                     ],
+                ],
+                'traversalStrategy' => [
+                    2,
+                ],
+                'name' => [
+                    'Symfony\\Component\\Form\\Form',
+                ],
+                'defaultGroup' => [
+                    'Form',
                 ],
                 'groups' => [
                     1 => [

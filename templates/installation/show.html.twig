@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Installation{% endblock %}
+
+{% block body %}
+    <h1>Installation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ installation.id }}</td>
+            </tr>
+            <tr>
+                <th>Etat</th>
+                <td>{{ installation.etat }}</td>
+            </tr>
+            <tr>
+                <th>CompteurVoisin</th>
+                <td>{{ installation.compteurVoisin }}</td>
+            </tr>
+            <tr>
+                <th>Compteur</th>
+                <td>{{ installation.compteur }}</td>
+            </tr>
+            <tr>
+                <th>Abonnement</th>
+                <td>{{ installation.abonnement }}</td>
+            </tr>
+            <tr>
+                <th>Bp</th>
+                <td>{{ installation.bp }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ installation.adresse }}</td>
+            </tr>
+            <tr>
+                <th>NomSite</th>
+                <td>{{ installation.nomSite }}</td>
+            </tr>
+            <tr>
+                <th>Lattitude</th>
+                <td>{{ installation.lattitude }}</td>
+            </tr>
+            <tr>
+                <th>Longitude</th>
+                <td>{{ installation.longitude }}</td>
+            </tr>
+            <tr>
+                <th>DateInstallation</th>
+                <td>{{ installation.dateInstallation }}</td>
+            </tr>
+            <tr>
+                <th>GrstReseau</th>
+                <td>{{ installation.grstReseau }}</td>
+            </tr>
+            <tr>
+                <th>Neuf15</th>
+                <td>{{ installation.neuf15 }}</td>
+            </tr>
+            <tr>
+                <th>Existant15</th>
+                <td>{{ installation.existant15 }}</td>
+            </tr>
+            <tr>
+                <th>Neuf25</th>
+                <td>{{ installation.neuf25 }}</td>
+            </tr>
+            <tr>
+                <th>Existant25</th>
+                <td>{{ installation.existant25 }}</td>
+            </tr>
+            <tr>
+                <th>NeufAutre</th>
+                <td>{{ installation.neufAutre }}</td>
+            </tr>
+            <tr>
+                <th>ExistantAutre</th>
+                <td>{{ installation.existantAutre }}</td>
+            </tr>
+            <tr>
+                <th>TitreProp</th>
+                <td>{{ installation.titreProp }}</td>
+            </tr>
+            <tr>
+                <th>Intervenant</th>
+                <td>{{ installation.intervenant }}</td>
+            </tr>
+            <tr>
+                <th>IntervenantAutre</th>
+                <td>{{ installation.intervenantAutre }}</td>
+            </tr>
+            <tr>
+                <th>Collectif</th>
+                <td>{{ installation.collectif }}</td>
+            </tr>
+            <tr>
+                <th>Logement</th>
+                <td>{{ installation.logement }}</td>
+            </tr>
+            <tr>
+                <th>Priece</th>
+                <td>{{ installation.priece }}</td>
+            </tr>
+            <tr>
+                <th>Puissance</th>
+                <td>{{ installation.puissance }}</td>
+            </tr>
+            <tr>
+                <th>Created_at</th>
+                <td>{{ installation.createdAt ? installation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Created_by</th>
+                <td>{{ installation.createdBy }}</td>
+            </tr>
+            <tr>
+                <th>Updated_at</th>
+                <td>{{ installation.updatedAt ? installation.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated_by</th>
+                <td>{{ installation.updatedBy }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_installation_index') }}">back to list</a>
+
+    <a href="{{ path('app_installation_edit', {'id': installation.id}) }}">edit</a>
+
+    {{ include('installation/_delete_form.html.twig') }}
+{% endblock %}

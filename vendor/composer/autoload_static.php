@@ -579,7 +579,9 @@ class ComposerStaticInitfa14053abeb62120c996aa4467adf2b2
     );
 
     public static $classMap = array (
+        'App\\Controller\\DepartementController' => __DIR__ . '/../..' . '/src/Controller/DepartementController.php',
         'App\\Controller\\MainController' => __DIR__ . '/../..' . '/src/Controller/MainController.php',
+        'App\\Controller\\RegionController' => __DIR__ . '/../..' . '/src/Controller/RegionController.php',
         'App\\Controller\\RegistrationController' => __DIR__ . '/../..' . '/src/Controller/RegistrationController.php',
         'App\\Controller\\ResetPasswordController' => __DIR__ . '/../..' . '/src/Controller/ResetPasswordController.php',
         'App\\Controller\\SecurityController' => __DIR__ . '/../..' . '/src/Controller/SecurityController.php',
@@ -614,11 +616,13 @@ class ComposerStaticInitfa14053abeb62120c996aa4467adf2b2
         'App\\Entity\\Rubrique' => __DIR__ . '/../..' . '/src/Entity/Rubrique.php',
         'App\\Entity\\Tarif' => __DIR__ . '/../..' . '/src/Entity/Tarif.php',
         'App\\Entity\\Traits\\createdAtTrait' => __DIR__ . '/../..' . '/src/Entity/Traits/createdAtTrait.php',
+        'App\\Entity\\Traits\\slugTrait' => __DIR__ . '/../..' . '/src/Entity/Traits/slugTrait.php',
         'App\\Entity\\TypeConstruction' => __DIR__ . '/../..' . '/src/Entity/TypeConstruction.php',
         'App\\Entity\\Utilisateur' => __DIR__ . '/../..' . '/src/Entity/Utilisateur.php',
         'App\\Entity\\Verification' => __DIR__ . '/../..' . '/src/Entity/Verification.php',
         'App\\Entity\\Visite' => __DIR__ . '/../..' . '/src/Entity/Visite.php',
         'App\\Form\\ChangePasswordFormType' => __DIR__ . '/../..' . '/src/Form/ChangePasswordFormType.php',
+        'App\\Form\\RegionFormType' => __DIR__ . '/../..' . '/src/Form/RegionFormType.php',
         'App\\Form\\RegistrationFormType' => __DIR__ . '/../..' . '/src/Form/RegistrationFormType.php',
         'App\\Form\\ResetPasswordRequestFormType' => __DIR__ . '/../..' . '/src/Form/ResetPasswordRequestFormType.php',
         'App\\Kernel' => __DIR__ . '/../..' . '/src/Kernel.php',
@@ -4859,8 +4863,6 @@ class ComposerStaticInitfa14053abeb62120c996aa4467adf2b2
         'Symfony\\Component\\Intl\\Util\\IcuVersion' => __DIR__ . '/..' . '/symfony/intl/Util/IcuVersion.php',
         'Symfony\\Component\\Intl\\Util\\IntlTestHelper' => __DIR__ . '/..' . '/symfony/intl/Util/IntlTestHelper.php',
         'Symfony\\Component\\Intl\\Util\\Version' => __DIR__ . '/..' . '/symfony/intl/Util/Version.php',
-        'Symfony\\Component\\Mailer\\Bridge\\Google\\Transport\\GmailSmtpTransport' => __DIR__ . '/..' . '/symfony/google-mailer/Transport/GmailSmtpTransport.php',
-        'Symfony\\Component\\Mailer\\Bridge\\Google\\Transport\\GmailTransportFactory' => __DIR__ . '/..' . '/symfony/google-mailer/Transport/GmailTransportFactory.php',
         'Symfony\\Component\\Mailer\\DataCollector\\MessageDataCollector' => __DIR__ . '/..' . '/symfony/mailer/DataCollector/MessageDataCollector.php',
         'Symfony\\Component\\Mailer\\DelayedEnvelope' => __DIR__ . '/..' . '/symfony/mailer/DelayedEnvelope.php',
         'Symfony\\Component\\Mailer\\Envelope' => __DIR__ . '/..' . '/symfony/mailer/Envelope.php',
