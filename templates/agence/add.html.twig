@@ -7,7 +7,7 @@
             <a href="/region" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des Agences</span>
             </a>
-            <a href="{{ path('app_region_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Régions</a>
+            <a href="{{ path('app_agence_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Régions</a>
         </header>
         <div class="row">
             <div class="col-12 shadow border border-light">
@@ -23,7 +23,13 @@
                         {{ form_row(agenceForm.adresse) }}<br>
                         {{ form_row(agenceForm.telephone) }}<br>
                         {{ form_row(agenceForm.email) }}<br>
-                    {{ form_end(agenceForm) }}            
+                        <label>Localité</label>
+                        <select name="localite">
+                            {% for loc in localite %}
+                            <option value='{{ loc.id }}'>{{ loc.nom }}</option>
+                            {% endfor %}
+                        <select><br><br><br>
+                    {{ form_end(agenceForm) }}<br>         
                 </div>
             </div>
         </div>

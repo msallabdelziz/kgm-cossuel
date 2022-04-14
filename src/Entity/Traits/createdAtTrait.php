@@ -40,7 +40,7 @@
 
         public function getCreatedby(): ?string
         {
-            return $this->created_at;
+            return $this->created_by;
         }
 
         public function setCreatedby(string $created_by): self
@@ -49,12 +49,12 @@
             return $this;
         }
 
-        public function getUpdateBy(): ?string
+        public function getUpdatedBy(): ?string
         {
             return $this->updated_by;
         }
 
-        public function setUpdateBy(string $updated_by): self
+        public function setUpdatedBy(string $updated_by): self
         {
             $this->updated_by = $updated_by;
             return $this;

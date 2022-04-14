@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/region" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des Localités</span>
+            </a>
+            <a href="{{ path('app_localite_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Localités</a>
+        </header>
+        <div class="row">
+            <div class="col-12 shadow border border-light">
+                <nav class="navbar navbar-light bg-light my-2">
+                    <div class="container-fluid">
+                        <span class="navbar-brand mb-0 h1"> Ajout Localité</span>
+                    </div>
+                </nav>
+                <div class="container">
+                    {{ form_start(localiteForm) }}
+                        {{ form_row(localiteForm.code) }}<br>
+                        {{ form_row(localiteForm.nom) }}<br>
+                    {{ form_end(localiteForm) }}            
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

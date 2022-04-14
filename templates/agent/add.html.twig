@@ -4,10 +4,11 @@
 {% block body %}
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/region" class="align-items-center text-dark text-decoration-none">
+            <a href="/agent" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des Agents</span>
             </a>
-            <a href="{{ path('app_region_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Régions</a>
+            <a href="{{ path('app_agent_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Agents</a>
+            <a href="{{ path('app_affecter_liste') }}" class="btn btn-sm fs-7 btn-warning ms-auto"><b>Affecter Agents</b></a>
         </header>
         <div class="row">
             <div class="col-10 shadow border border-light">
@@ -25,21 +26,16 @@
                         {{ form_row(agentForm.telephone) }}<br>
                         {{ form_row(agentForm.email) }}<br>
                         {{ form_row(agentForm.photo) }}<br>
+                        <label>Agence</label>
+                        <select name="agence">
+                            {% for ag in agence %}
+                            <option value='{{ ag.id }}'>{{ ag.nom }}</option>
+                            {% endfor %}
+                        <select>
                     {{ form_end(agentForm) }}          
                 </div>
             </div>
-            <div class="col-2 shadow border border-light">
-                <nav class="navbar navbar-light bg-light my-2">
-                    <div class="container-fluid">
-                        <span class="navbar-brand mb-0 h1">Ajout Agent</span>
-                    </div>
-                </nav>
-                <div class="container">
-                    {{ form_start(agenceForm) }}
-                        {{ form_widget(agenceForm) }}
-                    {{ form_end(agenceForm) }}          
-                </div>
-            </div>
+            
         </div>
     </section>
 {% endblock %}

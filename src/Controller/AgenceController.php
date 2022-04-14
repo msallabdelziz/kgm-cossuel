@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\AgenceRepository;
 use App\Entity\Agence;
+use App\Entity\Localite;
 
 #[Route('/agence', name: 'app_agence_')]
 class AgenceController extends AbstractController
@@ -31,6 +32,8 @@ class AgenceController extends AbstractController
     public function create(Request $request, ManagerRegistry $doctrine): Response
     {
         $ag = new Agence();
+        $entityManager = $doctrine->getManager();
+        $localite = $entityManager->getRepository(Localite::class)->findAll();
 
         $form = $this->createFormBuilder($ag)
             ->add('code', TextType::class)
@@ -42,14 +45,28 @@ class AgenceController extends AbstractController
             ->getForm();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
-
-            $ag=$form->getData();
-            $manager = $doctrine->getManager();
-            $manager->persist($ag);
-            $manager->flush();
+            if($request->request->count() > 0 )
+                {
+                $nom=$form->getData()->getNom();
+                $code=$form->getData()->getCode();
+                $idLoc =$request->request->get('localite');
+                $localite= $entityManager->getRepository(Localite::class)->find($idLoc);
+                $ag->setAgence($localite)
+                   ->setNom($nom)
+                   ->setCode($code)
+                   ->setDateAffectation(new \DateTime());
+                $manager = $doctrine->getManager();
+                $manager->persist($ag);
+                $manager->flush();
+                }
+            
+            //$manager = $doctrine->getManager();
+            //$manager->persist($ag);
+            //$manager->flush();
         }
         return $this->render('agence/add.html.twig',[
-            'agenceForm'=> $form->createView()
+            'agenceForm'=> $form->createView(),
+            'localite' => $localite
         ]);
     }
 

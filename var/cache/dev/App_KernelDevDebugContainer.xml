@@ -364,6 +364,13 @@
         <argument type="service" id=".service_locator.jIxfAsi.App\Controller\DepartementController"/>
       </call>
     </service>
+    <service id="App\Controller\LocaliteController" class="App\Controller\LocaliteController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.jIxfAsi.App\Controller\LocaliteController"/>
+      </call>
+    </service>
     <service id="App\Controller\MainController" class="App\Controller\MainController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
@@ -5778,6 +5785,9 @@
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\DepartementController" class="App\Controller\DepartementController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\DepartementController" class="App\Controller\DepartementController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\DepartementController" class="App\Controller\DepartementController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\LocaliteController" class="App\Controller\LocaliteController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\LocaliteController" class="App\Controller\LocaliteController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\LocaliteController" class="App\Controller\LocaliteController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\MainController" class="App\Controller\MainController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\MainController" class="App\Controller\MainController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\MainController" class="App\Controller\MainController" autowire="true" autoconfigure="true" abstract="true"/>
@@ -6243,6 +6253,14 @@
         <argument key="departementRepository" type="service_closure" id="App\Repository\DepartementRepository"/>
       </argument>
     </service>
+    <service id=".service_locator.9gfGPgD" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="doctrine" type="service_closure" id="doctrine"/>
+        <argument key="localiteRepository" type="service_closure" id="App\Repository\LocaliteRepository"/>
+        <argument key="slug" type="service_closure" id=".errored..service_locator.9gfGPgD.App\Entity\Localite"/>
+      </argument>
+    </service>
     <service id=".service_locator.EMvzwna" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -6293,9 +6311,12 @@
         <argument key="authenticationUtils" type="service_closure" id="security.authentication_utils"/>
       </argument>
     </service>
-    <service id=".service_locator.mlHlZpC" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.8YiGOo5" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
+        <argument key="App\Controller\AffectationsAgentsController::create" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\AffectationsAgentsController::formulaireAff" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\AffectationsAgentsController::liste" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController::create" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController::delete" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController::index" type="service_closure" id=".service_locator.GQZbvNR"/>
@@ -6310,6 +6331,11 @@
         <argument key="App\Controller\DepartementController::edit" type="service_closure" id=".service_locator.16do.Na"/>
         <argument key="App\Controller\DepartementController::index" type="service_closure" id=".service_locator.BgES_Ar"/>
         <argument key="App\Controller\DepartementController::show" type="service_closure" id=".service_locator.16do.Na"/>
+        <argument key="App\Controller\LocaliteController::create" type="service_closure" id=".service_locator.aUsFPsv"/>
+        <argument key="App\Controller\LocaliteController::delete" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController::index" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController::show" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController::update" type="service_closure" id=".service_locator.9gfGPgD"/>
         <argument key="App\Controller\RegionController::add" type="service_closure" id=".service_locator.6LWVlbq"/>
         <argument key="App\Controller\RegionController::edit" type="service_closure" id=".service_locator.vgdgQZJ"/>
         <argument key="App\Controller\RegionController::index" type="service_closure" id=".service_locator.EMvzwna"/>
@@ -6324,6 +6350,9 @@
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.xUrKPVU"/>
         <argument key="kernel::terminate" type="service_closure" id=".service_locator.bRdave9"/>
+        <argument key="App\Controller\AffectationsAgentsController:create" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\AffectationsAgentsController:formulaireAff" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\AffectationsAgentsController:liste" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController:create" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController:delete" type="service_closure" id=".service_locator.GQZbvNR"/>
         <argument key="App\Controller\AgenceController:index" type="service_closure" id=".service_locator.GQZbvNR"/>
@@ -6338,6 +6367,11 @@
         <argument key="App\Controller\DepartementController:edit" type="service_closure" id=".service_locator.16do.Na"/>
         <argument key="App\Controller\DepartementController:index" type="service_closure" id=".service_locator.BgES_Ar"/>
         <argument key="App\Controller\DepartementController:show" type="service_closure" id=".service_locator.16do.Na"/>
+        <argument key="App\Controller\LocaliteController:create" type="service_closure" id=".service_locator.aUsFPsv"/>
+        <argument key="App\Controller\LocaliteController:delete" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController:index" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController:show" type="service_closure" id=".service_locator.GQZbvNR"/>
+        <argument key="App\Controller\LocaliteController:update" type="service_closure" id=".service_locator.9gfGPgD"/>
         <argument key="App\Controller\RegionController:add" type="service_closure" id=".service_locator.6LWVlbq"/>
         <argument key="App\Controller\RegionController:edit" type="service_closure" id=".service_locator.vgdgQZJ"/>
         <argument key="App\Controller\RegionController:index" type="service_closure" id=".service_locator.EMvzwna"/>
@@ -6746,6 +6780,12 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.jIxfAsi" method="withContext"/>
     </service>
+    <service id=".service_locator.jIxfAsi.App\Controller\LocaliteController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\LocaliteController"/>
+      <argument>App\Controller\LocaliteController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.jIxfAsi" method="withContext"/>
+    </service>
     <service id=".service_locator.jIxfAsi.App\Controller\MainController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\MainController"/>
       <argument>App\Controller\MainController</argument>
@@ -6948,12 +6988,12 @@
       <argument type="service" id="security.token_storage"/>
     </service>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
-      <argument type="service" id=".service_locator.mlHlZpC"/>
+      <argument type="service" id=".service_locator.8YiGOo5"/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
-      <argument type="service" id=".service_locator.mlHlZpC"/>
+      <argument type="service" id=".service_locator.8YiGOo5"/>
     </service>
     <service id=".debug.http_client.inner" class="Symfony\Contracts\HttpClient\HttpClientInterface">
       <argument type="collection"/>
@@ -6974,6 +7014,7 @@
     <service id=".errored..service_locator.FsO1k8A.App\Entity\Agence" class="App\Entity\Agence"/>
     <service id=".errored..service_locator.lFxlOIj.App\Entity\Agent" class="App\Entity\Agent"/>
     <service id=".errored..service_locator.16do.Na.App\Entity\Departement" class="App\Entity\Departement"/>
+    <service id=".errored..service_locator.9gfGPgD.App\Entity\Localite" class="App\Entity\Localite"/>
     <service id=".errored..service_locator.vgdgQZJ.App\Entity\Region" class="App\Entity\Region"/>
     <service id=".console.command.about.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>about</argument>
@@ -7787,7 +7828,7 @@
     <service id="SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface" alias="symfonycasts.reset_password.helper"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.gSv9zYw" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.mlHlZpC"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.8YiGOo5"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface $requestLogger" alias="monolog.logger.request"/>
     <service id="Psr\Log\LoggerInterface $consoleLogger" alias="monolog.logger.console"/>
@@ -7807,10 +7848,11 @@
     <service id=".service_locator.0GV1BZZ" alias=".service_locator.gSv9zYw"/>
     <service id=".service_locator.kCs646E" alias=".service_locator.FsO1k8A"/>
     <service id=".service_locator.ou_Wdwl" alias=".service_locator.m8i3TFw"/>
+    <service id=".service_locator.wKkbA_W" alias=".service_locator.9gfGPgD"/>
     <service id=".service_locator.T89Jl7Z" alias=".service_locator.6LWVlbq"/>
     <service id=".service_locator.IJyWPwb" alias=".service_locator.kXtg5m1"/>
     <service id=".service_locator.hvnzVF6" alias=".service_locator.Kn9Vk3z"/>
-    <service id=".service_locator.0BEGuQl" alias=".service_locator.mlHlZpC"/>
+    <service id=".service_locator.fzv_S98" alias=".service_locator.8YiGOo5"/>
     <service id=".service_locator.wKF4yn1" alias=".service_locator.19_mNxd"/>
     <service id=".service_locator.MJszHvf" alias=".service_locator.HZqqko4"/>
     <service id=".service_locator.qBCHs1a" alias=".service_locator.QXcJQkF"/>
@@ -7846,6 +7888,7 @@
     <service id=".service_locator.sFYsUep" alias=".service_locator.BgES_Ar"/>
     <service id=".service_locator.M8tqUf_" alias=".service_locator.WuUWbbL"/>
     <service id=".service_locator.ldxGSLi" alias=".service_locator.16do.Na"/>
+    <service id=".service_locator.rNEIvc_" alias=".service_locator.9gfGPgD"/>
     <service id=".service_locator.hC_P8ZU" alias=".service_locator.EMvzwna"/>
     <service id=".service_locator.HBAaWQU" alias=".service_locator.6LWVlbq"/>
     <service id=".service_locator.WfkZFj6" alias=".service_locator.vgdgQZJ"/>

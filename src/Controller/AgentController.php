@@ -26,12 +26,13 @@ class AgentController extends AbstractController
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
         $entityManager = $doctrine->getManager();
-        $ag = $entityManager->getRepository(Agent::class)->findAll();
-        return $this->render('agent/add.html.twig', [
+        $ag = $entityManager->getRepository(AffectationsAgents::class)->findAll();
+        return $this->render('agent/index.html.twig', [
             'controller_name' => 'AgentController',
             'agents'=> $ag
         ]);
     }
+
 
     #[Route('/create', name: 'create')]
     public function create(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger): Response
@@ -66,15 +67,7 @@ class AgentController extends AbstractController
             ->add('save', SubmitType::class, ['label' => 'Valider'])
             ->getForm();
 
-            $formA = $this->createFormBuilder($af)
-            ->add('agence',  EntityType::class, [
-                'class' => Agence::class,
-                'choice_label' => 'nom',
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Valider'])
-            ->getForm();
         $form->handleRequest($request);
-        $formA->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
 
             $photoFile = $form->get('photo')->getData();
@@ -99,73 +92,129 @@ class AgentController extends AbstractController
             $agent=$form->getData();
             $manager = $doctrine->getManager();
             $manager->persist($agent);
-            
-            
             $manager->flush();
+
+            if($request->request->count() > 0 )
+                {
+                $ag = new AffectationsAgents();
+                $idAg =$request->request->get('agence');
+                $agence= $entityManager->getRepository(Agence::class)->find($idAg);
+                //dump($agence);
+                $ag->setAgence($agence)
+                   ->setAgent($agent)
+                   ->setDateAffectation(new \DateTime());
+                $manager = $doctrine->getManager();
+                $manager->persist($ag);
+                $manager->flush();
+                } 
+            //if ($form->isSubmitted() && $form->isValid()){
+            //    $affec=$formA->getData();
+                
+        
+                
+                //dump($affec);
+                //$entityManager = $doctrine->getManager();
+                //$afagc = $entityManager->getRepository(Agence::class)->find($affec);
+                //$afag = $entityManager->getRepository(Agent::class)->findBy([], ['id' => 'desc'],1,0);
+                //dump($afag);
+                //$affectation=setAgent($afag);
+                //dump($affectation);
+                //$entityManager->persist($affectation);
+                //$entityManager->flush();
+            //}
         }
-        if ($form->isSubmitted() && $form->isValid()){
-            $affec=$formA->getData();
-            $affe=$form->getData();
-            dump($affec);
-            //$entityManager = $doctrine->getManager();
-            //$afagc = $entityManager->getRepository(Agence::class)->find($affec);
-            //$afag = $entityManager->getRepository(Agent::class)->find($affe->id);
-            //$affectation=new AffectationsAgents('agence'->$afagc,'agent'->$afag);
-            //$entityManager->persist($affectation);
-            $entityManager->flush();
-        }
+        
         return $this->render('agent/add.html.twig',[
             'agentForm'=> $form->createView(),
-            'agenceForm'=> $formA->createView()
+            'agence'=> $agence
         ]);
 
     }
+
+   
 
     #[Route('/update/{id}', name: 'update')]
     public function update(ManagerRegistry $doctrine, Agent $id,Request $request): Response
     {
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(Agent::class)->find($id);
+        $agence = $entityManager->getRepository(Agence::class)->findAll();
 
         $form = $this->createFormBuilder($ag)
-            ->add('matricule', TextType::class)
-            ->add('nom', TextType::class)
-            ->add('prenom', TextType::class)
-            ->add('adresse', TextType::class)
-            ->add('telephone', TextType::class)
-            ->add('email', TextType::class)
-            ->add('photo', TextType::class)
-            ->add('save', SubmitType::class, ['label' => 'Valider'])
-            ->getForm();
+        ->add('matricule', TextType::class)
+        ->add('nom', TextType::class)
+        ->add('prenom', TextType::class,['required' => true])
+        ->add('adresse', TextType::class,['required' => true])
+        ->add('telephone', TextType::class,['required' => true])
+        ->add('email', EmailType::class,['required' => true])
+        ->add('photo', FileType::class,[
+            'label' => 'Photo (PDF file)',
+            'mapped' => false,
+            'required' => false,
+            'constraints' => [
+                new File([
+                    'maxSize' => '1024k',
+                    'mimeTypes' => [
+                        'application/pdf',
+                        'application/x-pdf',
+                    ],
+                    
+                ])
+            ],
+        ])
+        ->add('save', SubmitType::class, ['label' => 'Valider'])
+        ->getForm();
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()){
 
-            $ag=$form->getData();
-            $manager = $doctrine->getManager();
-            $manager->persist($ag);
-            $manager->flush();
+        $photoFile = $form->get('photo')->getData();
+        if ($photoFile) {
+            $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
 
-            return new Response('enregistrement effectué!');
+            try {
+                $photoFile->move(
+                    $this->getParameter('photo_directory'),
+                    $newFilename
+                );
+            } catch (FileException $e) {
+               
+            }
+
+            $ag->setPhoto($newFilename);
         }
-        return $this->render('agent/formulaire.html.twig',[
-            'formAgent'=> $form->createView()
-        ]);
-        }
+
+        $agent=$form->getData();
+        $manager = $doctrine->getManager();
+        $manager->persist($agent);
+        $manager->flush();
+    }
+    
+    return $this->render('agent/add.html.twig',[
+        'agentForm'=> $form->createView(),
+        'agence'=> $agence
+    ]);
+}
 
     #[Route('/show/{id}', name: 'show')]
     public function show(ManagerRegistry $doctrine, int $id): Response
     {
         $ag = $doctrine->getRepository(Agent::class)->find($id);
+        $agents = $doctrine->getRepository(Agent::class)->findAll();
+        $agence = $doctrine->getRepository(AffectationsAgents::class)->findOneBy(['agent'=>$ag]);
+        
+        //$agence = $doctrine->getRepository(Agent::class)->find($agen);
+        
 
-        if (!$ag) {
-            throw $this->createNotFoundException(
-                'N\'EXISTE PAS'
-            );
-        }
-
-        return new Response('agent:'.$ag->getNom().' '.$ag->getPrenom());
-
+        return $this->render('agent/show.html.twig', [
+            'controller_name' => 'AgentController',
+            'agent'=> $ag,
+            'agents'=> $agents,
+            'ag'=> $agence
+        ]);
     }
 
     #[Route('/delete/{id}', name: 'delete')]

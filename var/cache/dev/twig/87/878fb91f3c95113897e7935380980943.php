@@ -127,10 +127,30 @@ class __TwigTemplate_1b29520f4c24b20f7824744c6d0f3804 extends Template
         // line 25
         echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 25, $this->source); })()), "email", [], "any", false, false, false, 25), 'row');
         echo "<br>
+                        <label>Localité</label>
+                        <select name=\"localite\">
+                            ";
+        // line 28
+        $context['_parent'] = $context;
+        $context['_seq'] = twig_ensure_traversable((isset($context["localite"]) || array_key_exists("localite", $context) ? $context["localite"] : (function () { throw new RuntimeError('Variable "localite" does not exist.', 28, $this->source); })()));
+        foreach ($context['_seq'] as $context["_key"] => $context["loc"]) {
+            // line 29
+            echo "                            <option value='";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["loc"], "id", [], "any", false, false, false, 29), "html", null, true);
+            echo "'>";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["loc"], "nom", [], "any", false, false, false, 29), "html", null, true);
+            echo "</option>
+                            ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['loc'], $context['_parent'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 31
+        echo "                        <select><br><br><br>
                     ";
-        // line 26
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 26, $this->source); })()), 'form_end');
-        echo "            
+        // line 32
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 32, $this->source); })()), 'form_end');
+        echo "<br>         
                 </div>
             </div>
         </div>
@@ -156,7 +176,7 @@ class __TwigTemplate_1b29520f4c24b20f7824744c6d0f3804 extends Template
 
     public function getDebugInfo()
     {
-        return array (  132 => 26,  128 => 25,  124 => 24,  120 => 23,  116 => 22,  112 => 21,  108 => 20,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  152 => 32,  149 => 31,  138 => 29,  134 => 28,  128 => 25,  124 => 24,  120 => 23,  116 => 22,  112 => 21,  108 => 20,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -186,7 +206,13 @@ class __TwigTemplate_1b29520f4c24b20f7824744c6d0f3804 extends Template
                         {{ form_row(agenceForm.adresse) }}<br>
                         {{ form_row(agenceForm.telephone) }}<br>
                         {{ form_row(agenceForm.email) }}<br>
-                    {{ form_end(agenceForm) }}            
+                        <label>Localité</label>
+                        <select name=\"localite\">
+                            {% for loc in localite %}
+                            <option value='{{ loc.id }}'>{{ loc.nom }}</option>
+                            {% endfor %}
+                        <select><br><br><br>
+                    {{ form_end(agenceForm) }}<br>         
                 </div>
             </div>
         </div>

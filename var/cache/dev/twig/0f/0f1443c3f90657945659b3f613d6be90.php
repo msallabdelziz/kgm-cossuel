@@ -87,13 +87,17 @@ class __TwigTemplate_6f4c36028aae9acacfedde54381d1afa extends Template
         // line 5
         echo "    <section class=\"container\">
         <header class=\"hstack pb-2 mb-2 border-bottom\">
-            <a href=\"/region\" class=\"align-items-center text-dark text-decoration-none\">
+            <a href=\"/agent\" class=\"align-items-center text-dark text-decoration-none\">
                 <span class=\"fs-4\">Gestion des Agents</span>
             </a>
             <a href=\"";
         // line 10
-        echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_region_index");
-        echo "\" class=\"btn btn-sm fs-7 btn-success ms-auto\">Liste des Régions</a>
+        echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_agent_index");
+        echo "\" class=\"btn btn-sm fs-7 btn-success ms-auto\">Liste des Agents</a>
+            <a href=\"";
+        // line 11
+        echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_affecter_liste");
+        echo "\" class=\"btn btn-sm fs-7 btn-warning ms-auto\"><b>Affecter Agents</b></a>
         </header>
         <div class=\"row\">
             <div class=\"col-10 shadow border border-light\">
@@ -104,64 +108,64 @@ class __TwigTemplate_6f4c36028aae9acacfedde54381d1afa extends Template
                 </nav>
                 <div class=\"container\">
                     ";
-        // line 20
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 20, $this->source); })()), 'form_start');
+        // line 21
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 21, $this->source); })()), 'form_start');
         echo "
                         ";
-        // line 21
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 21, $this->source); })()), "matricule", [], "any", false, false, false, 21), 'row');
-        echo "<br>
-                        ";
         // line 22
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 22, $this->source); })()), "nom", [], "any", false, false, false, 22), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 22, $this->source); })()), "matricule", [], "any", false, false, false, 22), 'row');
         echo "<br>
                         ";
         // line 23
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 23, $this->source); })()), "prenom", [], "any", false, false, false, 23), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 23, $this->source); })()), "nom", [], "any", false, false, false, 23), 'row');
         echo "<br>
                         ";
         // line 24
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 24, $this->source); })()), "adresse", [], "any", false, false, false, 24), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 24, $this->source); })()), "prenom", [], "any", false, false, false, 24), 'row');
         echo "<br>
                         ";
         // line 25
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 25, $this->source); })()), "telephone", [], "any", false, false, false, 25), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 25, $this->source); })()), "adresse", [], "any", false, false, false, 25), 'row');
         echo "<br>
                         ";
         // line 26
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 26, $this->source); })()), "email", [], "any", false, false, false, 26), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 26, $this->source); })()), "telephone", [], "any", false, false, false, 26), 'row');
         echo "<br>
                         ";
         // line 27
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 27, $this->source); })()), "photo", [], "any", false, false, false, 27), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 27, $this->source); })()), "email", [], "any", false, false, false, 27), 'row');
         echo "<br>
-                    ";
-        // line 28
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 28, $this->source); })()), 'form_end');
-        echo "          
-                </div>
-            </div>
-            <div class=\"col-2 shadow border border-light\">
-                <nav class=\"navbar navbar-light bg-light my-2\">
-                    <div class=\"container-fluid\">
-                        <span class=\"navbar-brand mb-0 h1\">Ajout Agent</span>
-                    </div>
-                </nav>
-                <div class=\"container\">
-                    ";
-        // line 38
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 38, $this->source); })()), 'form_start');
-        echo "
                         ";
-        // line 39
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock((isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 39, $this->source); })()), 'widget');
-        echo "
+        // line 28
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 28, $this->source); })()), "photo", [], "any", false, false, false, 28), 'row');
+        echo "<br>
+                        <label>Agence</label>
+                        <select name=\"agence\">
+                            ";
+        // line 31
+        $context['_parent'] = $context;
+        $context['_seq'] = twig_ensure_traversable((isset($context["agence"]) || array_key_exists("agence", $context) ? $context["agence"] : (function () { throw new RuntimeError('Variable "agence" does not exist.', 31, $this->source); })()));
+        foreach ($context['_seq'] as $context["_key"] => $context["ag"]) {
+            // line 32
+            echo "                            <option value='";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 32), "html", null, true);
+            echo "'>";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "nom", [], "any", false, false, false, 32), "html", null, true);
+            echo "</option>
+                            ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['ag'], $context['_parent'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 34
+        echo "                        <select>
                     ";
-        // line 40
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agenceForm"]) || array_key_exists("agenceForm", $context) ? $context["agenceForm"] : (function () { throw new RuntimeError('Variable "agenceForm" does not exist.', 40, $this->source); })()), 'form_end');
+        // line 35
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["agentForm"]) || array_key_exists("agentForm", $context) ? $context["agentForm"] : (function () { throw new RuntimeError('Variable "agentForm" does not exist.', 35, $this->source); })()), 'form_end');
         echo "          
                 </div>
             </div>
+            
         </div>
     </section>
 ";
@@ -185,7 +189,7 @@ class __TwigTemplate_6f4c36028aae9acacfedde54381d1afa extends Template
 
     public function getDebugInfo()
     {
-        return array (  161 => 40,  157 => 39,  153 => 38,  140 => 28,  136 => 27,  132 => 26,  128 => 25,  124 => 24,  120 => 23,  116 => 22,  112 => 21,  108 => 20,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  164 => 35,  161 => 34,  150 => 32,  146 => 31,  140 => 28,  136 => 27,  132 => 26,  128 => 25,  124 => 24,  120 => 23,  116 => 22,  112 => 21,  99 => 11,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -196,10 +200,11 @@ class __TwigTemplate_6f4c36028aae9acacfedde54381d1afa extends Template
 {% block body %}
     <section class=\"container\">
         <header class=\"hstack pb-2 mb-2 border-bottom\">
-            <a href=\"/region\" class=\"align-items-center text-dark text-decoration-none\">
+            <a href=\"/agent\" class=\"align-items-center text-dark text-decoration-none\">
                 <span class=\"fs-4\">Gestion des Agents</span>
             </a>
-            <a href=\"{{ path('app_region_index') }}\" class=\"btn btn-sm fs-7 btn-success ms-auto\">Liste des Régions</a>
+            <a href=\"{{ path('app_agent_index') }}\" class=\"btn btn-sm fs-7 btn-success ms-auto\">Liste des Agents</a>
+            <a href=\"{{ path('app_affecter_liste') }}\" class=\"btn btn-sm fs-7 btn-warning ms-auto\"><b>Affecter Agents</b></a>
         </header>
         <div class=\"row\">
             <div class=\"col-10 shadow border border-light\">
@@ -217,21 +222,16 @@ class __TwigTemplate_6f4c36028aae9acacfedde54381d1afa extends Template
                         {{ form_row(agentForm.telephone) }}<br>
                         {{ form_row(agentForm.email) }}<br>
                         {{ form_row(agentForm.photo) }}<br>
+                        <label>Agence</label>
+                        <select name=\"agence\">
+                            {% for ag in agence %}
+                            <option value='{{ ag.id }}'>{{ ag.nom }}</option>
+                            {% endfor %}
+                        <select>
                     {{ form_end(agentForm) }}          
                 </div>
             </div>
-            <div class=\"col-2 shadow border border-light\">
-                <nav class=\"navbar navbar-light bg-light my-2\">
-                    <div class=\"container-fluid\">
-                        <span class=\"navbar-brand mb-0 h1\">Ajout Agent</span>
-                    </div>
-                </nav>
-                <div class=\"container\">
-                    {{ form_start(agenceForm) }}
-                        {{ form_widget(agenceForm) }}
-                    {{ form_end(agenceForm) }}          
-                </div>
-            </div>
+            
         </div>
     </section>
 {% endblock %}
