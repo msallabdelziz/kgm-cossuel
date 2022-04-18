@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-<<<<<<< HEAD
 use App\Entity\Electricien;
 use App\Entity\Installation;
 use App\Entity\Localite;
@@ -22,12 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-=======
-use App\Entity\Installation;
-use App\Form\InstallationType;
-use App\Repository\InstallationRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,7 +36,6 @@ class InstallationController extends AbstractController
         ]);
     }
 
-<<<<<<< HEAD
     #[Route('/add', name: 'app_installation_add', methods: ['GET', 'POST'])]
     public function new(Request $request, InstallationRepository $installationRepository): Response
     {
@@ -410,12 +402,6 @@ class InstallationController extends AbstractController
     public function new6(Request $request, InstallationRepository $installationRepository): Response
     {
         $installation = new Installation();
-=======
-    #[Route('/new', name: 'app_installation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, InstallationRepository $installationRepository): Response
-    {
-        $installation = new Installation();
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
         $form = $this->createForm(InstallationType::class, $installation);
         $form->handleRequest($request);
 
@@ -424,14 +410,8 @@ class InstallationController extends AbstractController
             return $this->redirectToRoute('app_installation_index', [], Response::HTTP_SEE_OTHER);
         }
 
-<<<<<<< HEAD
         return $this->renderForm('installation/new6.html.twig', [
             'installationForm' => $form,
-=======
-        return $this->renderForm('installation/new.html.twig', [
-            'installation' => $installation,
-            'form' => $form,
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
         ]);
     }
 
