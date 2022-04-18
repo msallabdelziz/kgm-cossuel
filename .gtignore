@@ -1,7 +1,0 @@
-var/
-vendor/
-bin/
-.php-version
-*.lock
-php.ini
-.env
