@@ -8,8 +8,16 @@ use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
+/**
+ * @ORM\Entity
+ * @UniqueEntity("email")
+ * @UniqueEntity("photo")
+ * @UniqueEntity("matricule")
+ */
 class Agent
 {
     use createdAtTrait;
@@ -22,7 +30,7 @@ class Agent
     #[ORM\Column(type: 'string', length: 255)]
     private $matricule;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique:true)]
     private $prenom;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -34,11 +42,16 @@ class Agent
     #[ORM\Column(type: 'string', length: 255)]
     private $telephone;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique:true)]
     private $email;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique:true)]
     private $photo;
+
+    /**
+     * @var File
+     */
+    private $tof;
 
     #[ORM\OneToMany(mappedBy: 'agent', targetEntity: AffectationsAgents::class)]
     private $affectation;
@@ -139,12 +152,40 @@ class Agent
         return $this;
     }
 
+
+    /**
+     * @return File/null
+     */
+
+    public function getTof(): ?string
+    {
+        return $this->tof;
+    }
+
+    /**
+     * @param File $tof
+     */
+
+    public function setTof(File $tof): self
+    {
+        $this->tof = $tof;
+
+        return $this;
+    }
     /**
      * @return Collection<int, AffectationsAgents>
      */
     public function getAffectation(): Collection
     {
         return $this->affectation;
+    }
+
+    public function getAgence(): ? Agence
+    {
+        if($this->affectation->count()>0) {
+            return $this->affectation->last()->getAgence();
+        }
+        return null;
     }
 
     public function addAffectation(AffectationsAgents $affectation): self
@@ -168,4 +209,10 @@ class Agent
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return "[".$this->getMatricule()."] ".$this->getPrenom()." ".$this->getNom();
+    }
+
 }

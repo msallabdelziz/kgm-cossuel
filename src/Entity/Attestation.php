@@ -71,4 +71,11 @@ class Attestation
 
         return $this;
     }
+
+
+    public function __toString()
+    {
+        return "[".$this->getNumero()." - ".$this->getDateDelivrance()->format("d/m/Y")."]";
+    }
+
 }

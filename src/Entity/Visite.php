@@ -107,4 +107,10 @@ class Visite
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return "[".$this->getId()." ".$this->getDateVisite()->format("d-m-y")."]";
+    }
+
 }

@@ -5,12 +5,10 @@ namespace App\Controller;
 use App\Entity\Region;
 use App\Form\RegionFormType;
 use App\Repository\RegionRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @Route("/region", name="app_region_")
@@ -29,22 +27,18 @@ class RegionController extends AbstractController
     /**
      * @Route("/add", name="add")
      */
-    public function add(Request $request, RegionRepository $regionRepository, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function add(Request $request, RegionRepository $regionRepository): Response
     {
         $region = new Region();
         $form = $this->createForm(RegionFormType::class, $region);
         $form->handleRequest($request);
+        // $this->addFlash('success', 'Req: '.$request->request->get("region_form_code"));
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            $region->setSlug($slugger->slug($region->getCode())->lower()); 
-
-            $entityManager->persist($region);
-            $entityManager->flush();
+            $regionRepository->add($region);
             // do anything else you need here, like send an email
 
             return $this->redirectToRoute("app_region_index");
         }
-
         return $this->render('region/add.html.twig', [
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
             'regionForm' => $form->createView(),
@@ -52,18 +46,29 @@ class RegionController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}/edit", name="edit")
+     * @Route("/{id}/edit", name="edit")
      */
-    public function edit(Region $region, RegionRepository $regionRepository): Response
+    public function edit(Request $request, Region $region, RegionRepository $regionRepository): Response
     {
+        $region = $regionRepository->find($region->getId());
+        $form = $this->createForm(RegionFormType::class, $region);
+        $form->handleRequest($request);
+        // $this->addFlash('success', 'Req: '.$request->request->get("region_form_code"));
+        if ($form->isSubmitted() && $form->isValid()) {
+            $regionRepository->add($region);
+            // do anything else you need here, like send an email
+
+            return $this->redirectToRoute("app_region_show", ['id'=>$region->getId()]);
+        }
         return $this->render('region/edit.html.twig', [
             'region' => $region,
+            'regionForm' => $form->createView(),
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
         ]);
     }
 
     /**
-     * @Route("/{slug}", name="show")
+     * @Route("/{id}", name="show")
      */
     public function show(Region $region, RegionRepository $regionRepository): Response
     {

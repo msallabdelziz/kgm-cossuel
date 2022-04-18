@@ -15,13 +15,13 @@ class RegionFormType extends AbstractType
         $builder
             ->add('code', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control mb-2'
+                    'class' => 'form-control'
                 ],
                 'label' => 'Code'
             ])
             ->add('nom', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control mb-2'
+                    'class' => 'form-control'
                 ],
                 'label' => 'Nom'
             ])

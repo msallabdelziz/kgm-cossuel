@@ -1,31 +1,88 @@
 <!DOCTYPE html>
-<html class="h-100">
+<html lang="fr">
 	<head>
-		<meta charset="UTF-8">
-		<title>
-			{% block title %}Welcome!
-			{% endblock %}
-		</title>
-		<link
-		rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-		<meta
-		name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- Styles CSS -->
-		<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}"> {% block stylesheets %}{% endblock %}
-		<link
-		rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{# <link rel="shortcut icon" href="{{ asset('assets/img/favicon.svg') }}" type="image/x-icon" /> #}
+		<link rel="shortcut icon" href="{{ asset('assets/img/bootstrap-icons.svg') }}" type="image/x-icon" />
 
-		<!-- Fichiers JS -->
-		<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
-		{% block javascripts %}{% endblock %}
-		<script src="{{ asset('assets/js/scripts.js') }}"></script>
+		<!-- Bootstrap CSS -->
+		<link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
+		<link rel="stylesheet" href="{{ asset('assets/css/lineicons.css') }}" />
+		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+		<!-- Styles CSS -->
+		{% block stylesheets %}{% endblock %}
+
+		<title>
+			{% block title %}Welcome! {% endblock %}
+		</title>
 	</head>
-	<body class="d-flex flex-column h-100">
-        {% include "include/_menu.html.twig" %}
-        <main class="">
-    		{% block body %}{% endblock %}
-        </main>
-        {% include "include/_footer.html.twig" %}
+	<body>
+	    {% if app.user %}
+			{% include "include/_menu.html.twig" %}
+			<!-- ======== main-wrapper start =========== -->
+			<main class="main-wrapper">
+			{% include "include/_header.html.twig" %}
+				<!-- ========== section start ========== -->
+				<section class="section">
+					<div class="container-fluid pt-4">
+		{% endif %}
+
+		{% block body %}{% endblock %}
+
+	    {% if app.user %}
+					</div>
+				</section>
+				<!-- ========== section end ========== -->
+				<!-- ========== footer start =========== -->
+				<footer class="footer">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-md-12 order-last order-md-first">
+								<div class="copyright text-center text-md-start">
+									<p class="small">
+										&copy; 2022 -
+										<a href="{{ path('main') }}" rel="nofollow" target="_blank"> KGM </a>
+									</p>
+								</div>
+							</div>
+							<!-- end col-->
+						</div>
+						<!-- end row -->
+					</div>
+					<!-- end container -->
+				</footer>
+				<!-- ========== footer end =========== -->
+			</main>
+			<!-- ======== main-wrapper end =========== -->
+			{% include "include/_footer.html.twig" %}
+		{% endif %}
+
+		{# Modal Dialog #}
+		<!-- Modal -->
+		<div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					...
+				</div>
+			</div>
+		</div>
+		</div>
+
+		{# read and display all flash messages #}
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+			{% if label=="notice" %} 
+				{% set label="warning" %}
+			{% endif %}
+				<div class="col-4 p-2 m-2 right alert alert-{{ label }} alert-dismissible fade show position-absolute top-0 end-0" role="alert">
+					{{ message }}
+				<button type="button" class="btn-close my-1 py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+		{% endfor %}
 	</body>
 </html>
+{% block javascripts %}{% endblock %}

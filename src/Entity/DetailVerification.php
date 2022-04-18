@@ -147,4 +147,10 @@ class DetailVerification
 
         return $this;
     }
+
+
+    public function __toString()
+    {
+        return "[".$this->getNumero()."]";
+    }
 }

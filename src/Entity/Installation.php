@@ -7,6 +7,7 @@ use App\Repository\InstallationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 
 #[ORM\Entity(repositoryClass: InstallationRepository::class)]
 class Installation
@@ -19,81 +20,100 @@ class Installation
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    private $usage;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $etat;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $alimente;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $compteurVoisin;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $compteur;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $abonnement;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $bp;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $adresse;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $nomSite;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $lattitude;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $longitude;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'datetime', nullable:true)]
     private $dateInstallation;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $grstReseau;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $neuf15;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $existant15;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $neuf25;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $existant25;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $neufAutre;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $existantAutre;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $titreProp;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $intervenant;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $intervenantAutre;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $collectif;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $logement;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $priece;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $puissance;
 
-    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'installation')]
-    private $client;
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $activite;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $niveau;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $habitation;
+
+    #[ORM\ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'installation')]
+    private $proprietaire;
+
+    #[ORM\ManyToOne(targetEntity: Electricien::class, inversedBy: 'installation')]
+    private $electricien;
 
     #[ORM\ManyToOne(targetEntity: Localite::class, inversedBy: 'installation')]
+    // #[ORM\JoinColumn("NatureBatiment", "id", false, true)]
     private $localite;
 
     #[ORM\ManyToOne(targetEntity: TypeConstruction::class, inversedBy: 'installation')]
@@ -133,6 +153,18 @@ class Installation
         return $this;
     }
 
+    public function getUsage(): ?string
+    {
+        return $this->usage;
+    }
+
+    public function setUsage(string $usage): self
+    {
+        $this->usage = $usage;
+
+        return $this;
+    }
+
     public function getCompteurVoisin(): ?string
     {
         return $this->compteurVoisin;
@@ -141,6 +173,18 @@ class Installation
     public function setCompteurVoisin(string $compteurVoisin): self
     {
         $this->compteurVoisin = $compteurVoisin;
+
+        return $this;
+    }
+
+    public function getAlimente(): ?string
+    {
+        return $this->alimente;
+    }
+
+    public function setAlimente(string $alimente): self
+    {
+        $this->alimente = $alimente;
 
         return $this;
     }
@@ -229,12 +273,12 @@ class Installation
         return $this;
     }
 
-    public function getDateInstallation(): ?string
+    public function getDateInstallation(): ?\DateTimeInterface
     {
         return $this->dateInstallation;
     }
 
-    public function setDateInstallation(string $dateInstallation): self
+    public function setDateInstallation(?\DateTimeInterface $dateInstallation): self
     {
         $this->dateInstallation = $dateInstallation;
 
@@ -409,14 +453,62 @@ class Installation
         return $this;
     }
 
-    public function getClient(): ?Client
+    public function getActivite(): ?string
     {
-        return $this->client;
+        return $this->activite;
     }
 
-    public function setClient(?Client $client): self
+    public function setActivite(string $activite): self
     {
-        $this->client = $client;
+        $this->activite = $activite;
+
+        return $this;
+    }
+
+    public function getNiveau(): ?string
+    {
+        return $this->niveau;
+    }
+
+    public function setNiveau(string $niveau): self
+    {
+        $this->niveau = $niveau;
+
+        return $this;
+    }
+
+    public function getHabitation(): ?string
+    {
+        return $this->habitation;
+    }
+
+    public function setHabitation(string $habitation): self
+    {
+        $this->habitation = $habitation;
+
+        return $this;
+    }
+
+    public function getProprietaire(): ?Proprietaire
+    {
+        return $this->proprietaire;
+    }
+
+    public function setProprietaire(?Proprietaire $proprietaire): self
+    {
+        $this->proprietaire = $proprietaire;
+
+        return $this;
+    }
+
+    public function getElectricien(): ?Electricien
+    {
+        return $this->electricien;
+    }
+
+    public function setElectricien(?Electricien $electricien): self
+    {
+        $this->electricien = $electricien;
 
         return $this;
     }

@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
-use App\Entity\Traits\slugTrait;
 use App\Repository\RegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Region
 {
     use createdAtTrait;
-    use slugTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -93,5 +91,10 @@ class Region
         $this->code = $code;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return "[".$this->getCode()."] ".$this->getNom();
     }
 }

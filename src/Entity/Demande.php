@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
-use App\Entity\Traits\slugTrait;
 use App\Repository\DemandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -57,7 +56,6 @@ class Demande
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
         $this->pieceJointes = new ArrayCollection();
-        $this->installation = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -216,4 +214,11 @@ class Demande
 
         return $this;
     }
+
+
+    public function __toString()
+    {
+        return "[".$this->getNumero()." ".$this->getDateCreation()->format("d/m/Y")."]";
+    }
+
 }

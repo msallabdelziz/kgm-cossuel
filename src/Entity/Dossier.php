@@ -198,4 +198,11 @@ class Dossier
 
         return $this;
     }
+
+
+    public function __toString()
+    {
+        return "[".$this->getNum()." ".$this->getDateCreation()->format("d/m/Y")."]";
+    }
+
 }

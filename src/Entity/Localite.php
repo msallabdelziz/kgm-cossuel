@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
-use App\Entity\Traits\slugTrait;
 use App\Repository\LocaliteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Localite
 {
     use createdAtTrait;
-    use slugTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,8 +27,11 @@ class Localite
     #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Agence::class)]
     private $agence;
 
-    #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Client::class)]
-    private $client;
+    #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Electricien::class)]
+    private $electricien;
+
+    #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Proprietaire::class)]
+    private $proprietaire;
 
     #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Installation::class)]
     private $installation;
@@ -43,7 +44,8 @@ class Localite
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
         $this->agence = new ArrayCollection();
-        $this->client = new ArrayCollection();
+        $this->electricien = new ArrayCollection();
+        $this->proprietaire = new ArrayCollection();
         $this->installation = new ArrayCollection();
     }
 
@@ -107,29 +109,59 @@ class Localite
     }
 
     /**
-     * @return Collection<int, Client>
+     * @return Collection<int, Electricien>
      */
-    public function getClient(): Collection
+    public function getElectricien(): Collection
     {
-        return $this->client;
+        return $this->electricien;
     }
 
-    public function addClient(Client $client): self
+    public function addElectricien(Electricien $electricien): self
     {
-        if (!$this->client->contains($client)) {
-            $this->client[] = $client;
-            $client->setLocalite($this);
+        if (!$this->electricien->contains($electricien)) {
+            $this->electricien[] = $electricien;
+            $electricien->setLocalite($this);
         }
 
         return $this;
     }
 
-    public function removeClient(Client $client): self
+    public function removeElectricien(Electricien $electricien): self
     {
-        if ($this->client->removeElement($client)) {
+        if ($this->electricien->removeElement($electricien)) {
             // set the owning side to null (unless already changed)
-            if ($client->getLocalite() === $this) {
-                $client->setLocalite(null);
+            if ($electricien->getLocalite() === $this) {
+                $electricien->setLocalite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Proprietaire>
+     */
+    public function getProprietaire(): Collection
+    {
+        return $this->proprietaire;
+    }
+
+    public function addProprietaire(Proprietaire $proprietaire): self
+    {
+        if (!$this->proprietaire->contains($proprietaire)) {
+            $this->electricien[] = $proprietaire;
+            $proprietaire->setLocalite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProprietaire(Proprietaire $proprietaire): self
+    {
+        if ($this->proprietaire->removeElement($proprietaire)) {
+            // set the owning side to null (unless already changed)
+            if ($proprietaire->getLocalite() === $this) {
+                $proprietaire->setLocalite(null);
             }
         }
 
@@ -177,4 +209,10 @@ class Localite
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return "[".$this->getCode()."] ".$this->getNom();
+    }
+
 }

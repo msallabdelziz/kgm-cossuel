@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
-use App\Entity\Traits\slugTrait;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,10 +13,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[UniqueEntity(fields: ['login'], message: 'There is already an account with this login')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface 
 {
     use createdAtTrait;
-    use slugTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -39,7 +38,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $id_type;
 
-
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Demande::class)]
     private $demande;
 
@@ -58,6 +56,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 100)]
     private $email;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isVerified = false;
+
     public function __construct()
     {
         $this->demande = new ArrayCollection();
@@ -65,6 +66,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->created_at = new \DateTimeImmutable();
         $this->type = "";
         $this->id_type = "";
+        // guarantee every user at least has ROLE_USER
+        $this->roles[] = 'ROLE_USER';
     }
 
     public function getId(): ?int
@@ -84,7 +87,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getType(): ?int
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -274,4 +277,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return "[".$this->getLogin()."] ".$this->getPrenom()." ".$this->getNom();
+    }
+
 }

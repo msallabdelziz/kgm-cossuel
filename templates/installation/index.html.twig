@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Installation index{% endblock %}
+
+{% block body %}
+    <h1>Installation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Etat</th>
+                <th>CompteurVoisin</th>
+                <th>Compteur</th>
+                <th>Abonnement</th>
+                <th>Bp</th>
+                <th>Adresse</th>
+                <th>NomSite</th>
+                <th>Lattitude</th>
+                <th>Longitude</th>
+                <th>DateInstallation</th>
+                <th>GrstReseau</th>
+                <th>Neuf15</th>
+                <th>Existant15</th>
+                <th>Neuf25</th>
+                <th>Existant25</th>
+                <th>NeufAutre</th>
+                <th>ExistantAutre</th>
+                <th>TitreProp</th>
+                <th>Intervenant</th>
+                <th>IntervenantAutre</th>
+                <th>Collectif</th>
+                <th>Logement</th>
+                <th>Priece</th>
+                <th>Puissance</th>
+                <th>Created_at</th>
+                <th>Created_by</th>
+                <th>Updated_at</th>
+                <th>Updated_by</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for installation in installations %}
+            <tr>
+                <td>{{ installation.id }}</td>
+                <td>{{ installation.etat }}</td>
+                <td>{{ installation.compteurVoisin }}</td>
+                <td>{{ installation.compteur }}</td>
+                <td>{{ installation.abonnement }}</td>
+                <td>{{ installation.bp }}</td>
+                <td>{{ installation.adresse }}</td>
+                <td>{{ installation.nomSite }}</td>
+                <td>{{ installation.lattitude }}</td>
+                <td>{{ installation.longitude }}</td>
+                <td>{{ installation.dateInstallation ? installation.dateInstallation|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ installation.grstReseau }}</td>
+                <td>{{ installation.neuf15 }}</td>
+                <td>{{ installation.existant15 }}</td>
+                <td>{{ installation.neuf25 }}</td>
+                <td>{{ installation.existant25 }}</td>
+                <td>{{ installation.neufAutre }}</td>
+                <td>{{ installation.existantAutre }}</td>
+                <td>{{ installation.titreProp }}</td>
+                <td>{{ installation.intervenant }}</td>
+                <td>{{ installation.intervenantAutre }}</td>
+                <td>{{ installation.collectif }}</td>
+                <td>{{ installation.logement }}</td>
+                <td>{{ installation.priece }}</td>
+                <td>{{ installation.puissance }}</td>
+                <td>{{ installation.createdAt ? installation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ installation.createdBy }}</td>
+                <td>{{ installation.updatedAt ? installation.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ installation.updatedBy }}</td>
+                <td>
+                    <a href="{{ path('app_installation_show', {'id': installation.id}) }}">show</a>
+                    <a href="{{ path('app_installation_edit', {'id': installation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="30">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_installation_add') }}">Create new</a>
+{% endblock %}

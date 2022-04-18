@@ -86,4 +86,9 @@ class Recu
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return "[".$this->getNumero()." ".$this->getDateEdition()->format("d/m/Y")."]";
+    }
 }

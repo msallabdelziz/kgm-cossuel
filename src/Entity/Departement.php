@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
-use App\Entity\Traits\slugTrait;
 use App\Repository\DepartementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,8 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Departement
 {
     use createdAtTrait;
-    use slugTrait;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -108,5 +105,10 @@ class Departement
         $this->code = $code;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return "[".$this->getCode()."] ".$this->getNom();
     }
 }

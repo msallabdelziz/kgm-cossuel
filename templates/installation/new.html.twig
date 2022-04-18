@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des demandes</span>
+            </a>
+            <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Demandes</a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-1" %}            
+            <div class="{{ offset }} col-lg-10 mb-2  p-3">
+
+                <div class="container">
+                    <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
+                        <div class="container-fluid ps-4">
+                            <span class="navbar-brand mb-0 fs-4 fw-400">
+                            <svg class="bi" width="24" height="24" fill="black">
+                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                            </svg>
+                            Nouvelle demande</span>
+                        </div>
+                    </nav>
+                    <div class="container">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
+                            <div class="row">
+                                <!-- progressbar -->
+                                <ul id="progressbar">
+                                    <li class="step active">
+                                        <svg class="bi" width="24" height="24" fill="#ffc328" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                        </svg>
+                                        Données de base
+                                    </li>
+                                    <li class="step">
+                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#house-door') }}"></use>
+                                        </svg>
+                                        Données sur le Site
+                                    </li>
+                                    <li class="step">
+                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#gear') }}"></use>
+                                        </svg>
+                                        Données Installation
+                                    </li>
+                                    <li class="step">
+                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                        </svg>
+                                        Données Electricien
+                                    </li>
+                                    <li class="step">
+                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
+                                        </svg>
+                                        Données Propriétaire
+                                    <li/>
+                                    <li class="step">
+                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                        </svg>
+                                        Soumission demande
+                                    <li/>
+                                </ul>
+                            	<fieldset>
+                                <div class="card">
+                                    <h2 class="fs-title">Données de base de la demande</h2>
+                                    <div class="row">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.usage) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.alimente) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                            {{ form_row(installationForm.compteur) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                        {{ form_row(installationForm.abonnement) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                            {{ form_row(installationForm.grstReseau) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente0">
+                                            {{ form_row(installationForm.compteurVoisin) }}<br>
+                                        </div>
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.localite) }}<br>
+                                        </div>
+                                        <div class="col-lg-8">
+                                        {{ form_row(installationForm.adresse) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.habitation) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.bp) }}<br>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            {{ form_row(installationForm.lattitude) }}<br>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            {{ form_row(installationForm.longitude) }}<br>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div align="right">
+                                    <a href="{{ path('app_installation_add2') }}" class="next action-button btn btn-primary btn my-3">Suivant</a>
+                                </div>
+                                </fieldset>
+                            </div>
+                            {# <div align="center">
+                                <a class="previous btn btn-secondary" href="{{ path('app_installation_index') }}">Annuler</a>
+                                <button type="button" class="next action-button btn btn-primary btn my-3">Enregistrer</button>
+                            </div> #}
+                        {{ form_end(installationForm) }}            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        $('.alimente0').show(); $('.alimente1').hide();
+        $('input[type=radio][name="form[alimente]"]').change(function() {
+            if (this.value == true) {
+                $('.alimente1').show(); $('.alimente0').hide();
+            }
+            else if (this.value == false) {
+                $('.alimente0').show(); $('.alimente1').hide();
+            }
+        });
+    });
+</script>
+
+{% endblock %}

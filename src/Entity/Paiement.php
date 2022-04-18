@@ -191,4 +191,10 @@ class Paiement
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return "[".$this->getReference()." ".$this->getDatePaiement()->format("d/m/Y")."]";
+    }
+
 }

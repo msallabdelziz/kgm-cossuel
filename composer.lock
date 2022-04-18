@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7a1126def806749998c2bbd4541c340e",
+    "content-hash": "f79427661227099358a1d89c092e87c7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1226,16 +1226,16 @@
         },
         {
             "name": "doctrine/persistence",
-            "version": "2.4.1",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "092a52b71410ac1795287bb5135704ef07d18dd0"
+                "reference": "f8776dd9a0bdcd838812951a75f4ada72065a82a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/092a52b71410ac1795287bb5135704ef07d18dd0",
-                "reference": "092a52b71410ac1795287bb5135704ef07d18dd0",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/f8776dd9a0bdcd838812951a75f4ada72065a82a",
+                "reference": "f8776dd9a0bdcd838812951a75f4ada72065a82a",
                 "shasum": ""
             },
             "require": {
@@ -1255,10 +1255,10 @@
                 "doctrine/annotations": "^1.0",
                 "doctrine/coding-standard": "^9.0",
                 "doctrine/common": "^3.0",
-                "phpstan/phpstan": "1.4.6",
+                "phpstan/phpstan": "~1.4.10 || 1.5.0",
                 "phpunit/phpunit": "^7.5.20 || ^8.5 || ^9.5",
                 "symfony/cache": "^4.4 || ^5.4 || ^6.0",
-                "vimeo/psalm": "4.21.0"
+                "vimeo/psalm": "4.22.0"
             },
             "type": "library",
             "autoload": {
@@ -1308,9 +1308,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/persistence/issues",
-                "source": "https://github.com/doctrine/persistence/tree/2.4.1"
+                "source": "https://github.com/doctrine/persistence/tree/2.5.0"
             },
-            "time": "2022-03-22T06:44:40+00:00"
+            "time": "2022-04-06T14:59:40+00:00"
         },
         {
             "name": "doctrine/sql-formatter",
@@ -1582,16 +1582,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.4.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef"
+                "reference": "4192345e260f1d51b365536199744b987e160edc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d7fd7450628561ba697b7097d86db72662f54aef",
-                "reference": "d7fd7450628561ba697b7097d86db72662f54aef",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/4192345e260f1d51b365536199744b987e160edc",
+                "reference": "4192345e260f1d51b365536199744b987e160edc",
                 "shasum": ""
             },
             "require": {
@@ -1665,7 +1665,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/2.4.0"
+                "source": "https://github.com/Seldaek/monolog/tree/2.5.0"
             },
             "funding": [
                 {
@@ -1677,7 +1677,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-14T12:44:37+00:00"
+            "time": "2022-04-08T15:43:54+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -1841,16 +1841,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.4.3",
+            "version": "1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "34545bb30a6f8bd86cfa371dbd42140a657bbf0d"
+                "reference": "d8e9fd97ca11f2f24fc1aafbcfb1f78bce762267"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/34545bb30a6f8bd86cfa371dbd42140a657bbf0d",
-                "reference": "34545bb30a6f8bd86cfa371dbd42140a657bbf0d",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/d8e9fd97ca11f2f24fc1aafbcfb1f78bce762267",
+                "reference": "d8e9fd97ca11f2f24fc1aafbcfb1f78bce762267",
                 "shasum": ""
             },
             "require": {
@@ -1879,9 +1879,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.4.3"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.4.4"
             },
-            "time": "2022-04-08T11:30:34+00:00"
+            "time": "2022-04-14T12:24:06+00:00"
         },
         {
             "name": "psr/cache",
@@ -7221,6 +7221,55 @@
                 "source": "https://github.com/SymfonyCasts/reset-password-bundle/tree/v1.13.0"
             },
             "time": "2022-02-23T14:48:27+00:00"
+        },
+        {
+            "name": "symfonycasts/verify-email-bundle",
+            "version": "v1.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SymfonyCasts/verify-email-bundle.git",
+                "reference": "7b9b1f59093dd260afa91eb6b3a220906a0fe0e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SymfonyCasts/verify-email-bundle/zipball/7b9b1f59093dd260afa91eb6b3a220906a0fe0e2",
+                "reference": "7b9b1f59093dd260afa91eb6b3a220906a0fe0e2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/config": "^4.4 | ^5.0 | ^6.0",
+                "symfony/dependency-injection": "^4.4 | ^5.0 | ^6.0",
+                "symfony/deprecation-contracts": "^2.2 | ^3.0",
+                "symfony/http-kernel": "^4.4 | ^5.0 | ^6.0",
+                "symfony/routing": "^4.4 | ^5.0 | ^6.0"
+            },
+            "conflict": {
+                "symfony/framework-bundle": "<4.4"
+            },
+            "require-dev": {
+                "doctrine/orm": "^2.7",
+                "doctrine/persistence": "^2.0",
+                "symfony/framework-bundle": "^4.4 | ^5.0 | ^6.0",
+                "symfony/phpunit-bridge": "^5.0 | ^6.0",
+                "vimeo/psalm": "^4.3"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "SymfonyCasts\\Bundle\\VerifyEmail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Simple, stylish Email Verification for Symfony",
+            "support": {
+                "issues": "https://github.com/SymfonyCasts/verify-email-bundle/issues",
+                "source": "https://github.com/SymfonyCasts/verify-email-bundle/tree/v1.10.0"
+            },
+            "time": "2022-03-08T22:08:27+00:00"
         },
         {
             "name": "twig/extra-bundle",

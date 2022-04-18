@@ -41,4 +41,10 @@ class Grille
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->getLibelle();
+    }
+
 }

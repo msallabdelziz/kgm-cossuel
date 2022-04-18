@@ -1,17 +1,12 @@
-<div class="container-fluid mt-auto py-3">
-  <footer class="d-flex flex-wrap justify-content-between align-items-center my-4 border-top">
-    <div class="col-md-4 d-flex align-items-center">
-      <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-        <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
-      </a>
-      
-      <div class=""><span class="text-muted">©</span>&nbsp;<span class="">KGM Consulting</span> <span class="text-muted">  - Avril 2022</span></div>
-    </div>
 
-    <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-      <li class="ms-3"><a class="text-muted" href="#"><i class="icon">AA</i></a></li>
-      <li class="ms-3"><a class="text-muted" href="#"><i class="icon">BB</i></a></li>
-      <li class="ms-3"><a class="text-muted" href="#"><i class="icon">CC</i></a></li>
-    </ul>
-  </footer>
-</div>
+		<!-- Fichiers JS -->
+		<!-- JavaScript: Bootstrap Bundle with Popper -->
+		<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
+		<script src="{{ asset('assets/js/main.js') }}"></script>
+		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
+		<script>
+		$('body').on('click', '[data-bs-toggle="modal"]', function(){
+        	$($(this).data("bs-target")+' .modal-body').load($(this).data("bs-remote"));
+    	});  
+		</script>
