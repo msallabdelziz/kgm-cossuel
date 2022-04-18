@@ -6,3 +6,4 @@ bin/
 *.lock
 php.ini
 .env
+var/log/dev.log
