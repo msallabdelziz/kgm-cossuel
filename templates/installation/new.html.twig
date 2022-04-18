@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+<<<<<<< HEAD
 {% block title %}Administration{% endblock %}
 {% block body %}
     <section class="container">
@@ -142,3 +143,14 @@
 </script>
 
 {% endblock %}
+=======
+{% block title %}New Installation{% endblock %}
+
+{% block body %}
+    <h1>Create new Installation</h1>
+
+    {{ include('installation/_form.html.twig') }}
+
+    <a href="{{ path('app_installation_index') }}">back to list</a>
+{% endblock %}
+>>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0

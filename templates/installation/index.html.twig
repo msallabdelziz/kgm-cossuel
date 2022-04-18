@@ -53,7 +53,11 @@
                 <td>{{ installation.nomSite }}</td>
                 <td>{{ installation.lattitude }}</td>
                 <td>{{ installation.longitude }}</td>
+<<<<<<< HEAD
                 <td>{{ installation.dateInstallation ? installation.dateInstallation|date('Y-m-d H:i:s') : '' }}</td>
+=======
+                <td>{{ installation.dateInstallation }}</td>
+>>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
                 <td>{{ installation.grstReseau }}</td>
                 <td>{{ installation.neuf15 }}</td>
                 <td>{{ installation.existant15 }}</td>
@@ -85,5 +89,9 @@
         </tbody>
     </table>
 
+<<<<<<< HEAD
     <a href="{{ path('app_installation_add') }}">Create new</a>
+=======
+    <a href="{{ path('app_installation_new') }}">Create new</a>
+>>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
 {% endblock %}
