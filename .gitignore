@@ -1,9 +1,0 @@
-var/cache/
-var/log/
-vendor/
-bin/
-.php-version
-*.lock
-php.ini
-.env
-var/log/dev.log
