@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Installation;
-<<<<<<< HEAD
 use App\Entity\Localite;
 use App\Entity\NatureBatiment;
 use App\Entity\NatureTravaux;
@@ -20,18 +19,12 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType as TypeDateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-=======
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
 
 class InstallationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-<<<<<<< HEAD
         // ->add('etat', TextType::class, [
         //     'attr' => [
         //         'class' => 'form-control'
@@ -342,42 +335,6 @@ class InstallationType extends AbstractType
             ->add('updated_at')
             ->add('updated_by') */
             ;
-=======
-            ->add('etat')
-            ->add('compteurVoisin')
-            ->add('compteur')
-            ->add('abonnement')
-            ->add('bp')
-            ->add('adresse')
-            ->add('nomSite')
-            ->add('lattitude')
-            ->add('longitude')
-            ->add('dateInstallation')
-            ->add('grstReseau')
-            ->add('neuf15')
-            ->add('existant15')
-            ->add('neuf25')
-            ->add('existant25')
-            ->add('neufAutre')
-            ->add('existantAutre')
-            ->add('titreProp')
-            ->add('intervenant')
-            ->add('intervenantAutre')
-            ->add('collectif')
-            ->add('logement')
-            ->add('priece')
-            ->add('puissance')
-            ->add('created_at')
-            ->add('created_by')
-            ->add('updated_at')
-            ->add('updated_by')
-            ->add('client')
-            ->add('localite')
-            ->add('typeConstruction')
-            ->add('natureBatiment')
-            ->add('natureTravaux')
-        ;
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
     }
 
     public function configureOptions(OptionsResolver $resolver): void
