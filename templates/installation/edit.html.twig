@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-<<<<<<< HEAD
 {% block title %}Administration{% endblock %}
 {% block body %}
     <section class="container">
@@ -52,16 +51,4 @@
             </div>
         </div>
     </section>
-=======
-{% block title %}Edit Installation{% endblock %}
-
-{% block body %}
-    <h1>Edit Installation</h1>
-
-    {{ include('installation/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_installation_index') }}">back to list</a>
-
-    {{ include('installation/_delete_form.html.twig') }}
->>>>>>> 601003a06e4b3cb15c96b0485e6d0da65c68d0a0
 {% endblock %}
