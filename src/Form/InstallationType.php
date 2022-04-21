@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Electricien;
 use App\Entity\Installation;
 use App\Entity\Localite;
 use App\Entity\NatureBatiment;
@@ -198,7 +199,7 @@ class InstallationType extends AbstractType
                 ],
                 'mapped' => false,
                 'class' => TypeConstruction::class,
-                'choice_label' => 'name',
+                'choice_label' => 'nom',
                 'label' => 'Type Construction',
                 'required' => false
                 ])
@@ -232,7 +233,7 @@ class InstallationType extends AbstractType
                 ],
                 'mapped' => false,
                 'class' => NatureTravaux::class,
-                'choice_label' => 'name',
+                'choice_label' => 'nom',
                 'label' => 'Nature Travaux',
                 'required' => false
                 ])
@@ -325,7 +326,7 @@ class InstallationType extends AbstractType
                 ],
                 'mapped' => false,
                 'class' => NatureBatiment::class,
-                'choice_label' => 'name',
+                'choice_label' => 'nom',
                 'label' => 'Nature Batiment',
                 'required' => false
                 ])

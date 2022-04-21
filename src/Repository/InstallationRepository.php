@@ -48,6 +48,24 @@ class InstallationRepository extends ServiceEntityRepository
     // /**
     //  * @return Installation[] Returns an array of Installation objects
     //  */
+    public function findByEtat($value)
+    {
+        if($value=="Saisie") { $v='i.step <= 7'; }
+        elseif($value=="Soumis") $v='i.step = 7';
+        elseif($value=="Payé") $v='i.step = 8';
+        elseif($value=="Validé") $v='i.step = 9';
+        return $this->createQueryBuilder('i')
+            ->andWhere($v)
+            ->orderBy('i.id', 'ASC')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    // /**
+    //  * @return Installation[] Returns an array of Installation objects
+    //  */
     /*
     public function findByExampleField($value)
     {

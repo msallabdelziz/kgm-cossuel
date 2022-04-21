@@ -5,9 +5,8 @@
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
-                <span class="fs-4">Gestion des demandes</span>
+                <span class="fs-4">Soumission de demandes </span>
             </a>
-            <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Demandes</a>
         </header>
         <div class="row">
         {% set offset="offset-md-1" %}            
@@ -20,54 +19,19 @@
                             <svg class="bi" width="24" height="24" fill="black">
                                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
                             </svg>
-                            Nouvelle demande</span>
+                            Saisie Nouvelle demande: <span class="text-danger">Etape 3 sur 6</span></span>
                         </div>
                     </nav>
                     <div class="container">
                         {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
                                 <!-- progressbar -->
-                                <ul id="progressbar">
-                                    <li class="step active">
-                                        <svg class="bi" width="24" height="24" fill="#fff" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                                        </svg>
-                                        Données de base
-                                    </li>
-                                    <li class="step active">
-                                        <svg class="bi" width="24" height="24" fill="#fff" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#house-door') }}"></use>
-                                        </svg>
-                                        Données sur le Site
-                                    </li>
-                                    <li class="step active">
-                                        <svg class="bi" width="24" height="24" fill="#ffc328" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#gear') }}"></use>
-                                        </svg>
-                                        Données Installation
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
-                                        </svg>
-                                        Données Electricien
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
-                                        </svg>
-                                        Données Propriétaire
-                                    <li/>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
-                                        </svg>
-                                        Soumission demande
-                                    <li/>
-                                </ul>
+                                {% set curr_etat = 3 %}
+                                {{ include('installation/_progress_bar.html.twig') }}
+
                             	<fieldset>
                                 <div class="card">
-                                    <h2 class="fs-title">Caractéristique de l'installation</h2>
+                                    <h2 class="fs-title">Caractéristiques de l'installation</h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-6">
@@ -98,10 +62,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div align="right">
-                                    <a href="{{ path('app_installation_add2') }}" class="next action-button btn btn-secondary btn my-3">Précédent</a>
-                                    <a href="{{ path('app_installation_add4') }}" class="next action-button btn btn-primary btn my-3">Suivant</a>
-                                </div>
+                                {% include "installation/_actions_new.html.twig" %}
                                 </fieldset>
                             </div>
                             {# <div align="center">
@@ -109,6 +70,7 @@
                                 <button type="button" class="next action-button btn btn-primary btn my-3">Enregistrer</button>
                             </div> #}
                         {{ form_end(installationForm) }}            
+                        {% include "installation/_delete_form.html.twig" %}
                     </div>
                 </div>
             </div>
@@ -119,14 +81,26 @@
 {% block javascripts %}
 <script>
     $(document).ready(function () {
-        $('.natureTravaux1').hide(); $('.intervenantAutre1').hide();
+        $('.intervenantAutre1').hide(); $('.natureTravaux1').hide();
+        optSel=$('input[type=radio][name="form[intervenantAutre]"]:checked');
+        valSel=optSel.val();
+        if (valSel==1) {
+            $('.intervenantAutre1').show(); 
+        }
         $('input[type=radio][name="form[intervenantAutre]"]').change(function() {
             $('.intervenantAutre1').hide();
-            if (this.value == true) {
+            optSel=$('input[type=radio][name="form[intervenantAutre]"]:checked');
+            valSel=optSel.val();
+            if (valSel==1) {
                 $('.intervenantAutre1').show(); 
             }
         });
 
+        optSel=$('select[name="form[natureTravaux]"]').find("option:selected");
+        valSel=optSel.text();
+        if (valSel == "Rénovation Partielle") {
+            $('.natureTravaux1').show(); 
+        }
         $('select[name="form[natureTravaux]"]').on('change', function() {
             $('.natureTravaux1').hide();
             optSel=$('select[name="form[natureTravaux]"]').find("option:selected");

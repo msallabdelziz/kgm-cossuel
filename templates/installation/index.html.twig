@@ -1,89 +1,134 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Installation index{% endblock %}
-
+{% block title %}Administration{% endblock %}
 {% block body %}
-    <h1>Installation index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Etat</th>
-                <th>CompteurVoisin</th>
-                <th>Compteur</th>
-                <th>Abonnement</th>
-                <th>Bp</th>
-                <th>Adresse</th>
-                <th>NomSite</th>
-                <th>Lattitude</th>
-                <th>Longitude</th>
-                <th>DateInstallation</th>
-                <th>GrstReseau</th>
-                <th>Neuf15</th>
-                <th>Existant15</th>
-                <th>Neuf25</th>
-                <th>Existant25</th>
-                <th>NeufAutre</th>
-                <th>ExistantAutre</th>
-                <th>TitreProp</th>
-                <th>Intervenant</th>
-                <th>IntervenantAutre</th>
-                <th>Collectif</th>
-                <th>Logement</th>
-                <th>Priece</th>
-                <th>Puissance</th>
-                <th>Created_at</th>
-                <th>Created_by</th>
-                <th>Updated_at</th>
-                <th>Updated_by</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for installation in installations %}
-            <tr>
-                <td>{{ installation.id }}</td>
-                <td>{{ installation.etat }}</td>
-                <td>{{ installation.compteurVoisin }}</td>
-                <td>{{ installation.compteur }}</td>
-                <td>{{ installation.abonnement }}</td>
-                <td>{{ installation.bp }}</td>
-                <td>{{ installation.adresse }}</td>
-                <td>{{ installation.nomSite }}</td>
-                <td>{{ installation.lattitude }}</td>
-                <td>{{ installation.longitude }}</td>
-                <td>{{ installation.dateInstallation ? installation.dateInstallation|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ installation.grstReseau }}</td>
-                <td>{{ installation.neuf15 }}</td>
-                <td>{{ installation.existant15 }}</td>
-                <td>{{ installation.neuf25 }}</td>
-                <td>{{ installation.existant25 }}</td>
-                <td>{{ installation.neufAutre }}</td>
-                <td>{{ installation.existantAutre }}</td>
-                <td>{{ installation.titreProp }}</td>
-                <td>{{ installation.intervenant }}</td>
-                <td>{{ installation.intervenantAutre }}</td>
-                <td>{{ installation.collectif }}</td>
-                <td>{{ installation.logement }}</td>
-                <td>{{ installation.priece }}</td>
-                <td>{{ installation.puissance }}</td>
-                <td>{{ installation.createdAt ? installation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ installation.createdBy }}</td>
-                <td>{{ installation.updatedAt ? installation.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ installation.updatedBy }}</td>
-                <td>
-                    <a href="{{ path('app_installation_show', {'id': installation.id}) }}">show</a>
-                    <a href="{{ path('app_installation_edit', {'id': installation.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="30">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_installation_add') }}">Create new</a>
+    <section class="container">
+        <div class="row">
+            <div class="card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="fw-bold">Demandes {{ etatDemande }}</h4>
+                    {% if modif == 1 %}
+                    <a href="{{ path('app_installation_add', { 'id': 0}) }}" class="btn btn-primary btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
+                        </svg>
+                        Nouvelle Demande
+                    </a>
+                    {% endif %}
+                </div>
+                <span class="divider">
+                    <hr></span>
+            {% if les_installation|length == 0 %}
+                <div class="row pt-20">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+            <table class="table table-striped table-hover table-sm pt-0 mt-0">
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">N° demande</th> 
+                    <th scope="col">Usage</th> 
+                    <th>Localité</th>
+                    <th>Adresse</th>
+                    <th>Type Construction</th>
+                    <th>Electricien</th>
+                    <th>Statut demande</th>
+                    {# <th scope="col">Agence</th> #}
+                    {# <th class="text-center" scope="col">Départements</th>  #}
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ag in les_installation %}
+                    {% set badge_etat = "warning" %}
+                    {% if ag.step == 7 %}
+                        {% set badge_etat = "success" %}
+                    {% endif %}
+                    <tr>
+                        <td scope="row">
+                            {% if ag.demandeCourante %}
+                                <a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.demandeCourante.numero }}</a>
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td><a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">{{ ag.usages }}</a></td>
+                        <td>
+                            {% if ag.localite is not null %}
+                                {{ ag.localite.nom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ ag.adresse }}</td>
+                        <td>
+                            {% if ag.typeconstruction is not null %}
+                                {{ ag.typeconstruction.nom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ag.electricien is not null %}
+                                {{ ag.electricien.nom ~ " " ~ ag.electricien.prenom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td><a  href="{{ path('app_installation_show', {'id': ag.id }) }}"><span class="badge badge-{{ badge_etat }} fs-8">{{ ag.etat }}</span></a></td>
+                        {# <td>{{ ag.agence }}</td> #}
+                        {# <td class="text-center">
+                            {% if reg.departement.count >0 %}
+                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                            {% else %}
+                                <code class="text-danger text-opacity-50">Aucun département</code>
+                            {% endif %}
+                        </td> #}
+                        <td class="text-end">
+                            <a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="mx-1" title="Afficher les détails">
+                                <svg class="bi" width="16" height="16" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
+                                </svg>
+                            </a>
+                            {% if ag.step<7 %}
+                                {% set link_edit = 'app_installation_add' %}
+                                {% if ag.step > 1 %}
+                                    {% set link_edit = 'app_installation_add' ~ ag.step %}
+                                {% endif %}
+                                <a href="{{ path(link_edit, {'id': ag.id }) }}" class="mx-1" title="Modifier">
+                                    <svg class="bi" width="16" height="16" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <a href="#" class="mx-1" title="Modification non autorisée">
+                                    <svg class="bi" width="16" height="16" fill="gray">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#reception-0') }}"></use>
+                                    </svg>
+                                </a>
+                            {% endif %}
+                            <a href="" class="mx-1" title="Supprimer">
+                                <svg class="bi" width="16" height="16" fill="red">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </section>
 {% endblock %}
+

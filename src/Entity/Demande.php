@@ -18,8 +18,11 @@ class Demande
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $numero;
+
+    #[ORM\Column(type: 'integer', nullable:true)]
+    private $cout;
 
     #[ORM\Column(type: 'datetime')]
     private $dateCreation;
@@ -30,10 +33,10 @@ class Demande
     #[ORM\Column(type: 'string', length: 255)]
     private $Puissance;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $TypeDemande;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime', nullable:true)]
     private $dateValidation;
 
     #[ORM\Column(type: 'integer')]
@@ -53,8 +56,13 @@ class Demande
 
     public function __construct()
     {
+        $this->numeroPassage = 1;
+        $this->cout = 0;
+        $this->numero = "";
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
+        $this->dateCreation = new \DateTime();
+        $this->etat = "Soumis";
         $this->pieceJointes = new ArrayCollection();
     }
 
@@ -63,14 +71,26 @@ class Demande
         return $this->id;
     }
 
-    public function getNumero(): ?int
+    public function getNumero(): ?string
     {
         return $this->numero;
     }
 
-    public function setNumero(int $numero): self
+    public function setNumero(string $numero): self
     {
         $this->numero = $numero;
+
+        return $this;
+    }
+
+    public function getCout(): ?int
+    {
+        return $this->cout;
+    }
+
+    public function setCout(int $cout): self
+    {
+        $this->cout = $cout;
 
         return $this;
     }

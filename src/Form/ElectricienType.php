@@ -27,7 +27,7 @@ class ElectricienType extends AbstractType
             'attr' => [
                 'class' => 'form-select'
             ],
-            'data' => "Electricien",
+            'data' => "CNI",
             'label' => 'Type Pièce'
         ])
         ->add('prenom', TextType::class, [
@@ -78,7 +78,7 @@ class ElectricienType extends AbstractType
             ->add('updated_at')
             ->add('updated_by')*/
             ->add('localite', EntityType::class, [
-                'mapped' => false,
+                'mapped' => true,
                 'attr' => [
                     'class' => 'form-select'
                 ],
@@ -86,7 +86,9 @@ class ElectricienType extends AbstractType
                 'choice_label' => 'nom',
                 'label' => 'Localité',
                 'group_by' => 'departement',
-                'required' => true])
+                'required' => false
+                ]
+            )
         ;
     }
 

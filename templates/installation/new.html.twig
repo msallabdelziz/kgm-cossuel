@@ -5,9 +5,8 @@
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
-                <span class="fs-4">Gestion des demandes</span>
+                <span class="fs-4">Soumission de demandes </span>
             </a>
-            <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-success ms-auto">Liste des Demandes</a>
         </header>
         <div class="row">
         {% set offset="offset-md-1" %}            
@@ -20,58 +19,24 @@
                             <svg class="bi" width="24" height="24" fill="black">
                                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
                             </svg>
-                            Nouvelle demande</span>
+                            Saisie Nouvelle demande: <span class="text-danger">Etape 1 sur 6</span>
+                            </span>
                         </div>
                     </nav>
                     <div class="container">
                         {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
                                 <!-- progressbar -->
-                                <ul id="progressbar">
-                                    <li class="step active">
-                                        <svg class="bi" width="24" height="24" fill="#ffc328" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                                        </svg>
-                                        Données de base
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#house-door') }}"></use>
-                                        </svg>
-                                        Données sur le Site
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#gear') }}"></use>
-                                        </svg>
-                                        Données Installation
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
-                                        </svg>
-                                        Données Electricien
-                                    </li>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
-                                        </svg>
-                                        Données Propriétaire
-                                    <li/>
-                                    <li class="step">
-                                        <svg class="bi" width="24" height="24" fill="gray" style="position:relative; left:66px; top:-48px;">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
-                                        </svg>
-                                        Soumission demande
-                                    <li/>
-                                </ul>
+                                {% set curr_etat = 1 %}
+                                {{ include('installation/_progress_bar.html.twig') }}
+
                             	<fieldset>
                                 <div class="card">
                                     <h2 class="fs-title">Données de base de la demande</h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-8">
-                                            {{ form_row(installationForm.usage) }}<br>
+                                            {{ form_row(installationForm.usages) }}<br>
                                         </div>
                                         <div class="col-lg-4">
                                             {{ form_row(installationForm.alimente) }}<br>
@@ -110,7 +75,8 @@
                                     </div>
                                 </div>
                                 <div align="right">
-                                    <a href="{{ path('app_installation_add2') }}" class="next action-button btn btn-primary btn my-3">Suivant</a>
+                                    <a href="{{ path('app_installation_index') }}" class="me-3 next action-button btn btn-outline-secondary btn my-3">Annuler</a>
+                                    <button type="submit" class="next action-button btn btn-primary btn my-3">Etape Suivante</button>
                                 </div>
                                 </fieldset>
                             </div>
@@ -130,12 +96,33 @@
 <script>
     $(document).ready(function () {
         $('.alimente0').show(); $('.alimente1').hide();
+        $('#form_compteurVoisin').prop('required',true);
+        $('#form_abonnement').prop('required',false);
+        $('#form_compteur').prop('required',false);
+        $('#form_localite').prop('required',true);
+        $('#form_adresse').prop('required',true);
+        $('#form_habitation').prop('required',true);
+        optSel=$('input[type=radio][name="form[alimente]"]:checked');
+        valSel=optSel.val();
+        if (valSel==1) {
+            $('.alimente1').show(); $('.alimente0').hide();
+            $('#form_compteurVoisin').prop('required',false);
+            $('#form_abonnement').prop('required',true);
+            $('#form_compteur').prop('required',true);
+        }
+
         $('input[type=radio][name="form[alimente]"]').change(function() {
-            if (this.value == true) {
+            $('.alimente0').show(); $('.alimente1').hide();
+            $('#form_compteurVoisin').prop('required',true);
+            $('#form_abonnement').prop('required',false);
+            $('#form_compteur').prop('required',false);
+            optSel=$('input[type=radio][name="form[alimente]"]:checked');
+            valSel=optSel.val();
+            if (valSel == 1) {
                 $('.alimente1').show(); $('.alimente0').hide();
-            }
-            else if (this.value == false) {
-                $('.alimente0').show(); $('.alimente1').hide();
+                $('#form_compteurVoisin').prop('required',false);
+                $('#form_abonnement').prop('required',true);
+                $('#form_compteur').prop('required',true);
             }
         });
     });

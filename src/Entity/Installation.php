@@ -20,7 +20,7 @@ class Installation
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $usage;
+    private $usages;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $etat;
@@ -106,6 +106,9 @@ class Installation
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $habitation;
 
+    #[ORM\Column(type: 'integer')]
+    private $step;
+
     #[ORM\ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'installation')]
     private $proprietaire;
 
@@ -131,6 +134,8 @@ class Installation
     public function __construct()
     {
         $this->created_by = "";
+        $this->step = 1;
+        $this->etat = "Saisie 1/6";
         $this->created_at = new \DateTimeImmutable();
         $this->demande = new ArrayCollection();
     }
@@ -153,14 +158,14 @@ class Installation
         return $this;
     }
 
-    public function getUsage(): ?string
+    public function getUsages(): ?string
     {
-        return $this->usage;
+        return $this->usages;
     }
 
-    public function setUsage(string $usage): self
+    public function setUsages(string $usages): self
     {
-        $this->usage = $usage;
+        $this->usages = $usages;
 
         return $this;
     }
@@ -221,6 +226,18 @@ class Installation
     public function setBp(string $bp): self
     {
         $this->bp = $bp;
+
+        return $this;
+    }
+
+    public function getStep(): ?int
+    {
+        return $this->step;
+    }
+
+    public function setStep(int $step): self
+    {
+        $this->step = $step;
 
         return $this;
     }
@@ -568,6 +585,17 @@ class Installation
     {
         return $this->demande;
     }
+
+    public function getDemandeCourante(): ?Demande
+    {
+        $les_demande = $this->demande;
+        if($les_demande->count()) {
+            return $les_demande->first();
+        } else {
+            return null;
+        }
+    }
+
 
     public function addDemande(Demande $demande): self
     {

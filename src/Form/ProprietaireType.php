@@ -27,7 +27,7 @@ class ProprietaireType extends AbstractType
             'attr' => [
                 'class' => 'form-select'
             ],
-            'data' => "Electricien",
+            'data' => "CNI",
             'label' => 'Type Pièce'
         ])
         ->add('prenom', TextType::class, [

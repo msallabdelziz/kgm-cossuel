@@ -45,6 +45,17 @@ class ElectricienRepository extends ServiceEntityRepository
         }
     }
 
+    public function findOneByTelMailPiece($value): ?Electricien
+    {
+        $res = $this->createQueryBuilder('i')
+        ->Where('i.telephone = :val or i.email = :val or i.numPiece = :val')
+        ->setParameter('val', $value)
+        ->getQuery()
+        ->getResult()
+        ;
+        if (empty($res)===true) { return null; } else { return $res[0]; }
+    }
+
     // /**
     //  * @return Electricien[] Returns an array of Electricien objects
     //  */
@@ -73,4 +84,5 @@ class ElectricienRepository extends ServiceEntityRepository
         ;
     }
     */
+
 }

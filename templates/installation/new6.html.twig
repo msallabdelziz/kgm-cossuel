@@ -18,10 +18,6 @@
         </header>
         <div class="row">
         {% set offset="offset-md-1" %}            
-        {% set badge_etat = "text-danger" %}
-        {% if installation.step == 7 %}
-            {% set badge_etat = "text-success" %}
-        {% endif %}
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
 
                 <div class="container">
@@ -31,51 +27,31 @@
                             <svg class="bi" width="24" height="24" fill="black">
                                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
                             </svg>
-                            Détails de la demande <span class="{{ badge_etat }}">{{ installation.etat }}</span></span>
+                            Saisie Nouvelle demande: <span class="text-danger">Etape 6 sur 6</span></span>
                         </div>
                     </nav>
                     <div class="container">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
+                                <!-- progressbar -->
+                                {% set curr_etat = 6 %}
+                                {{ include('installation/_progress_bar.html.twig') }}
+
                             	<fieldset id="synthese_demande">
-                                    <div align="right">
-                                        <a href="{{ path('app_installation_index') }}" class="next action-button btn btn-secondary btn my-3">Retour à la liste</a>
-                                        {% if installation.step<7 %}
-                                            {% set link_edit = 'app_installation_add' %}
-                                            {% if installation.step > 1 %}
-                                                {% set link_edit = 'app_installation_add' ~ installation.step %}
-                                            {% endif %}
-                                            <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-primary btn my-3">Finaliser la saisie</a>
-                                        {% else %}
-                                            <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-warning btn my-3">Générer PDF</a>
-                                            {% if installation.step==7 %}
-                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Enregistrer Paiement</a>
-                                            {% endif %}
-                                        {% endif %}
-                                    </div>                                
-                                {% if installation.demandeCourante %}
-                                    <div class="card mb-2">
-                                        <h2 class="fs-title">Puissance demandée et tarif</h2>
-                                        <div class="row">
-                                            <hr class="mb-3" />
-                                            <div class="col-lg-3">
-                                                <label >Numéro Demande</label>
-                                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.demandeCourante.numero }}">
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <label >Date Soumission</label>
-                                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.demandeCourante.dateCreation | date('d-m-Y') }}">
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <label >Puissance demandée</label>
-                                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.demandeCourante.puissance }} kW">
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <label >Cout de la demande</label>
-                                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.demandeCourante.cout }} FCFA">
-                                            </div>
-                                        </div>  
+                                {% include "installation/_actions_new.html.twig" %}
+                                <div class="card mb-2">
+                                    <h2 class="fs-title">Puissance demandée et tarif</h2>
+                                    <div class="row col-6 offset-3">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-6">
+                                        {{ form_row(installationForm.puissance) }}
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="form_tarif" >Tarif en FCFA</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm is-valid fs-5 py-2 fw-bold text-success" value="" id="form_tarif">
+                                        </div>
                                     </div>
-                                {% endif %}
+                                </div>
                                 {# BLOC 1 #}
                                 <div class="card mb-2">
                                     <h2 class="fs-title">Données de base de la demande</h2>
@@ -134,7 +110,6 @@
                                 </div>
                                 
                                 {# BLOC 2 #}
-                                {% if installation.typeConstruction %}
                                 <div class="card mb-2">
                                     <h2 class="fs-title">Caractéristiques du site</h2>
                                     <div class="row">
@@ -170,10 +145,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endif %}
 
                                 {# BLOC 3 #}
-                                {% if installation.natureTravaux %}
                                 <div class="card mb-2">
                                     <h2 class="fs-title">Caractéristiques de l'installation</h2>
                                     <div class="row">
@@ -202,8 +175,8 @@
                                         </div>
                                         <hr class="my-3" />
                                         <div class="col-lg-4">
-                                            <label for="form_puissance" >Puissance Limitée ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.puissance }}" id="form_puissance">
+                                            <label for="form_puissance0" >Puissance Limitée ?</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.puissance }}" id="form_puissance0">
                                         </div>
                                         <hr class="my-3" />
                                         <div class="col-lg-4 intervenantAutre1">
@@ -216,10 +189,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endif %}
 
                                 {# BLOC 4 #}
-                                {% if installation.electricien %}
                                 <div class="card mb-2">
                                     <h2 class="fs-title">Informations sur l'électricien installateur</h2>
                                     <div class="row">
@@ -258,10 +229,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endif %}                                
 
                                 {# BLOC 5 #}
-                                {% if installation.proprietaire %}
                                 <div class="card mb-2">
                                     <h2 class="fs-title">Informations sur le propriétaire de l'installation</h2>
                                     <div class="row">
@@ -299,10 +268,12 @@
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.numPiece }}">
                                         </div>
                                     </div>
-                                {% endif %}
                                 </div>
+                                {% include "installation/_actions_new.html.twig" %}
                                 </fieldset>
                             </div>
+                        {{ form_end(installationForm) }}            
+                        {% include "installation/_delete_form.html.twig" %}
                     </div>
                 </div>
             </div>
@@ -360,10 +331,40 @@
             $('.natureTravaux1').show(); 
         }
 
-        // Bloc 4
+        $("#form_puissance").keypress(function(event){
+            getTarif();
+        });
 
-        // Bloc 5
+        $("#form_puissance").keydown(function(event){
+            getTarif();
+        });
 
+        $("#form_puissance").keyup(function(event){
+            getTarif();
+        });
+
+        $("#form_puissance").change(function(event){
+            getTarif();
+        });
     });
+    function getTarif() {
+        // Tarif
+        val_usage=$("#form_usage").val();
+        val_puissance=$("#form_puissance").val();
+        
+        if ( ( val_puissance == 0 ) || (val_puissance == '' ) || (val_puissance == null ) || (!val_puissance)  ) result=0;
+        if(val_usage=="domestique") {
+            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="10 000";
+            if ( (val_puissance>6) && (val_puissance<=17) )   result="30 000";
+            if (val_puissance>17)  result="100 000";
+        }
+        else {
+            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="12 000";
+            if ( (val_puissance>6) && (val_puissance<=17) ) result="150 000";
+            if (val_puissance>17)  result="250 000";
+        } 
+        $("#form_tarif").val(result+" FCFA");
+    }
+
 </script>
 {% endblock %}
