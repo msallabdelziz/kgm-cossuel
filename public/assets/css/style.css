@@ -26,6 +26,13 @@ body {
     box-sizing: border-box;
 }
 
+.caption {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    color: #6c757d;
+    text-align: left;    
+}
+
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: #000;
     font-weight: 400!important;
@@ -179,6 +186,17 @@ h4 {
 
 /* ========== cart style ========== */
 
+.card-orig {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;    
+}
 .card {
     background: #FFFFFF;
     border-radius: 12px;
@@ -955,6 +973,11 @@ span.divider hr {
 
 
 /* =========== Boutons  =========== */
+.btn-primary0 {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
 
 
 .btn-primary {
@@ -1217,7 +1240,9 @@ only screen and (min-width: 768px) and (max-width: 991px),
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a.active,
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a:hover {
     color: #1C1B19;
-    background: rgb(0 0 0 / 6%);
+    background: rgb(0 0 0 / 15%);
+    border:1px solid #000;
+    border-left-width:2px;
 }
 
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item.nav-item-has-children ul li a i {
@@ -1706,6 +1731,19 @@ only screen and (min-width: 768px) and (max-width: 991px),
     color: #777;
     font-size: 13px;
     font-weight: 300;
+}
+
+.pt {
+    cursor: pointer;
+}
+.action-button:hover,
+.action-button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #616161;
+}
+
+.action-button2:hover,
+.action-button2:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px black;
 }
 
 

@@ -14,8 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProprietaireController extends AbstractController
 {
     #[Route('/', name: 'app_proprietaire_index', methods: ['GET'])]
-    public function index(ProprietaireRepository $proprietaireRepository): Response
+    public function index(Request $request, ProprietaireRepository $proprietaireRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'proprietaire');
+        $request->getSession()->set('sousmenu', '');
+
         return $this->render('proprietaire/index.html.twig', [
             'les_proprietaire' => $proprietaireRepository->findAll(),
         ]);

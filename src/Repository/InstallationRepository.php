@@ -50,10 +50,11 @@ class InstallationRepository extends ServiceEntityRepository
     //  */
     public function findByEtat($value)
     {
-        if($value=="Saisie") { $v='i.step <= 7'; }
-        elseif($value=="Soumis") $v='i.step = 7';
-        elseif($value=="Payé") $v='i.step = 8';
-        elseif($value=="Validé") $v='i.step = 9';
+        $v="i.step = 0";
+        if($value=="Saisie") { $v='i.step < 7'; }
+        elseif($value=="Soumis") $v='i.step = 7 or i.step = 8';
+        elseif($value=="Payé") $v='i.step = 9';
+        elseif($value=="Validé") $v='i.step = 10';
         return $this->createQueryBuilder('i')
             ->andWhere($v)
             ->orderBy('i.id', 'ASC')

@@ -16,29 +16,29 @@ class Paiement
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $libelle;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $observation;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $datePaiement;
 
     #[ORM\Column(type: 'datetime')]
-    private $datePaiement;
+    private $dateSaisie;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $mode;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $reference;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $motifRemboursement;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $motifRejet;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $etatRembousement;
-
-    #[ORM\Column(type: 'datetime')]
-    private $dateFacture;
 
     #[ORM\Column(type: 'boolean')]
     private $paiementEffectue;
@@ -52,7 +52,9 @@ class Paiement
     public function __construct()
     {
         $this->created_by = "";
+        $this->dateSaisie = new \DateTime();
         $this->created_at = new \DateTimeImmutable();
+        $this->paiementEffectue = false;
     }
     
     public function getId(): ?int
@@ -60,14 +62,14 @@ class Paiement
         return $this->id;
     }
 
-    public function getLibelle(): ?string
+    public function getObservation(): ?string
     {
-        return $this->libelle;
+        return $this->observation;
     }
 
-    public function setLibelle(string $libelle): self
+    public function setObservation(string $observation): self
     {
-        $this->libelle = $libelle;
+        $this->observation = $observation;
 
         return $this;
     }
@@ -80,6 +82,18 @@ class Paiement
     public function setDatePaiement(\DateTimeInterface $datePaiement): self
     {
         $this->datePaiement = $datePaiement;
+
+        return $this;
+    }
+
+    public function getDateSaisie(): ?\DateTimeInterface
+    {
+        return $this->dateSaisie;
+    }
+
+    public function setDateSaisie(\DateTimeInterface $dateSaisie): self
+    {
+        $this->dateSaisie = $dateSaisie;
 
         return $this;
     }

@@ -14,8 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ElectricienController extends AbstractController
 {
     #[Route('/', name: 'app_electricien_index', methods: ['GET'])]
-    public function index(ElectricienRepository $electricienRepository): Response
+    public function index(Request $request, ElectricienRepository $electricienRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'electricien');
+        $request->getSession()->set('sousmenu', '');
+
         return $this->render('electricien/index.html.twig', [
             'les_electricien' => $electricienRepository->findAll(),
         ]);

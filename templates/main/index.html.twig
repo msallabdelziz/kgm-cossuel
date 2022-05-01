@@ -4,7 +4,7 @@
 {% endblock %}
 {% block body %}
 
-	{% if app.user %}
+	{% if app.user and app.user.isverified %}
 		<!-- ========== title-wrapper start ========== -->
 		<div class="title-wrapper pt-30">
 			<div class="row">
@@ -301,6 +301,11 @@
 			</div>
 		</div>
 		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
 	{% endif %}
 
 {% endblock %}

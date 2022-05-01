@@ -35,32 +35,71 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/installation')]
 class InstallationController extends AbstractController
 {
-    #[Route('/', name: 'app_installation_index', methods: ['GET'])]
-    public function index(InstallationRepository $installationRepository): Response
+    #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_soumission');
+
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
         return $this->render('installation/index.html.twig', [
             'les_installation' => $installationRepository->findByEtat("Saisie"),
             'modif' => 1,
+            'page_list' => "app_installation_index",
+            'affichage' => $mode_affichage,
             'etatDemande' => "en soumission",
         ]);
     }
 
-    #[Route('/paiement', name: 'app_installation_index2', methods: ['GET'])]
-    public function index2(InstallationRepository $installationRepository): Response
+    #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
+    public function index2(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_paiement');
+
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
         return $this->render('installation/index.html.twig', [
             'les_installation' => $installationRepository->findByEtat("Soumis"),
             'modif' => 0,
+            'affichage' => $mode_affichage,
+            'page_list' => "app_installation_index2",
             'etatDemande' => "en attente de paiement",
         ]);
     }
 
-    #[Route('/validation', name: 'app_installation_index3', methods: ['GET'])]
-    public function index3(InstallationRepository $installationRepository): Response
+    #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
+    public function index3(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_validation');
+
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
         return $this->render('installation/index.html.twig', [
             'les_installation' => $installationRepository->findByEtat("Payé"),
             'modif' => 0,
+            'page_list' => "app_installation_index3",
+            'affichage' => $mode_affichage,
             'etatDemande' => "en attente de validation",
         ]);
     }
@@ -188,6 +227,7 @@ class InstallationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $step = 2;
             if($installation->getStep()<$step) { 
+                $installation->setCreatedby($this->getUser()->getId());
                 $installation->setStep($step); 
                 $installation->setEtat("En Saisie 2/6"); 
             }
@@ -544,6 +584,7 @@ class InstallationController extends AbstractController
                 // ...
             }
             $demande->setInstallation($installation);
+            $demande->setCreatedby($this->getUser()->getId());
             $demandeRepository->add($demande);
             $numD=str_pad($demande->getId(), 8, '0', STR_PAD_LEFT);
 
@@ -646,6 +687,7 @@ class InstallationController extends AbstractController
         // $html .= '<style>'.file_get_contents('../public/assets/css/style.css').' </style>';
         // $html .= '<style>'.file_get_contents('../public/assets/css/bootstrap.min.css').' </style>';
 
+        // echo $html;
         // Load HTML to Dompdf
         $dompdf->loadHtml($html);
         

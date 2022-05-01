@@ -10,10 +10,20 @@
         font-weight:500;
     }
     </style>
+    {% if (installation.step < 7) %}
+        {% set action_demande = "Soumission" %}
+        {% set link_liste = 'app_installation_index' %}
+    {% elseif (installation.step == 7 or installation.step == 8) %}
+        {% set action_demande = "Paiement" %}
+        {% set link_liste = 'app_installation_index2' %}
+    {% elseif (installation.step == 9) %}
+        {% set action_demande = "Validation" %}
+        {% set link_liste = 'app_installation_index3' %}
+    {% endif %}
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
-                <span class="fs-4">Soumission de demandes </span>
+                <span class="fs-4">{{ action_demande }} de demandes </span>
             </a>
         </header>
         <div class="row">
@@ -28,17 +38,23 @@
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
                             <span class="navbar-brand mb-0 fs-4 fw-400">
-                            <svg class="bi" width="24" height="24" fill="black">
-                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                            </svg>
-                            Détails de la demande <span class="{{ badge_etat }}">{{ installation.etat }}</span></span>
+                                <svg class="bi" width="24" height="24" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                </svg>
+                                Détails de la demande 
+                                {% if installation.step>=7 %}
+                                    <span class="{{ badge_etat }}">{{ installation.demandeCourante.etat }}</span>
+                                {% else %}
+                                    <span class="{{ badge_etat }}">{{ installation.etat }}</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </nav>
                     <div class="container">
                             <div class="row">
                             	<fieldset id="synthese_demande">
                                     <div align="right">
-                                        <a href="{{ path('app_installation_index') }}" class="next action-button btn btn-secondary btn my-3">Retour à la liste</a>
+                                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Retour à la liste</a>
                                         {% if installation.step<7 %}
                                             {% set link_edit = 'app_installation_add' %}
                                             {% if installation.step > 1 %}
@@ -48,7 +64,11 @@
                                         {% else %}
                                             <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-warning btn my-3">Générer PDF</a>
                                             {% if installation.step==7 %}
-                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Enregistrer Paiement</a>
+                                            <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-outline-danger btn my-3 ms-5">Enregistrer Paiement</a>
+                                            {% elseif installation.step==8 %}
+                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Confirmer le Paiement</a>
+                                            {% elseif installation.step==9 %}
+                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Valider la demande</a>
                                             {% endif %}
                                         {% endif %}
                                     </div>                                
@@ -87,7 +107,7 @@
                                         </div>
                                         <div class="col-lg-4">
                                             <label for="form_alimente" >Installation déja alimentée ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.alimente }}" id="form_alimente">
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{% if installation.alimente %}Oui{% else %}Non{% endif %}" id="form_alimente">
                                         </div>
                                         <div class="col-lg-4 alimente1">
                                             <label for="form_compteur" >Numéro Compteur</label>
@@ -141,7 +161,7 @@
                                         <hr class="mb-3" />
                                         <div class="col-lg-4">
                                             <label for="form_collectif collectif1" >Bien Collectif ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.collectif }}" id="form_collectif">
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{% if installation.collectif %}Oui{% else %}Non{% endif %}" id="form_collectif">
                                         </div>
                                         <div class="col-lg-4 collectif1">
                                             <label for="form_nomSite" >Nom du site</label>
@@ -203,7 +223,7 @@
                                         <hr class="my-3" />
                                         <div class="col-lg-4">
                                             <label for="form_puissance" >Puissance Limitée ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.puissance }}" id="form_puissance">
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{% if installation.puissance %}Oui{% else %}Non{% endif %}" id="form_puissance">
                                         </div>
                                         <hr class="my-3" />
                                         <div class="col-lg-4 intervenantAutre1">
@@ -323,7 +343,7 @@
         // Bloc 1
         $('.alimente0').show(); $('.alimente1').hide();
         optSel=$('#form_alimente'); valSel=optSel.val();
-        if (valSel==1) {
+        if (valSel=="Oui") {
             $('.alimente1').show(); $('.alimente0').hide();
         }
 
@@ -331,7 +351,7 @@
         $('.collectif0').show(); $('.collectif1').hide();
         optSel=$('#form_collectif');
         valSel=optSel.val();
-        if (valSel==1) {
+        if (valSel=="Oui") {
             $('.collectif1').show(); $('.collectif0').hide();
         }
         $('.typeConstruction1').hide(); $('.typeConstruction2').hide();  $('.typeConstruction3').hide();
@@ -351,7 +371,7 @@
         $('.intervenantAutre1').hide(); $('.natureTravaux1').hide();
         optSel=$('#form_intervenantAutre');
         valSel=optSel.val();
-        if (valSel==1) {
+        if (valSel=="Oui") {
             $('.intervenantAutre1').show(); 
         }
         optSel=$('#form_natureTravaux');

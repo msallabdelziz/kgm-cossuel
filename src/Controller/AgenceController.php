@@ -17,6 +17,10 @@ class AgenceController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'agence');
+        $request->getSession()->set('sousmenu', '');
+
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(Agence::class)->findAll();
         return $this->render('agence/index.html.twig', [

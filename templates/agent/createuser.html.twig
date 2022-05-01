@@ -61,7 +61,7 @@
             <div class="col-lg-6 mb-2 shadow border border-light card p-3">
                 <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
                     <div class="container-fluid">
-                        <span class="navbar-brand mb-0 h1">Détails de l'agent {{ agent }}</span>
+                        <span class="navbar-brand mb-0 h1">Détails de l'agent {{ agent.nom }}</span>
                     </div>
                 </nav>
                 <div class="container">
@@ -73,12 +73,7 @@
                         <div class="col-6 mb-2">
                             <label class="fw-light fs-7">Agence</label>
                             <div class="ms-4">
-                                {{ agent.agence.nom }}
-                                <a class="ms-2" href="{{ path('app_agent_affect', { 'id' : agent.id}) }}" title="Nouvelle affectation">
-                                    <svg class="bi" width="16" height="16" fill="red">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
-                                    </svg>
-                                </a>
+
                             </div>
                         </div>
                         <div class="col-6 mb-2">
@@ -101,40 +96,45 @@
                             <label class="fw-light fs-7">Email</label>
                             <div class="ms-4">{{ agent.email }}</div>
                         </div>
+                        <hr />
+                        <h4 class="border border-dark p-2 bg-warning">Création compte utilisateur pour l'agent</h4>
+                        <div class="col-12 my-3">
+                            <label for="" class="fw-light fs-7">Profil utilisateur</label>
+                            <div class="ms-4">
+                                {{ form_start(formUtil) }}
+                                {{ form_widget(formUtil.profil, {'attr': {'name': 'profil'}}) }}
+                                <div class="mt-2" align="right">
+                                    <a class="btn btn-secondary px-1 ms-2" href="{{ path('app_agent_show', { 'id' : agent.id}) }}" title="Annuler">
+                                        <svg class="bi" width="20" height="20" fill="orange">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-circle') }}"></use>
+                                        </svg> Annuler
+                                    </a>
+                                    <button class="btn btn-primary px-1 ms-3" type="submit">
+                                        <svg class="bi" width="20" height="20" fill="green">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check-circle') }}"></use>
+                                        </svg> Valider et créer le compte
+                                    </button>
+                                </div>
+                                {{ form_end(formUtil) }}                            
+                            </div>
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col pt-2" align="left">
-                        {% if utilisateur %}
-                                <svg class="bi" width="24" height="24" fill="green">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                    <div class="col pt-2" align="right">
+                            <a href="{{ path('app_agent_index') }}" class="mx-2" title="Retour">
+                                <svg class="bi" width="16" height="16" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-counterclockwise') }}"></use>
                                 </svg>
-                                <span class="text-success">Compte utilisateur créé (<span class="fw-bold">{{ utilisateur.login }}</span>)</span>
-                                </a>
-                        {% else %}
-                                <a href="{{ path('app_agent_createuser', {'id': agent.id }) }}" class="btn btn-secondary btn-sm" title="Créer un compte utilisateur">
-                                    <svg class="bi" width="20" height="20" fill="orange">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-badge') }}"></use>
-                                    </svg> Créer compte utilisateur
-                                </a>
-                        {% endif %}
-                        </div>
-                        <div class="col pt-2" align="right">
-                                <a href="{{ path('app_agent_index') }}" class="mx-2" title="Retour">
-                                    <svg class="bi" width="16" height="16" fill="black">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-counterclockwise') }}"></use>
-                                    </svg>
-                                </a>
-                                <a href="{{ path('app_agent_edit', {'id': agent.id }) }}" class="mx-2" title="Modifier">
-                                    <svg class="bi" width="16" height="16" fill="black">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
-                                    </svg>
-                                </a>
-                                <a href="" class="mx-2" title="Supprimer">
-                                    <svg class="bi" width="16" height="16" fill="red">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
-                                    </svg>
-                                </a>
-                        </div>
+                            </a>
+                            <a href="{{ path('app_agent_edit', {'id': agent.id }) }}" class="mx-2" title="Modifier">
+                                <svg class="bi" width="16" height="16" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                </svg>
+                            </a>
+                            <a href="" class="mx-2" title="Supprimer">
+                                <svg class="bi" width="16" height="16" fill="red">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
+                                </svg>
+                            </a>
                     </div>
                 </div>
 

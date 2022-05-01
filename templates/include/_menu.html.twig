@@ -5,6 +5,7 @@
 			<img src="{{ asset('assets/img/logo-cossuel-black.png') }}" alt="logo"/>
 		</a>
 	</div>
+	{% if app.user and app.user.isverified %}
 	<nav class="sidebar-nav">
 		<ul>
 			<span class="divider">
@@ -25,8 +26,9 @@
 				<hr/></span>
 			{# Fin - Utilisateur Connecté #}
 
-			<li class="nav-item">
-				<a href="{{ path('main') }}" class="active">
+		{% if is_granted('ROLE_USER') %}
+			<li class="nav-item {% if app.session.get('menu') == 'main' %}active{% endif %}">
+				<a href="{{ path('main') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
 							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pie-chart') }}"></use>
@@ -35,8 +37,10 @@
 					<span class="text">Tableau de bord</span>
 				</a>
 			</li>
+		{% endif %}
 
-			<li class="nav-item">
+		{% if is_granted('ROLE_ADMIN') %}
+			<li class="nav-item {% if app.session.get('menu') == 'localite' %}active{% endif %}">
 				<a href="{{ path('app_region_index') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
@@ -46,8 +50,10 @@
 					<span class="text">Gestion Localités</span>
 				</a>
 			</li>
+		{% endif %}
 
-			<li class="nav-item">
+		{% if is_granted('ROLE_ADMIN') %}
+			<li class="nav-item {% if app.session.get('menu') == 'agence' %}active{% endif %}">
 				<a href="{{ path('app_agence_index') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
@@ -57,7 +63,9 @@
 					<span class="text">Gestion Agences</span>
 				</a>
 			</li>
+		{% endif %}
 
+		{% if is_granted('ROLE_ADMIN') %}
 			<li class="nav-item">
 				<a href="{{ path('app_agent_index') }}">
 					<span class="icon">
@@ -68,7 +76,7 @@
 					<span class="text">Gestion Agents</span>
 				</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item {% if app.session.get('menu') in ['electricien', 'proprietaire'] %}active{% endif %}">
 				<a href="{{ path('app_electricien_index') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
@@ -78,8 +86,9 @@
 					<span class="text">Clients</span>
 				</a>
 			</li>
+		{% endif %}
 
-                <li class="nav-item nav-item-has-children">
+                <li class="nav-item nav-item-has-children {% if app.session.get('menu') == 'demande' %}active{% endif %}">
                     <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_2"
                         aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon">
@@ -89,9 +98,11 @@
 						</span>
                         <span class="text">Gestion des Demandes</span>
                     </a>
-                    <ul id="ddmenu_2" class="dropdown-nav collapse">
+                    <ul id="ddmenu_2" class="dropdown-nav collapse show {% if app.session.get('menu') == 'demande' %}show{% endif %}">
+		
+		{% if is_granted('ROLE_CLIENT') %}
                         <li>
-                            <a href="{{ path('app_installation_index') }}"> 
+                            <a href="{{ path('app_installation_index') }}" class="{% if app.session.get('sousmenu') == 'demande_soumission' %}active{% endif %}"> 
 								<span class="icon">
 									<svg class="bi" width="20" height="20" fill="black">
 										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#send-check') }}"></use>
@@ -100,8 +111,10 @@
 								<span class="text">Soumission demande</span>
 							</a>
                         </li>
+		{% endif %}
+		{% if is_granted('ROLE_ACCUEIL') or is_granted('ROLE_CAISSIER') %}
                         <li>
-                            <a href="{{ path('app_installation_index2') }}"> 
+                            <a href="{{ path('app_installation_index2') }}" class="{% if app.session.get('sousmenu') == 'demande_paiement' %}active{% endif %}"> 
 								<span class="icon">
 									<svg class="bi" width="20" height="20" fill="black">
 										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
@@ -110,8 +123,10 @@
 								<span class="text">Paiement demande</span>
 							</a>
                         </li>
+		{% endif %}
+		{% if is_granted('ROLE_RFO') %}
                         <li>
-                            <a href="{{ path('app_installation_index3') }}">
+                            <a href="{{ path('app_installation_index3') }}" class="{% if app.session.get('sousmenu') == 'demande_validation' %}active{% endif %}">
 								<span class="icon">
 									<svg class="bi" width="20" height="20" fill="black">
 										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2-circle') }}"></use>
@@ -120,10 +135,12 @@
 								<span class="text">Validation demande</span>
 							</a>
                         </li>
+		{% endif %}
                     </ul>
                 </li>
 
-			<li class="nav-item">
+		{% if is_granted('ROLE_USER') %}
+			<li class="nav-item {% if app.session.get('menu') == 'statistiques' %}active{% endif %}">
 				<a href="{{ path('main') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
@@ -133,7 +150,10 @@
 					<span class="text">Statistiques</span>
 				</a>
 			</li>
-			<li class="nav-item">
+		{% endif %}
+
+		{% if is_granted('ROLE_ADMIN') %}
+			<li class="nav-item {% if app.session.get('menu') == 'utilisateur' %}active{% endif %}">
 				<a href="{{ path('app_utilisateur_index') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
@@ -143,6 +163,9 @@
 					<span class="text">Utilisateurs</span>
 				</a>
 			</li>
+		{% endif %}
+
+		{% if is_granted('ROLE_USER') %}
 			<li class="nav-item">
 				<a href="{{ path('app_logout') }}">
 					<span class="icon">
@@ -153,8 +176,10 @@
 					<span class="text">Se déconnecter</span>
 				</a>
 			</li>
+		{% endif %}
 		</ul>
 	</nav>
+	{% endif %}
 </aside>
 <div class="overlay"></div>
 <!-- ======== sidebar end =========== -->
