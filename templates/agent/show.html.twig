@@ -73,7 +73,11 @@
                         <div class="col-6 mb-2">
                             <label class="fw-light fs-7">Agence</label>
                             <div class="ms-4">
-                                {{ agent.agence.nom }}
+                                {% if agent.agence %}
+                                    {{ agent.agence.nom }}
+                                {% else %}
+                                    <span class="text-danger">-</span>
+                                {% endif %}
                                 <a class="ms-2" href="{{ path('app_agent_affect', { 'id' : agent.id}) }}" title="Nouvelle affectation">
                                     <svg class="bi" width="16" height="16" fill="red">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>

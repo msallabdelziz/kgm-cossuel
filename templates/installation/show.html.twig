@@ -30,6 +30,8 @@
         {% set offset="offset-md-1" %}            
         {% set badge_etat = "text-danger" %}
         {% if installation.step == 7 %}
+            {% set badge_etat = "text-danger" %}
+        {% elseif installation.step > 7 %}
             {% set badge_etat = "text-success" %}
         {% endif %}
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
@@ -37,38 +39,42 @@
                 <div class="container">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
-                            <span class="navbar-brand mb-0 fs-4 fw-400">
-                                <svg class="bi" width="24" height="24" fill="black">
-                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                                </svg>
-                                Détails de la demande 
-                                {% if installation.step>=7 %}
-                                    <span class="{{ badge_etat }}">{{ installation.demandeCourante.etat }}</span>
-                                {% else %}
-                                    <span class="{{ badge_etat }}">{{ installation.etat }}</span>
-                                {% endif %}
-                            </span>
+                            <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                                <div class="col">
+                                    <svg class="bi" width="24" height="24" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                    </svg>
+                                    Détails de la demande 
+                                </div>
+                                <div class="col" align="right">
+                                    {% if installation.step>=7 %}
+                                        <span class="{{ badge_etat }}">[{{ installation.demandeCourante.etat }}]</span>
+                                    {% else %}
+                                        <span class="{{ badge_etat }}">[{{ installation.etat }}]</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </nav>
                     <div class="container">
                             <div class="row">
                             	<fieldset id="synthese_demande">
                                     <div align="right">
-                                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Retour à la liste</a>
+                                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                                         {% if installation.step<7 %}
                                             {% set link_edit = 'app_installation_add' %}
                                             {% if installation.step > 1 %}
                                                 {% set link_edit = 'app_installation_add' ~ installation.step %}
                                             {% endif %}
-                                            <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-primary btn my-3">Finaliser la saisie</a>
+                                            <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-success btn my-3">Finaliser la saisie</a>
                                         {% else %}
-                                            <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-warning btn my-3">Générer PDF</a>
+                                            <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
                                             {% if installation.step==7 %}
-                                            <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-outline-danger btn my-3 ms-5">Enregistrer Paiement</a>
-                                            {% elseif installation.step==8 %}
-                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Confirmer le Paiement</a>
+                                            <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Enregistrer Paiement</a>
+                                            {# {% elseif installation.step==8 %}
+                                            <a href="{{ path('app_paiement_add2', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Confirmer Paiement</a>
                                             {% elseif installation.step==9 %}
-                                            <a href="#" class="next action-button btn btn-outline-danger btn my-3 ms-5">Valider la demande</a>
+                                            <a href="#" class="next action-button btn btn-success btn my-3 ms-5">Valider la demande</a> #}
                                             {% endif %}
                                         {% endif %}
                                     </div>                                

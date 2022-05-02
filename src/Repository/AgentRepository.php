@@ -45,6 +45,23 @@ class AgentRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return Agent[] Returns an array of Agent objects
+     */
+    
+    public function findByLocalite($id_localite)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.id_agence = :val')
+            ->setParameter('val', $value)
+            ->orderBy('a.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
+
     // /**
     //  * @return Agent[] Returns an array of Agent objects
     //  */

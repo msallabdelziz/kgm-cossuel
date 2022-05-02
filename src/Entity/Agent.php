@@ -8,6 +8,7 @@ use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -30,7 +31,7 @@ class Agent
     #[ORM\Column(type: 'string', length: 255)]
     private $matricule;
 
-    #[ORM\Column(type: 'string', length: 255, unique:true)]
+    #[ORM\Column(type: 'string', length: 255)]
     private $prenom;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -45,8 +46,14 @@ class Agent
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     private $email;
 
-    #[ORM\Column(type: 'string', length: 255, unique:true)]
+    #[ORM\Column(type: 'string', length: 255)]
     private $photo;
+
+    #[ORM\Column(type: 'integer', nullable:true)]
+    private $id_agence;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $fonction;
 
     /**
      * @var File
@@ -148,6 +155,30 @@ class Agent
     public function setPhoto(string $photo): self
     {
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getFonction(): ?string
+    {
+        return $this->fonction;
+    }
+
+    public function setFonction(string $fonction): self
+    {
+        $this->fonction = $fonction;
+
+        return $this;
+    }
+
+    public function getIdAgence(): ?int
+    {
+        return $this->id_agence;
+    }
+
+    public function setIdAgence(int $id_agence): self
+    {
+        $this->id_agence = $id_agence;
 
         return $this;
     }

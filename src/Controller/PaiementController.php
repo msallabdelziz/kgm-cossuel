@@ -37,11 +37,47 @@ class PaiementController extends AbstractController
             $paiement->setDemande($demande);
             $paiementRepository->add($paiement);
 
+            $demande->setIdPaiement($paiement->getId());
+            $demandeRepository->add($demande);
+
             return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 
         }
 
         return $this->renderForm('paiement/add.html.twig', [
             'demande' => $demande,
+            'paiementForm' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/add2', name: 'app_paiement_add2')]
+    public function add2(Request $request, Demande $demande, DemandeRepository $demandeRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
+    {
+        $demande=$demandeRepository->find($demande);
+        $paiement=$paiementRepository->find($demande->getIdPaiement());
+
+        $form = $this->createFormBuilder($paiement)->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $step = 9;
+            $installation=$installationRepository->find($demande->getInstallation());
+            $installation->setStep($step);
+            $installationRepository->add($installation);
+
+            $demande->setEtat("Paiement validé");
+            $demandeRepository->add($demande);
+
+            $paiement->setPaiementEffectue(true);
+            $paiement->setDatePaiement(new \DateTime());
+            $paiementRepository->add($paiement);
+
+            return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 
+        }
+
+        return $this->renderForm('paiement/add2.html.twig', [
+            'demande' => $demande,
+            'paiement' => $paiement,
             'paiementForm' => $form,
         ]);
     }

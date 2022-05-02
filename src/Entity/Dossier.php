@@ -24,13 +24,13 @@ class Dossier
     #[ORM\Column(type: 'datetime')]
     private $dateCreation;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $heureCreation;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateCloture;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $affecte;
 
     #[ORM\OneToOne(targetEntity: Demande::class, cascade: ['persist', 'remove'])]
@@ -52,6 +52,7 @@ class Dossier
     public function __construct()
     {
         $this->created_by = "";
+        $this->affecte = false;
         $this->created_at = new \DateTimeImmutable();
         $this->visites = new ArrayCollection();
     }

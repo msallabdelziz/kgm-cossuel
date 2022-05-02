@@ -96,7 +96,7 @@
 								<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
 							</svg>
 						</span>
-                        <span class="text">Gestion des Demandes</span>
+                        <span class="text">Gestion Demandes</span>
                     </a>
                     <ul id="ddmenu_2" class="dropdown-nav collapse show {% if app.session.get('menu') == 'demande' %}show{% endif %}">
 		
@@ -139,6 +139,54 @@
                     </ul>
                 </li>
 
+                <li class="nav-item nav-item-has-children {% if app.session.get('menu') == 'dossier' %}active{% endif %}">
+                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_3" aria-controls="ddmenu_3"
+                        aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon">
+							<svg class="bi" width="24" height="24" fill="black">
+								<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#gear') }}"></use>
+							</svg>
+						</span>
+                        <span class="text">Gestion Dossiers</span>
+                    </a>
+		{% if is_granted('ROLE_RFO') %}
+                    <ul id="ddmenu_3" class="dropdown-nav collapse show {% if app.session.get('menu') == 'dossier' %}show{% endif %}">
+		
+		{% if is_granted('ROLE_RFO') %}
+                        <li>
+                            <a href="#" class="{% if app.session.get('sousmenu') == 'dossier_affectation' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#clipboard') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Affectation Dossiers</span>
+							</a>
+                        </li>
+                        <li>
+                            <a href="#" class="{% if app.session.get('sousmenu') == 'dossier_cree' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#calendar3') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Planification Visite</span>
+							</a>
+                        </li>
+                        <li>
+                            <a href="#" class="{% if app.session.get('sousmenu') == 'dossier_cree' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#card-checklist') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Rapport de Visites</span>
+							</a>
+                        </li>
+		{% endif %}
+					</ul>
+				</li>
+		{% endif %}
 		{% if is_granted('ROLE_USER') %}
 			<li class="nav-item {% if app.session.get('menu') == 'statistiques' %}active{% endif %}">
 				<a href="{{ path('main') }}">

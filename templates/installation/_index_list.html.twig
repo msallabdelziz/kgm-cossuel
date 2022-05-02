@@ -76,8 +76,13 @@
             </thead>
             <tbody>
                 {% for ag in les_installation %}
-                    {% set badge_etat = "warning" %}
-                    {% if ag.step == 7 %}
+                    {% if ag.step < 7 %}
+                        {% set badge_etat = "danger" %}
+                    {% endif %}
+                    {% if ag.step <= 7 %}
+                        {% set badge_etat = "warning" %}
+                    {% endif %}
+                    {% if ag.step > 7 %}
                         {% set badge_etat = "success" %}
                     {% endif %}
                     <tr>

@@ -15,6 +15,7 @@ use App\Form\InstallationType;
 use App\Repository\DemandeRepository;
 use App\Repository\ElectricienRepository;
 use App\Repository\InstallationRepository;
+use App\Repository\PaiementRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\TypeConstructionRepository;
 use Dompdf\Dompdf;
@@ -631,11 +632,18 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
-    public function show(Installation $installation): Response
+    public function show(Installation $installation, PaiementRepository $paiementRepository): Response
     {
-        return $this->render('installation/show.html.twig', [
-            'installation' => $installation,
-        ]);
+        if($installation->getStep()<=7) {
+            return $this->render('installation/show.html.twig', [
+                'installation' => $installation,
+            ]);
+        } elseif($installation->getDemandeCourante()) {
+            $paiement = $paiementRepository->find($installation->getDemandeCourante()->getIdPaiement());
+            return $this->render('paiement/show.html.twig', [
+                'paiement' => $paiement,
+            ]);
+        }
     }
 
     #[Route('/{id}/edit', name: 'app_installation_edit', methods: ['GET', 'POST'])]

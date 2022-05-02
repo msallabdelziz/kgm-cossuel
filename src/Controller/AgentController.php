@@ -153,11 +153,10 @@ class AgentController extends AbstractController
     }
 
     #[Route('/affecter/{id}', name: 'affect')]
-    public function affecter(ManagerRegistry $doctrine, Agent $agent, Request $request): Response
+    public function affecter(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
     {
-        $entityManager = $doctrine->getManager();
-        $les_agent = $entityManager->getRepository(Agent::class)->findAll();
-        $agent = $entityManager->getRepository(Agent::class)->find($agent);
+        $les_agent = $agentRepository->findAll();
+        $agent = $agentRepository->find($agent);
         $agaff = new AffectationsAgents();
         $form = $this->createFormBuilder($agaff, ['method' => 'post'])
             ->add('agence',
@@ -174,12 +173,14 @@ class AgentController extends AbstractController
             ->getForm();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->addFlash('success', 'OK SENT.');
-            //dump($agence);
-            $agaff->setAgent($agent)
-                ->setDateAffectation(new \DateTime());
-            $entityManager->persist($agaff);
-            $entityManager->flush();
+            $agence = $agenceRepository->find($agaff->getAgence()->getId());
+            if($agent->getAgence() != $agence) {
+                $agent->setIdAgence($agence->getId());
+                $agentRepository->add($agent);
+                $agaff->setAgent($agent)->setDateAffectation(new \DateTime());
+                $agaffRepository->add($agaff);
+                $this->addFlash('success', 'OK SENT.');
+            }
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
         return $this->renderForm('agent/affect.html.twig', [

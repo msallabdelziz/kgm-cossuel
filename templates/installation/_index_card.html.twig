@@ -64,8 +64,10 @@
 
             <div class="row mt-4">
                 {% for ag in les_installation %}
-                    {% set badge_etat = "warning" %}
+                    {% set badge_etat = "danger" %}
                     {% if ag.step == 7 %}
+                        {% set badge_etat = "warning" %}
+                    {% elseif ag.step > 7 %}
                         {% set badge_etat = "success" %}
                     {% endif %}
                     {% set badge_usage = "warning" %}
@@ -78,12 +80,14 @@
                         <div class="card-orig border-dark mb-3">
                             <h5 class="card-header border-dark bg-{{badge_usage}} py-1 px-2 pt">
                                 {% if ag.demandeCourante %}
-                                    <a class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
+                                    <a title="Afficher les détails la demande" class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
                                         <span class="{{text_usage}}">Demande n° {{ ag.demandeCourante.numero }}</span>
                                     </a>
-                                    <svg class="bi float-end pt" title="Générer la demande en pdf" width="22" height="22" fill="white">
+                                    <a target="_blank" title="Générer la demande en pdf" class="text-decoration-none float-end p-0 m-0" href="{{ path('app_installation_showpdf', {'id': ag.id }) }}">
+                                    <svg class="bi pt" width="22" height="22" fill="white">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
                                     </svg>
+                                    </a>
                                 {% else %}
                                     <a class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
                                         <span class="{{text_usage}}">Saisie [{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
@@ -93,7 +97,15 @@
                             <div class="card-body">
                                 <h6 class="card-title">
                                     <a href="{{ path('app_installation_show', {'id': ag.id }) }}"><span class="badge fs-7 bg-{{badge_usage}}">{{ ag.usages }}</span></a>
-                                    <a class="float-end" href="{{ path('app_installation_show', {'id': ag.id }) }}"><span class="badge badge-{{ badge_etat }} fs-7">{{ ag.etat }}</span></a>
+                                    <a class="float-end" href="{{ path('app_installation_show', {'id': ag.id }) }}">
+                                        <span class="badge badge-{{ badge_etat }} fs-7 px-1">
+                                        {% if ag.step<=7 %}                                       
+                                            {{ ag.etat }}
+                                        {% else %}
+                                            {{ ag.demandeCourante.etat }}
+                                        {% endif %}
+                                        </span>
+                                    </a>
                                 </h6>
                                 <p class="card-text fs-7">
                                     {% if ag.electricien %}
@@ -155,13 +167,13 @@
                                             {% if ag.step > 1 %}
                                                 {% set link_edit = 'app_installation_add' ~ ag.step %}
                                             {% endif %}
-                                            <a href="{{ path(link_edit, {'id': ag.id}) }}" class="next action-button btn btn-primary btn-sm">Finaliser la saisie</a>
+                                            <a href="{{ path(link_edit, {'id': ag.id}) }}" class="next action-button btn btn-success btn-sm">Finaliser la saisie</a>
                                         {% else %}
                                             {% if ag.step==7 %}
-                                            <a href="{{ path('app_paiement_add', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-outline-danger btn-sm">Enregistrer Paiement</a>
+                                            <a href="{{ path('app_paiement_add', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm">Enregistrer Paiement</a>
                                             {% endif %}
                                             {% if ag.step==8 %}
-                                            <a href="#" class="next action-button btn btn-outline-danger btn-sm">Confirmer Paiement</a>
+                                            <a href="{{ path('app_paiement_add2', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm">Confirmer Paiement</a>
                                             {% endif %}
                                         {% endif %}
                             </div>

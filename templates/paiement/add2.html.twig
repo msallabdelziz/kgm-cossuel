@@ -41,7 +41,7 @@
                             <svg class="bi" width="24" height="24" fill="black">
                                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
                             </svg>
-                            Enregistrement du paiement de la demande
+                            Confirmation du paiement de la demande
                         </div>
                         <div class="col" align="right">
                             <span class="text-success">[{{ demande.etat }}]</span>
@@ -127,26 +127,30 @@
                     <h2 class="fs-title">Enregistrement de paiement</h2>
                     <div class="row">
                         <hr class="mb-3" />
-                        <div class="">
-                            {{ form_row(paiementForm.mode) }}<br>
+                        <div class="mb-3 ">
+                            <label >Mode Paiement</label>
+                            <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.mode }}">
                         </div>
-                        <div class="reference">
-                            {{ form_row(paiementForm.reference) }}<br>
+                        <div class="mb-3 reference">
+                            <label >Référence Paiement</label>
+                            <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.reference }}">
                         </div>
-                        <div class="">
-                            {{ form_row(paiementForm.observation) }}<br>
+                        <div class="mb-3 ">
+                            <label >Observations</label>
+                            <textarea type="text" rows="4" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6">{{ paiement.observation }}</textarea>
                         </div>
                     </div>  
                 </div>
                 <div align="right">
                     <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
-                    <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Enregistrer Paiement</a>
+                    <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Confirmer Paiement</a>
                 </div>                                
                 {{ form_end(paiementForm) }}
             </div>
         </div>
     </section>
 {% endblock %}
+
 
 {% block javascripts %}
 <script>
@@ -160,23 +164,9 @@
 
         // Bloc 1
         $('.reference').hide();
-        $('#paiement_reference').prop('required',false);
-        optSel=$('#paiement_mode'); valSel=optSel.val();
-        if (valSel!="Espèce") {
+        if ("{{ paiement.mode }}"!="Espèce") {
             $('.reference').show(); 
-            $('#paiement_reference').prop('required',true);
         }
-        $('select[name="paiement[mode]"]').on('change', function() {
-            $('.reference').hide();
-            $('#paiement_reference').prop('required',false);
-            optSel=$('select[name="paiement[mode]"]').find("option:selected");
-            valSel=optSel.text();
-            if(valSel!="Espèce") {
-                $('.reference').show(); 
-                $('#paiement_reference').prop('required',true);
-            }
-        }
-        );
 
     });
 </script>
