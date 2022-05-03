@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+
+	{% if app.user %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-30">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="card bg-red p-4 card-stat">
+						<div class="un-stat d-flex">
+							<div class="icone">
+								<img src="{{ asset('assets/img/demandes.svg') }}" alt="">
+							</div>
+							<div class="desc">
+								<p class="mb-2">Total des demandes</p>
+								<h5 class="number mb-0">1234</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+				<div class="col-md-4">
+					<div class="card bg-green p-4 card-stat">
+						<div class="un-stat d-flex">
+							<div class="icone">
+								<img src="{{ asset('assets/img/demandes.svg') }}" alt="">
+							</div>
+							<div class="desc">
+								<p class="mb-2">Demandes domestiques</p>
+								<h5 class="number mb-0">703</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+				<div class="col-md-4">
+					<div class="card bg-blue card-stat">
+						<div class="un-stat d-flex">
+							<div class="icone">
+								<img src="{{ asset('assets/img/demandes.svg') }}" alt="">
+							</div>
+							<div class="desc">
+								<p class="mb-2">Demandes domestiques</p>
+								<h5 class="number mb-0">531</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+			</div>
+			<!-- end row -->
+
+			<div class="row mt-50">
+				<div class="col-md-8">
+					<div class="card">
+						<div class="d-flex align-items-center justify-content-between">
+							<h4 class="fw-bold">Nouvelles demandes</h4>
+							<a href="#" class="link">Voir toutes
+								<img src="{{ asset('assets/img/yellow-arrow-right.svg') }}" alt="">
+							</a>
+						</div>
+						<span class="divider">
+							<hr></span>
+						<table class="table table-hover table-striped">
+							<thead>
+								<tr>
+									<th scope="col">N° Demande</th>
+									<th scope="col">Type</th>
+									<th scope="col">Date</th>
+									<th scope="col">Etat</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-success">Soumise</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-danger">Annulée</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-success">Soumise</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-success">Soumise</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-info">Enregistrée</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-success">Soumise</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-danger">Annulée</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row">676013034</th>
+									<td>Non Domestique</td>
+									<td>12/02/2022 à 23:25</td>
+									<td>
+										<span class="badge badge-success">Soumise</span>
+									</td>
+									<td>
+										<div class="d-flex align-items-center">
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/Eye.svg') }}" alt="">
+											</a>
+											<a href="#" class="mx-1">
+												<img src="{{ asset('assets/img/doc.svg') }}" alt="">
+											</a>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+				<div class="col-md-4">
+					<div class="card card-clients">
+						<h4 class="fw-bold">Nouveaux clients</h4>
+						<span class="divider">
+							<hr></span>
+						<ul class="pl-0">
+							<li class="un-client d-flex align-items-center mt-3">
+								<div class="flex-shrink-0">
+									<img src="{{ asset('assets/img/avatar1.jpg') }}" alt="...">
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">Abdoulaye Diao</h5>
+										<p class="mb-0">Grand Yoff</p>
+									</div>
+									<span class="badge badge-success">Valide</span>
+								</div>
+							</li>
+							<li class="un-client d-flex align-items-center mt-3">
+								<div class="flex-shrink-0">
+									<img src="{{ asset('assets/img/avatar2.jpg') }}" alt="...">
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">Jean Mendy</h5>
+										<p class="mb-0">Grand Yoff</p>
+									</div>
+									<span class="badge badge-success">Valide</span>
+								</div>
+							</li>
+							<li class="un-client d-flex align-items-center mt-3">
+								<div class="flex-shrink-0">
+									<img src="{{ asset('assets/img/avatar3.jpg') }}" alt="...">
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">Aissatou Gueye</h5>
+										<p class="mb-0">Grand Yoff</p>
+									</div>
+									<span class="badge badge-success">Valide</span>
+								</div>
+							</li>
+							<li class="un-client d-flex align-items-center mt-3">
+								<div class="flex-shrink-0">
+									<img src="{{ asset('assets/img/avatar.jpg') }}" alt="...">
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">Mamadou Ndaw Diop</h5>
+										<p class="mb-0">Grand Yoff</p>
+									</div>
+									<span class="badge badge-success">Valide</span>
+								</div>
+							</li>
+							<li class="un-client d-flex align-items-center mt-3">
+								<div class="flex-shrink-0">
+									<img src="{{ asset('assets/img/avatar4.jpg') }}" alt="...">
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">Abdoulaye Diao</h5>
+										<p class="mb-0">Grand Yoff</p>
+									</div>
+									<span class="badge badge-success">Valide</span>
+								</div>
+							</li>
+						</ul>
+						<div class="text-end">
+							<a href="#" class="">Voir tous
+								<img src="{{ asset('assets/img/yellow-arrow-right.svg') }}" alt="" srcset="">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% endif %}
+
+{% endblock %}

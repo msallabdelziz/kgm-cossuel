@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypeConstruction index{% endblock %}
+
+{% block body %}
+    <h1>TypeConstruction index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>Usages</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for type_construction in type_constructions %}
+            <tr>
+                <td>{{ type_construction.id }}</td>
+                <td>{{ type_construction.code }}</td>
+                <td>{{ type_construction.nom }}</td>
+                <td>{{ type_construction.usages }}</td>
+                <td>
+                    <a href="{{ path('app_type_construction_show', {'id': type_construction.id}) }}">show</a>
+                    <a href="{{ path('app_type_construction_edit', {'id': type_construction.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_type_construction_add') }}">Create new</a>
+{% endblock %}

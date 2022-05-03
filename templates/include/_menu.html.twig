@@ -1,0 +1,160 @@
+<!-- ======== sidebar start =========== -->
+<aside class="sidebar-nav-wrapper">
+	<div class="navbar-logo">
+		<a href="{{ path('main') }}">
+			<img src="{{ asset('assets/img/logo-cossuel-black.png') }}" alt="logo"/>
+		</a>
+	</div>
+	<nav class="sidebar-nav">
+		<ul>
+			<span class="divider">
+				<hr/></span>
+			{# Debut - Utilisateur Connecté #}
+			<li>
+				<div class="px-3 user-logged d-flex align-items-center flex-wrap col">
+					<div class="photo col-4">
+						<img src="{{ asset('assets/img/avatar.jpg') }}" alt="AVATAR"/>
+					</div>
+					<div class="infos col-8">
+						<h5 class="nom tb fw-normal text-nowrap" title="{{ app.user.prenom }} {{ app.user.nom }}">{{ app.user.prenom }}</h5>
+						<p class="poste small fw-light">{{ app.user.roles[0] }}</p>
+					</div>
+				</div>
+			</li>
+			<span class="divider">
+				<hr/></span>
+			{# Fin - Utilisateur Connecté #}
+
+			<li class="nav-item">
+				<a href="{{ path('main') }}" class="active">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pie-chart') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Tableau de bord</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
+				<a href="{{ path('app_region_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#geo-alt') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Gestion Localités</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
+				<a href="{{ path('app_agence_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#building') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Gestion Agences</span>
+				</a>
+			</li>
+
+			<li class="nav-item">
+				<a href="{{ path('app_agent_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-workspace') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Gestion Agents</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a href="{{ path('app_electricien_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#people') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Clients</span>
+				</a>
+			</li>
+
+                <li class="nav-item nav-item-has-children">
+                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_2"
+                        aria-expanded="false" aria-label="Toggle navigation">
+						<span class="icon">
+							<svg class="bi" width="24" height="24" fill="black">
+								<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+							</svg>
+						</span>
+                        <span class="text">Gestion des Demandes</span>
+                    </a>
+                    <ul id="ddmenu_2" class="dropdown-nav collapse">
+                        <li>
+                            <a href="{{ path('app_installation_index') }}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#send-check') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Soumission demande</span>
+							</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_installation_index2') }}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Paiement demande</span>
+							</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_installation_index3') }}">
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2-circle') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Validation demande</span>
+							</a>
+                        </li>
+                    </ul>
+                </li>
+
+			<li class="nav-item">
+				<a href="{{ path('main') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#graph-up') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Statistiques</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a href="{{ path('app_utilisateur_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-badge') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Utilisateurs</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a href="{{ path('app_logout') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#box-arrow-left') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Se déconnecter</span>
+				</a>
+			</li>
+		</ul>
+	</nav>
+</aside>
+<div class="overlay"></div>
+<!-- ======== sidebar end =========== -->

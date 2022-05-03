@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/agence" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des agents</span>
+            </a>
+            <a href="{{ path('app_agent_add') }}" class="btn btn-sm fs-7 btn-primary ms-auto">Ajouter Agent</a>
+        </header>
+        <div class="row">
+            <div class="bg-body shadow bg-light">
+            <table class="table table-striped table-hover table-sm pt-0 mt-0">
+              <h5 >Liste des agents ({{ agents|length }})</h5> 
+                {{ form_start(agentForm,{'attr' : {id:'formAg'}}) }}
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        {{form_row(agentForm.nom) }}
+                    </div>
+                    <div class="col-auto"> 
+                    {{ form_row(agentForm.agence,{'attr' : {name:'agence', id:'agence' }}) }}
+                    </div>
+                </div>
+                {{ form_end(agentForm) }}
+            <thead>
+                <tr>
+                    <th scope="col">Matricule</th> 
+                    <th scope="col">Nom</th> 
+                    <th class="text-center" scope="col">Téléphone</th> 
+                    <th scope="col">Adresse Email</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Agence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ag in agents %}
+                    <tr>
+                        <td scope="row"><a href="{{ path('app_agent_show', {'id': ag.agent.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.agent.matricule }}</a></td>
+                        <td>{{ ag.agent.nom }}</td>
+                        <td>{{ ag.agent.telephone }}</td>
+                        <td>{{ ag.agent.email }}</td>
+                        <td>{{ ag.agent.adresse }}</td>
+                        <td>{{ ag.agence.nom }}</td>
+                        
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </div>
+            {% do agents.setPageRange(1)%}
+            {{ knp_pagination_render(agents, 'pagination.html.twig')}}
+        </div>
+    </section>
+{% block javascript %}
+<script src="{{ asset('assets/js/jquery-3.6.0.js') }}"></script>
+<script type="text/javascript">
+   
+        $(document).ready(function(){
+            $('#agence').on('change',function(){
+                //alert('cc');
+                $('#formAg').submit();
+            });
+        });
+    
+</script>
+{% endblock %}
+{% endblock %}

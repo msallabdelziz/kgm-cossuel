@@ -1,0 +1,166 @@
+<!-- ========== header start ========== -->
+<header class="header">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-5 col-md-5 col-6">
+				<div class="header-left d-flex align-items-center">
+					<div class="menu-toggle-btn mr-20">
+						<button id="menu-toggle" class="main-btn primary-btn btn-hover">
+							<i class="lni lni-menu me-2"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-7 col-md-7 col-6">
+				<div class="header-right">
+{#                     
+					<!-- notification start -->
+					<div class="notification-box ml-15 d-none d-md-flex">
+						<button class="dropdown-toggle" type="button" id="notification" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="lni lni-alarm"></i>
+							<span>2</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notification">
+							<li>
+								<a href="#0">
+									<div class="image">
+										<img src="{{ asset('assets/img/avatar1.jpg') }}" alt=""/>
+									</div>
+									<div class="content">
+										<h6>
+											Marieme
+											<span class="text-regular">
+												comment on a product.
+											</span>
+										</h6>
+										<p>
+											Lorem ipsum dolor sit amet, consect etur adipiscing
+																																	                            elit Vivamus tortor.
+										</p>
+										<span>10 mins ago</span>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#0">
+									<div class="image">
+										<img src="{{ asset('assets/img/avatar2.jpg') }}" alt=""/>
+									</div>
+									<div class="content">
+										<h6>
+											Abasse
+											<span class="text-regular">
+												like on a product.
+											</span>
+										</h6>
+										<p>
+											Lorem ipsum dolor sit amet, consect etur adipiscing
+																																	                            elit Vivamus tortor.
+										</p>
+										<span>10 mins ago</span>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<!-- notification end -->
+					<!-- message start -->
+					<div class="header-message-box ml-15 d-none d-md-flex">
+						<button class="dropdown-toggle" type="button" id="message" data-bs-toggle="dropdown" aria-expanded="false">
+							<i class="lni lni-envelope"></i>
+							<span>3</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="message">
+							<li>
+								<a href="#0">
+									<div class="image">
+										<img src="{{ asset('assets/img/avatar3.jpg') }}" alt=""/>
+									</div>
+									<div class="content">
+										<h6>Samuel Koly</h6>
+										<p>Hey!I can across your profile and ...</p>
+										<span>10 mins ago</span>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#0">
+									<div class="image">
+										<img src="{{ asset('assets/img/avatar.jpg') }}" alt=""/>
+									</div>
+									<div class="content">
+										<h6>Issa Diop</h6>
+										<p>Would you mind please checking out</p>
+										<span>12 mins ago</span>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="#0">
+									<div class="image">
+										<img src="{{ asset('assets/img/avatar4.jpg') }}" alt=""/>
+									</div>
+									<div class="content">
+										<h6>Awa Diallo</h6>
+										<p>Hey! are you available for freelance?</p>
+										<span>1h ago</span>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<!-- message end --> 
+                    #}
+					<!-- profile start -->
+					<div class="profile-box ml-15">
+						<button class="dropdown-toggle bg-transparent border-0" type="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
+							<div class="profile-info">
+								<div class="info">
+									<div class="fs-8 text-warning bg-black border px-2 py-0">{{ app.user.prenom }} {{ app.user.nom }} ( {{ app.user.login }})</div>
+									<div class="image ms-2 border-0">
+										<img src="{{ asset('assets/img/none.png') }}" alt=""/>
+									</div>
+								</div>
+							</div>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+							<li>
+								<a href="#0">
+									<i class="lni lni-user"></i>
+									Mon Profil
+								</a>
+							</li>
+
+							{# <li>
+															<a href="#0">
+																<i class="lni lni-alarm"></i>
+																Notifications
+															</a>
+														</li>
+														<li>
+															<a href="#0">
+																<i class="lni lni-inbox"></i>
+																Messages
+															</a>
+														</li>
+														<li>
+															<a href="#0">
+																<i class="lni lni-cog"></i>
+																Reglages
+															</a>
+														</li> #}
+							<li>
+								<a href="{{ path('app_logout') }}">
+									<i class="lni lni-exit"></i>
+									Déconnexion
+								</a>
+							</li>
+						</ul>
+					</div>
+					<!-- profile end -->
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<!-- ========== header end ========== -->
