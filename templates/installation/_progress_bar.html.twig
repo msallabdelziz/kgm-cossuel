@@ -1,0 +1,67 @@
+
+{% set les_etat = [] %}
+{% set les_coul = [] %}
+{% set coul0="gray" %}
+{% set coulX="" %}
+{% for i in 1..6 %}
+    {% if installation.step >= i %}
+        {% set les_etat = les_etat|merge(["active"]) %}
+    {% else %}
+        {% set les_etat = les_etat|merge([""]) %}
+    {% endif %}
+
+    {% set coul0="gray" %}
+    
+    {% if installation.step >= i %}
+        {% set coul0="#fff" %}
+    {% endif %}
+
+    {% if i == curr_etat %}
+        {% set coul0="#ffc328" %}
+        {% set coulX="#ffc328" %}
+    {% endif %}
+
+    {% set les_coul = les_coul|merge([coul0]) %}
+
+{% endfor %}
+{# Etape: {{ installation.step }} - Courant: {{ curr_etat }} : Couleur: {{ coulX }} #}
+<div class="row">
+    <!-- progressbar -->
+    <ul id="progressbar">
+        <li class="step {{ les_etat[0] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[0] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+            </svg>
+            Données de base
+        </li>
+        <li class="step {{ les_etat[1] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[1] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#house-door') }}"></use>
+            </svg>
+            Données sur le Site
+        </li>
+        <li class="step {{ les_etat[2] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[2] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#gear') }}"></use>
+            </svg>
+            Données Installation
+        </li>
+        <li class="step {{ les_etat[3] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[3] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+            </svg>
+            Données Electricien
+        </li>
+        <li class="step {{ les_etat[4] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[4] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
+            </svg>
+            Données Propriétaire
+        <li/>
+        <li class="step {{ les_etat[5] }}">
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[5] }}" style="position:relative; left:66px; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+            </svg>
+            Soumission demande
+        <li/>
+    </ul>

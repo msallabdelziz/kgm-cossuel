@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}NatureTravaux index{% endblock %}
+
+{% block body %}
+    <h1>NatureTravaux index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for nature_travaux in nature_travauxes %}
+            <tr>
+                <td>{{ nature_travaux.id }}</td>
+                <td>{{ nature_travaux.code }}</td>
+                <td>{{ nature_travaux.nom }}</td>
+                <td>
+                    <a href="{{ path('app_nature_travaux_show', {'id': nature_travaux.id}) }}">show</a>
+                    <a href="{{ path('app_nature_travaux_edit', {'id': nature_travaux.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_nature_travaux_add') }}">Create new</a>
+{% endblock %}

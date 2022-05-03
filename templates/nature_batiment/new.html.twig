@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New NatureBatiment{% endblock %}
+
+{% block body %}
+    <h1>Create new NatureBatiment</h1>
+
+    {{ include('nature_batiment/_form.html.twig') }}
+
+    <a href="{{ path('app_nature_batiment_index') }}">back to list</a>
+{% endblock %}

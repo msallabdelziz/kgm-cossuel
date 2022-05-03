@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit NatureTravaux{% endblock %}
+
+{% block body %}
+    <h1>Edit NatureTravaux</h1>
+
+    {{ include('nature_travaux/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_nature_travaux_index') }}">back to list</a>
+
+    {{ include('nature_travaux/_delete_form.html.twig') }}
+{% endblock %}

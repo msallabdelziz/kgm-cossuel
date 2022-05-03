@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit TypeConstruction{% endblock %}
+
+{% block body %}
+    <h1>Edit TypeConstruction</h1>
+
+    {{ include('type_construction/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_type_construction_index') }}">back to list</a>
+
+    {{ include('type_construction/_delete_form.html.twig') }}
+{% endblock %}
