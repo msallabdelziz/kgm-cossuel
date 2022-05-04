@@ -29,35 +29,41 @@ class SearchInstallationForm extends AbstractType
             ])
             ->add('usage', ChoiceType::class, [
                 'choices'  => [
-                    'Maybe' => null,
-                    'Yes' => true,
-                    'No' => false,
+                    'Domestique' => "Domestique",
+                    'Non_domestique' => "Non_domestique",
                 ],
                 'attr' => [
                     'class' => 'form-control mb-2',
                     
-                ]
+                ],
+                'label' => ' '
             ])
             ->add('statut', ChoiceType::class, [
                 'choices'  => [
-                    'Maybe' => null,
-                    'Yes' => true,
-                    'No' => false,
+                    'Statut demande' => null,
+                    'En saisie 1/6' => "En saisie 1/6",
+                    'En saisie 2/6' => "En saisie 2/6",
+                    'En saisie 3/6' => "En saisie 3/6",
+                    'En saisie 4/6' => "En saisie 4/6",
+                    'En saisie 5/6' => "En saisie 5/6",
+                    'En saisie 6/6' => "En saisie 6/6",
+                    'Soumis' => "Soumis",
                 ],
                 'attr' => [
                     'class' => 'form-control mb-2',
                     'placeholder'=>'Statut demande'
-                ]
+                ],
+                'label' => ' '
             ])
             ->add('localite', EntityType::class, [
-                'label' => 'Localité',
+                'label' =>'Localité',
                 'required' => false,
                 'class'=>Localite::class,
                 'expanded' => false,
                 'multiple' => false,
                 'attr' => [
                     'class' => 'form-control mb-2',
-                    'placeholder'=>'Localite'
+                    
                 ]
             ]);
             

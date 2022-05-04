@@ -36,21 +36,25 @@
             <caption align="top" class="fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</caption>
 
                 {{ form_start(searchForm,{'attr' : {id:'formLoc'}}) }}
-                <div class="row g-3 align-items-center">
+                <div class="row align-items-right">
                     <div class="col-auto">
-                        {{form_row(searchForm.nom) }}
-                    </div>
-                    <div class="col-auto">
-                        {{form_row(searchForm.statut,{'attr' : {name:'statut', id:'statut' }}) }}
+                        {{form_row(searchForm.statut,{'attr' : {name:'statut', id:'statut',style:'margin-left:250px; width:170px; border: 2px solid yellow; height:45px;' }}) }}
                     </div>
                     <div class="col-auto"> 
-                        {{form_row(searchForm.usage,{'attr' : {name:'usage', id:'usage' }}) }}
+                        {{form_row(searchForm.usage,{'attr' : {name:'usage', id:'usage',style:'border: 2px solid orange; height:45px;' }}) }}
                     </div>
                     <div class="col-auto">
-                    {{ form_row(searchForm.localite,{'attr' : {name:'localite', id:'loc' }}) }}
+                    {{ form_row(searchForm.localite,{'attr' : {name:'localite', id:'loc',style:'border: 2px solid green; height:45px;' }}) }}
+                    </div>
+                    <div class="col-auto">
+                        {{form_row(searchForm.nom,{'attr' : {style:' border: 2px solid; height:45px;' }}) }}
+                    </div>
+                    {{ form_end(searchForm) }}
+                    <div class="col-auto">
+                        <a> <img src="/assets/img/PDF1.png" style="width: 30px; height:30px; margin-top:30px;" ></a>
                     </div>
                 </div>
-                {{ form_end(searchForm) }}
+                
             
             <thead>
                 <tr>
