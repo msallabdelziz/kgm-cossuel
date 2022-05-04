@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Donnees\SearchAgentAgence;
+use App\Donnees\SearchAgent;
 use App\Entity\Agence;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -13,7 +13,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
 
-class SearchAgentForm extends AbstractType
+class SearchAgentF extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -25,29 +25,14 @@ class SearchAgentForm extends AbstractType
                     'class' => 'form-control mb-2',
                     'placeholder'=>'Rechercher'
                 ]
-            ])
-            ->add('agence', EntityType::class, [
-                'label' => false,
-                'required' => false,
-                'class'=>Agence::class,
-                'expanded' => false,
-                'multiple' => false,
             ]);
-            /*$builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event){
-                $form = $event->getForm();
-                $form->add('localite', EntityType::class, [
-                    'label' => false,
-                    'required' => false,
-                    'class'=>Localite::class,
-                    'expanded' => true,
-                    'multiple' => false,
-                ]);
-            });*/
+            
+            
     }
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => SearchAgentAgence::class,
+            'data_class' => SearchAgent::class,
             'method' =>'GET',
             'crsf_protection'=> false
         ]);

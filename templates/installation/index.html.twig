@@ -38,7 +38,7 @@
                 {{ form_start(searchForm,{'attr' : {id:'formLoc'}}) }}
                 <div class="row align-items-right">
                     <div class="col-auto">
-                        {{form_row(searchForm.statut,{'attr' : {name:'statut', id:'statut',style:'margin-left:250px; width:170px; border: 2px solid yellow; height:45px;' }}) }}
+                        {{form_row(searchForm.statut,{'attr' : {name:'statut', id:'statut',style:'margin-left:100px; width:170px; border: 2px solid yellow; height:45px;' }}) }}
                     </div>
                     <div class="col-auto"> 
                         {{form_row(searchForm.usage,{'attr' : {name:'usage', id:'usage',style:'border: 2px solid orange; height:45px;' }}) }}
@@ -51,7 +51,7 @@
                     </div>
                     {{ form_end(searchForm) }}
                     <div class="col-auto">
-                        <a> <img src="/assets/img/PDF1.png" style="width: 30px; height:30px; margin-top:30px;" ></a>
+                        <a href="{{ path('app_agent_agentpdf') }}"> <img src="/assets/img/PDF1.png" style="width: 30px; height:30px; margin-top:30px;" ></a>
                     </div>
                 </div>
                 

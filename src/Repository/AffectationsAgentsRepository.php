@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\AffectationsAgents;
-use App\Donnees\SearchAgent;
+use App\Donnees\SearchAgentAgence;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -75,7 +75,7 @@ class AffectationsAgentsRepository extends ServiceEntityRepository
     }
     */
 
-    public function findSearch(SearchAgent $search):array
+    public function findSearch(SearchAgentAgence $search):array
     {
         $query = $this->createQueryBuilder('a')
                 ->select('agent', 'a')

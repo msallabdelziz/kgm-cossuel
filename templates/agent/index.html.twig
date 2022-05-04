@@ -38,9 +38,6 @@
                     <div class="col-auto">
                         {{form_row(searchForm.nom) }}
                     </div>
-                    <div class="col-auto"> 
-                        {{ form_row(searchForm.agence,{'attr' : {name:'agence', id:'agence' }}) }}
-                    </div>
                 </div>
                 {{ form_end(searchForm) }}
             
@@ -98,19 +95,5 @@
             {% endif %}
         </div>
     </section>
-{% block javascript %}
-<script src="{{ asset('assets/js/jquery-3.6.0.js') }}"></script>
-<script type="text/javascript">
-   
-        $(document).ready(function(){
-            $('#agence').on('change',function(){
-                //alert('cc');
-                $('#formLoc').submit();
-            });
-        });
-    
-</script>
-{% endblock %}
-
 {% endblock %}
 

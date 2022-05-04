@@ -18,24 +18,23 @@ use App\Repository\AgenceRepository;
 use App\Repository\AgentRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Donnees\SearchAgent;
-use App\Form\SearchAgentForm;
+use App\Form\SearchAgentF;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use App\Service\PdfService;
 
 #[Route('/agent', name: 'app_agent_')]
 class AgentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, ManagerRegistry $doctrine,PaginatorInterface $page): Response
+    public function index(Request $request, ManagerRegistry $doctrine,PaginatorInterface $page,AgentRepository $repository): Response
     {
         $donnee= new SearchAgent();
         $donnee->page = $request->get('page',1);
-        $form= $this->createForm(SearchAgentForm::class,$donnee);
-        
-        $loc = $request->get('agence');
+        $form= $this->createForm(SearchAgentF::class,$donnee);
         $nom =$request->get('nom');
-        $donnee->agence=$loc;
         $donnee->nom = $nom;
-        dd($donne);
+        //dd($donne);
         $agent = $repository->findSearch($donnee);
         return $this->render('agent/index.html.twig', [
             'controller_name' => 'AgentController',
@@ -48,6 +47,16 @@ class AgentController extends AbstractController
         ]);
     }
 
+     #[Route('/agentpdf', name: 'agentpdf')]
+     public function agentpdf(Request $request, ManagerRegistry $doctrine, PdfService $pdf): Response
+     {
+         $entityManager = $doctrine->getManager();
+         $ag = $entityManager->getRepository(Agent::class)->findAll();
+         $html= $this->render('agent/listepdf.html.twig', [
+             'agents' => $ag
+         ]);
+         $pdf->showPdfFile($html);
+     }
 
     #[Route('/add', name: 'add')]
     public function create(Request $request, PaginatorInterface $page, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response

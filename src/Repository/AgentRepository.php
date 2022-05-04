@@ -76,9 +76,8 @@ class AgentRepository extends ServiceEntityRepository
     */
     public function findSearch(SearchAgent $search):array
     {
-        $query = $this->createQueryBuilder('a')
-                ->select('agence', 'a')
-                ->join('a.agence', 'agence');
+        $query = $this->createQueryBuilder('a');
+
                 
         if(!empty($search->nom)){
             $query  = $query
@@ -89,12 +88,7 @@ class AgentRepository extends ServiceEntityRepository
                 ->orderBy('a.id', 'ASC');
                  
         }
-        if(!empty($search->agence)){
-            $query  = $query
-                ->andWhere('agence.id LIKE :agence')
-                ->setParameter('agence', "$search->agence")
-                ->orderBy('a.id', 'ASC'); 
-        }
+        
         return $query->getQuery()->getResult();
         
     }

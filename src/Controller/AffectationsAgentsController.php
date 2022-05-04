@@ -17,7 +17,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Agent;
 use App\Entity\Agence;
-use App\Donnees\SearchAgent;
+use App\Donnees\SearchAgentAgence;
 use App\Form\SearchAgentForm;
 use App\Entity\AffectationsAgents;
 use Knp\Component\Pager\PaginatorInterface;
@@ -47,7 +47,7 @@ class AffectationsAgentsController extends AbstractController
     #[Route('/liste', name: 'liste')]
     public function liste(Request $request, ManagerRegistry $doctrine,PaginatorInterface $page,AffectationsAgentsRepository $repository): Response
     {
-        $donnee= new SearchAgent();
+        $donnee= new SearchAgentAgence();
         $donnee->page = $request->get('page',1);
         $form= $this->createForm(SearchAgentForm::class,$donnee);
 
