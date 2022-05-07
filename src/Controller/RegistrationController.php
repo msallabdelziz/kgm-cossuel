@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Electricien;
+use App\Entity\Proprietaire;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
@@ -52,11 +54,21 @@ class RegistrationController extends AbstractController
             // Quelle valeur prendre pour type utilisateur ?
             if($form->get('type')->getData()=="Proprietaire") {
                 $user->setType("Proprietaire");
+                // Nouveau proprietaire à créer !!!
+                $proprietaire = new Proprietaire();
+                $proprietaire = $proprietaire->setFromUtilisateur($user);
+                $entityManager->persist($proprietaire);
+                $entityManager->flush();
+                $user->setIdType($proprietaire->getId());
             } else {
                 $user->setType("Electricien");
+                // Nouveau electricien à créer !!!
+                $electricien = new Electricien();
+                $electricien = $electricien->setFromUtilisateur($user);
+                $entityManager->persist($electricien);
+                $entityManager->flush();
+                $user->setIdType($electricien->getId());
             }
-
-
             $entityManager->persist($user);
             $entityManager->flush();
 

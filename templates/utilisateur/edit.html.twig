@@ -61,12 +61,12 @@
                             {{ form_start(utilisateurForm) }}
                             <div class="row">
                                 <div class="col-5 mb-2">
-                                    <label class="fw-light fs-7">Profil Utilisateur</label>
-                                    <div class="ms-4">{{ utilisateur.type }}</div>
+                                    <label class="fw fs-7">Profil Utilisateur</label>
+                                    <div class="form-control disabled bg-warning bg-opacity-25">{{ utilisateur.type }}</div>
                                 </div>
                                 <div class="col-5 mb-2">
-                                    <label class="fw-light fs-7">Identifiant</label>
-                                    <div class="ms-4">{{ utilisateur.login }}</div>
+                                    <label class="fw fs-7">Identifiant</label>
+                                    <div class="form-control disabled bg-warning bg-opacity-25">{{ utilisateur.login }}</div>
                                 </div>
                                 <div class="col-5">
                                     {{ form_row(utilisateurForm.nom) }}

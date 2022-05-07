@@ -38,7 +38,7 @@
                                 {% endif %}
                                 <tr class="{{ cur }}">
                                     <td scope="row"><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.matricule }}</a></td>
-                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
+                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}  {{ dep.prenom }}</a></td>
 {#                                     
                                     <td align="center">
                                     {% if dep.localite.count >0 %}
@@ -94,6 +94,16 @@
                             <div class="ms-4">{{ agent.prenom }}</div>
                         </div>
                         <div class="col-12 mb-2">
+                            <label class="fw-light fs-7">Fonction</label>
+                            <div class="ms-4">
+                                {% if agent.profil %}
+                                    {{ agent.profil }}
+                                {% else %}
+                                    <span class="text-danger fs-7">Non défini</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
                             <label class="fw-light fs-7">Adresse</label>
                             <div class="ms-4">{{ agent.adresse }}</div>
                         </div>
@@ -114,7 +124,7 @@
                                 </svg>
                                 <span class="text-success">Compte utilisateur créé (<span class="fw-bold">{{ utilisateur.login }}</span>)</span>
                                 </a>
-                        {% else %}
+                        {% elseif(agent.profil) %}
                                 <a href="{{ path('app_agent_createuser', {'id': agent.id }) }}" class="btn btn-secondary btn-sm" title="Créer un compte utilisateur">
                                     <svg class="bi" width="20" height="20" fill="orange">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-badge') }}"></use>

@@ -18,13 +18,13 @@
     }
 
     #paiement_demande .card {
-        background-color:#ffc328;
+        background-color:#fff;
         box-shadow: 0 0 0 2px white, 0 0 0 3px #000
     }
     
     </style>
-    {% set action_demande = "Paiement" %}
-    {% set link_liste = 'app_installation_index2' %}
+    {% set action_demande = "Validation" %}
+    {% set link_liste = 'app_installation_index3' %}
     {% set demande = paiement.demande %}
     {% set installation = demande.installation %}
     
@@ -57,10 +57,7 @@
         <div class="row">
             <div class="col-lg-8 mb-2">
                 <div align="right">
-                    <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                     <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Facture</a>
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Reçu</a>
                 </div>
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
@@ -346,7 +343,7 @@
 
             <div class="col-lg-4 mb-2" id="paiement_demande">
                 <div align="right">
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Reçu</a>
+                    <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                 </div>                                
                 <div class="card mb-2 pb-0">
                     <h2 class="fs-title">Données sur le paiement</h2>

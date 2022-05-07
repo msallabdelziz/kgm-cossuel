@@ -36,9 +36,9 @@
                 <tr>
                     <th scope="col">Matricule</th> 
                     <th scope="col">Nom</th> 
+                    <th scope="col">Fonction</th>
                     <th class="text-center" scope="col">Téléphone</th> 
                     <th scope="col">Adresse Email</th>
-                    <th scope="col">Adresse</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
@@ -48,10 +48,10 @@
                 {% for ag in les_agent %}
                     <tr>
                         <td scope="row"><a href="{{ path('app_agent_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.matricule }}</a></td>
-                        <td>{{ ag.nom }}</td>
+                        <td>{{ ag.nom }} {{ ag.prenom }}</td>
+                        <td>{{ ag.profil }}</td>
                         <td>{{ ag.telephone }}</td>
                         <td>{{ ag.email }}</td>
-                        <td>{{ ag.adresse }}</td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}

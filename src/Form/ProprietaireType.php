@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class ProprietaireType extends AbstractType
 {
@@ -55,6 +56,9 @@ class ProprietaireType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
+            'constraints' => [
+                new Regex('/^(0|[1-9][0-9]*)$/')
+            ],
             'required' => true,
             'label' => 'Téléphone'
         ])
@@ -68,6 +72,9 @@ class ProprietaireType extends AbstractType
         ->add('numPiece', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
+            ],
+            'constraints' => [
+                new Regex('/^(0|[1-9][0-9]*)$/')
             ],
             'required' => true,
             'label' => 'Numéro Piece'

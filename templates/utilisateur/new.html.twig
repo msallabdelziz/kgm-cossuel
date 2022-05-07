@@ -78,6 +78,20 @@
                                 <div class="col-7">
                                     {{ form_row(utilisateurForm.email) }}
                                 </div>
+                                <hr class="my-4" />
+                                <div class="col-5">
+                                    {{ form_row(utilisateurForm.typePiece) }}
+                                </div>
+                                <div class="col-7">
+                                    {{ form_row(utilisateurForm.numPiece) }}
+                                </div>
+                                <hr class="my-4" />
+                                <div class="col-12">
+                                    {{ form_row(utilisateurForm.type_login) }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form_row(utilisateurForm.plainPassword) }}
+                                </div>
                             </div>
                             <div align="center">
                                 <a class="btn btn-secondary" href="{{ path('app_utilisateur_index') }}">Annuler</a>

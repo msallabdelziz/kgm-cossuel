@@ -3,24 +3,16 @@
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h4 class="fw-bold">Demandes {{ etatDemande }}</h4>
+                        <h4 class="fw-bold">Dossiers en attente de {{ etatDossier }}</h4>
                         <select name="val_affichage_demande" id="val_affichage_demande" class="bg-warning bg-opacity-50 form-select-sm">
                             <option {% if affichage == 'listing' %} selected="selected" {% endif %} value="listing">Affichage en Listing</option>
                             <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
                         </select>
                     </div>
-                    {% if modif == 1 %}
-                    <a href="{{ path('app_installation_add', { 'id': 0}) }}" class="btn btn-primary btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
-                        </svg>
-                        Nouvelle Demande
-                    </a>
-                    {% endif %}
                 </div>
                 <span class="divider">
                     <hr></span>
-            {% if les_installation|length == 0 %}
+            {% if les_dossier|length == 0 %}
                 <div class="row pt-20">
                     <div class="col-3"></div>
                     <div class="col-6">
@@ -48,7 +40,7 @@
                 </div>
                 <div class="col-2 fs-6 border-bottom">
                     <select name="" id="" class="form-select form-select-sm border-success py-1">
-                        <option value="">Statut demande ...</option>
+                        <option value="">Statut dossier ...</option>
                     </select>
                 </div>
                 <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." /></div>
@@ -58,124 +50,116 @@
                     </svg>
                 </div>
             </div>
-            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</div>
+            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Dossiers ({{ les_dossier|length }})</div>
 
-            {# Affichage des demandes en format card #}
+            {# Affichage des dossiers en format card #}
 
             <div class="row mt-4">
-                {% for ag in les_installation %}
+                {% for doss in les_dossier %}
+                    {% set demande = doss.demande %}
+                    {% set installation = demande.installation %}
+                    {% set electricien = installation.electricien %}
+                    {% set proprietaire = installation.proprietaire %}
+
                     {% set badge_etat = "danger" %}
-                    {% if ag.step == 7 %}
+                    {% if doss.etat == "Visite" %}
                         {% set badge_etat = "warning" %}
-                    {% elseif ag.step > 7 %}
+                    {% elseif doss.etat == "Rapport" %}
+                        {% set badge_etat = "warning" %}
+                    {% elseif doss.etat == "Attestation" %}
                         {% set badge_etat = "success" %}
                     {% endif %}
                     {% set badge_usage = "warning" %}
                     {% set text_usage = "text-dark" %}
-                    {% if ag.usages != "domestique" %}
+                    {% if installation.usages != "domestique" %}
                         {% set badge_usage = "primary text-light" %}
                         {% set text_usage = "text-light" %}
                     {% endif %}
                     <div class="col-lg-3 col-md-6">
                         <div class="card-orig border-dark mb-3">
                             <h5 class="card-header border-dark bg-{{badge_usage}} py-1 px-2 pt">
-                                {% if ag.demandeCourante %}
-                                    <a title="Afficher les détails la demande" class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
-                                        <span class="{{text_usage}}">Demande n° {{ ag.demandeCourante.numero }}</span>
+                                    <a title="Afficher les détails la demande" class="text-decoration-none" href="{{ path('app_dossier_show', {'id': doss.id }) }}">
+                                        <span class="{{text_usage}}">Dossier n° {{ demande.numero }}</span>
                                     </a>
-                                    <a target="_blank" title="Générer la demande en pdf" class="text-decoration-none float-end p-0 m-0" href="{{ path('app_installation_showpdf', {'id': ag.id }) }}">
+                                    <a target="_blank" title="Générer la demande en pdf" class="text-decoration-none float-end p-0 m-0" href="{{ path('app_installation_showpdf', {'id': installation.id }) }}">
                                     <svg class="bi pt" width="22" height="22" fill="white">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
                                     </svg>
                                     </a>
-                                {% else %}
-                                    <a class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
-                                        <span class="{{text_usage}}">Saisie [{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
-                                    </a>
-                                {% endif %}
                             </h5>
                             <div class="card-body">
-                                <h6 class="card-title">
-                                    <a href="{{ path('app_installation_show', {'id': ag.id }) }}"><span class="badge fs-7 bg-{{badge_usage}}">{{ ag.usages }}</span></a>
-                                    <a class="float-end" href="{{ path('app_installation_show', {'id': ag.id }) }}">
+                                <h6 class="card-title" align="right">
+                                    {# <a href="{{ path('app_dossier_show', {'id': doss.id }) }}"><span class="badge fs-7 bg-{{badge_usage}}">{{ installation.usages }}</span></a> #}
+                                    <a class="" href="{{ path('app_dossier_show', {'id': doss.id }) }}">
                                         <span class="badge badge-{{ badge_etat }} fs-7 px-1">
-                                        {% if ag.step<=7 %}                                       
-                                            {{ ag.etat }}
-                                        {% else %}
-                                            {{ ag.demandeCourante.etat }}
-                                        {% endif %}
+                                            En Attente de {{ doss.etat }}
                                         </span>
                                     </a>
                                 </h6>
                                 <p class="card-text fs-7">
-                                    {% if ag.electricien %}
-                                    <div class="mb-2 border-0 text-muted" title="Electricien installateur">
-                                        <svg class="bi pt" width="22" height="22" fill="#036">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
-                                        </svg>
-                                        {{ ag.electricien  | length < 30 ? ag.electricien : ag.electricien|slice(0, 27) ~ '...'}}
-									</div>
-                                    {% endif %}
-                                    {% if ag.proprietaire %}
-                                    <div class="mb-2 border-0 text-muted" title="Propriétaire de l'installation">
+                                    {% if doss.referent %}
+                                    <div class="mb-2 border-0 text-muted" title="Référent">
                                         <svg class="bi pt" width="22" height="22" fill="gray">
-                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-workspace') }}"></use>
                                         </svg>
-                                        {{ ag.proprietaire  | length < 30 ? ag.proprietaire : ag.proprietaire|slice(0, 27) ~ '...'}}
+                                        {{ doss.referent  | length < 30 ? doss.referent : doss.referent|slice(0, 27) ~ '...'}}
 									</div>
                                     {% endif %}
+                                    <div class="mb-2 border-0 text-muted" title="Controleur">
+                                        <svg class="bi pt" width="22" height="22" fill="red">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-rolodex') }}"></use>
+                                        </svg>
+                                    {% if doss.controleur %}
+                                        {{ doss.controleur  | length < 30 ? doss.controleur : doss.controleur|slice(0, 27) ~ '...'}}
+                                    {% else %}
+                                        <span class="text-danger">Non affecté à controleur</span>
+                                    {% endif %}
+									</div>
                                     <div class="mb-2 border-0 text-muted" title="Localisation installation">
                                         <svg class="bi pt" width="20" height="20" fill="#6d0d2b">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#geo-alt') }}"></use>
                                         </svg>
-                                        {% if ag.localite is not null %}
-                                            {{ ag.localite.departement.nom }} - {{ ag.localite.nom }}
+                                        {% if installation.localite is not null %}
+                                            {{ installation.localite.departement.nom }} - {{ installation.localite.nom }}
                                         {% else %}
                                             <span class="text-danger">-</span>
                                         {% endif %}
                                     </div>
                                     <p class="ms-2 fs-7">
-                                        {% if ag.typeconstruction is not null %}
-                                            [<span class="text-dark fw-bold">{{ ag.typeconstruction.nom }}]</span>
-                                            {{ ag.adresse | length < 15 ? ag.adresse : ag.adresse|slice(0, 12) ~ '...' }}
+                                        {% if installation.typeconstruction is not null %}
+                                            [<span class="text-dark fw-bold">{{ installation.typeconstruction.nom }}]</span>
+                                            {{ installation.adresse | length < 15 ? installation.adresse : installation.adresse|slice(0, 12) ~ '...' }}
                                         {% else %}
                                             <span class="text-danger">-</span>
                                         {% endif %}
                                     </p>
-                                    {% if ag.demandeCourante %}
                                         <div class="mt-2 pt-2 border-top border-secondary text-dark">
                                             <div class="row">
                                                 <div class="col-5">
                                                     <svg class="bi pt" width="20" height="20" fill="orange">
                                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightning-charge') }}"></use>
                                                     </svg>
-                                                    {{ ag.demandeCourante.puissance }} kW
+                                                    {{ demande.puissance }} kW
                                                 </div>
                                                 <div class="col-7">
                                                     <svg class="bi pt" width="20" height="20" fill="blue">
                                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
                                                     </svg>
-                                                    {{ ag.demandeCourante.cout|number_format(0, ',', ' ') }} FCFA
+                                                    {{ demande.cout|number_format(0, ',', ' ') }} FCFA
                                                 </div>
                                             </div>
                                         </div>
-                                    {% endif %}
                             </div>
                             <div class="card-footer text-muted text-end">
-                                        {% if ag.step<7 %}
-                                            {% set link_edit = 'app_installation_add' %}
-                                            {% if ag.step > 1 %}
-                                                {% set link_edit = 'app_installation_add' ~ ag.step %}
-                                            {% endif %}
-                                            <a href="{{ path(link_edit, {'id': ag.id}) }}" class="next action-button btn btn-success btn-sm">Finaliser la saisie</a>
-                                        {% else %}
-                                            {% if ag.step==7 %}
-                                            <a href="{{ path('app_paiement_add', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm">Enregistrer Paiement</a>
-                                            {% endif %}
-                                            {% if ag.step==8 %}
-                                            <a href="{{ path('app_paiement_add2', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm">Confirmer Paiement</a>
-                                            {% endif %}
-                                        {% endif %}
+                            {% if not doss.affecte %}
+                                <a href="{{ path('app_dossier_affecter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Affecter à un contrôleur</a>
+                            {% elseif not doss.visite %}
+                                <a href="{{ path('app_dossier_visiter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Planifier une visite</a>
+                            {% elseif not doss.rapport %}
+                                <a href="{{ path('app_dossier_show', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Elaborer rapport de visite</a>
+                            {% elseif not doss.attestation %}
+                                <a href="{{ path('app_dossier_show', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Planifier une visite</a>
+                            {% endif %}
                             </div>
                         </div>
                     </div>

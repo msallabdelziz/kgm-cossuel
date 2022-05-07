@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * @method Agent|null find($id, $lockMode = null, $lockVersion = null)
@@ -53,15 +54,14 @@ class AgentRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.id_agence = :val')
-            ->setParameter('val', $value)
+            ->setParameter('val', $id_localite)
             ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
+//            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
     
-
     // /**
     //  * @return Agent[] Returns an array of Agent objects
     //  */

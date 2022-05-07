@@ -18,56 +18,76 @@
     }
 
     #paiement_demande .card {
-        background-color:#ffffff;
+        background-color:#fff;
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #000
     }
     
-    #paiement_demande label, #paiement_demande .fs-title {
-        color:black;
-        font-weight:normal;
-    }
-
-    #validation_demande .card {
+    #validation_dossier .card {
         background-color:#ffc328;
         box-shadow: 0 0 0 2px white, 0 0 0 3px #000
     }
     
-
     </style>
-    {% set action_demande = "Validation" %}
-    {% set link_liste = 'app_installation_index3' %}
-    {% set installation = demande.installation %}
+    {% if not dossier.affecte %}
+        {% set action_demande = "Affectation" %}
+        {% set link_liste = 'app_dossier_affectation' %}
+        {% set link_action = 'app_dossier_affecter' %}
+        {% set libelle_action = 'Affecter à un contrôleur' %}
+    {% elseif not dossier.visite %}
+        {% set action_demande = "Planification Visite" %}
+        {% set link_liste = 'app_dossier_visite' %}
+        {% set link_action = 'app_dossier_visite' %}
+        {% set libelle_action = 'Planifier une visite' %}
+    {% elseif not dossier.rapport %}
+        {% set action_demande = "Rapport de Visite" %}
+        {% set link_liste = 'app_dossier_rapport' %}
+        {% set link_action = 'app_dossier_rapport' %}
+        {% set libelle_action = 'Elaborer le rapport de visite' %}
+    {% elseif not dossier.attestation %}
+        {% set action_demande = "Résultat Conformité" %}
+        {% set link_liste = 'app_dossier_attestation' %}
+        {% set link_action = 'app_dossier_attestation' %}
+        {% set libelle_action = 'Confirmer Résultats Conformité' %}
+    {% endif %}
 
+    {% set demande = dossier.demande %}
+    {% set installation = demande.installation %}
+    
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
-                <span class="fs-4">{{ action_demande }} de demandes </span>
+                <span class="fs-4">{{ action_demande }} de dossiers </span>
             </a>
         </header>
 
         <div class="container">
-            <nav class="navbar shadow bg-warning border border-dark mt-2 mb-4 p-0">
+            <nav class="navbar shadow bg-warning border border-dark mt-2 p-0">
                 <div class="container-fluid ps-4">
-                    <div class="navbar-brand mb-0 fs-4 fw-400 row col">
-                        <div class="col">
-                            <svg class="bi" width="24" height="24" fill="black">
-                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                            </svg>
-                            Validation de la demande
+                        <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                            <div class="col">
+                                <svg class="bi" width="24" height="24" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                </svg>
+                                Détails du dossier
+                            </div>
+                            <div class="col" align="right">
+                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                            </div>
                         </div>
-                        <div class="col" align="right">
-                            <span class="text-success">[{{ demande.etat }}]</span>
-                        </div>
-                    </div>
+
                 </div>
             </nav>
         </div>
 
         <div class="row">
             <div class="col-lg-8 mb-2">
+                <div align="right">
+                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
+                </div>
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
-                        <h2 class="fs-title text-dark">Puissance demandée et tarif</h2>
-                        <div class="row">
+                        <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
+                        <div class="row bloc_0">
                             <hr class="mb-3" />
                             <div class="col-lg-3">
                                 <label >Numéro Demande</label>
@@ -88,14 +108,39 @@
                         </div>  
                     </div>
 
+                    <div class="card mb-2">
+                        <h2 class="fs-title text-black">Situation paiement</h2>
+                        <div class="row bloc_0">
+                            <hr class="mb-3" />
+                            <div class="col-lg-3">
+                                <label >Statut Demande</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fs-6 text-success" value="{{ demande.etat }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Date Paiement</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fs-6" value="{{ paiement.datepaiement | date('d-m-Y') }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Mode paiement</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fs-6" value="{{ paiement.mode }}">
+                            </div>
+                            {% if paiement.reference %}
+                            <div class="col-lg-3">
+                                <label >Référence paiement</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fs-6" value="{{ paiement.reference }}">
+                            </div>
+                            {% endif %}
+                        </div>  
+                    </div>
+
                     {# BLOC 1 #}
                     <div class="card mb-2">
                         <h2 class="fs-title text-black titre_bloc_1">
                         Données de base de la demande
                             <div class="float-end">
-                                <a class="pt fs-7 text-danger btn_bloc_1" title="Cacher les détails">
-                                    <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
-                                </a>
+                                <a class="pt fs-7 text-warning btn_bloc_1" title="Afficher les détails">
+                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
+                                Afficher ...</a>
                             </div>
                         </h2>
                         <div class="row bloc_1">
@@ -155,12 +200,12 @@
                     {# BLOC 2 #}
                     {% if installation.typeConstruction %}
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black titre_bloc_2">
+                        <h2 class="fs-title titre_bloc_2">
                             Caractéristiques du site
                             <div class="float-end">
-                                <a class="pt fs-7 text-danger btn_bloc_2" title="Cacher les détails">
-                                    <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
-                                </a>
+                                <a class="pt fs-7 text-warning btn_bloc_2" title="Afficher les détails">
+                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
+                                Afficher ...</a>
                             </div>
                         </h2>
                         <div class="row bloc_2">
@@ -201,12 +246,12 @@
                     {# BLOC 3 #}
                     {% if installation.natureTravaux %}
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black titre_bloc_3">
+                        <h2 class="fs-title titre_bloc_3">
                             Caractéristiques de l'installation
                             <div class="float-end">
-                                <a class="pt fs-7 text-danger btn_bloc_3" title="Cacher les détails">
-                                    <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
-                                </a>
+                                <a class="pt fs-7 text-warning btn_bloc_3" title="Afficher les détails">
+                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
+                                Afficher ...</a>
                             </div>
                         </h2>
                         <div class="row bloc_3">
@@ -254,12 +299,12 @@
                 {# BLOC 4 #}
                     {% if demande.installation.electricien %}
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black titre_bloc_4">
+                        <h2 class="fs-title titre_bloc_4">
                             Informations sur l'électricien installateur
                             <div class="float-end">
-                                <a class="pt fs-7 text-danger btn_bloc_4" title="Cacher les détails">
-                                    <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
-                                </a>
+                                <a class="pt fs-7 text-warning btn_bloc_4" title="Afficher les détails">
+                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
+                                Afficher ...</a>
                             </div>
                         </h2>
                         <div class="row bloc_4">
@@ -303,12 +348,12 @@
                     {# BLOC 5 #}
                     {% if installation.proprietaire %}
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black titre_bloc_5">
+                        <h2 class="fs-title titre_bloc_5">
                             Informations sur le propriétaire de l'installation
                             <div class="float-end">
-                                <a class="pt fs-7 text-danger btn_bloc_5" title="Cacher les détails">
-                                    <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
-                                </a>
+                                <a class="pt fs-7 text-warning btn_bloc_5" title="Afficher les détails">
+                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
+                                Afficher ...</a>
                             </div>
                         </h2>
                         <div class="row bloc_5">
@@ -350,46 +395,76 @@
                 </fieldset>
             </div>
 
-            <div class="col-lg-4 mb-2">
-                <div id="paiement_demande" class="mb-4">
-                    <div class="card mb-2 pb-0">
-                        <h2 class="fs-title">Données sur le paiement</h2>
-                        <div class="row">
-                            <hr class="mb-3" />
-                            <div class="mb-3 ">
-                                <label >Statut Paiement</label>
-                                <input type="text" disabled readonly class="bg-warning form-control text-success form-control py-1 fw-bold fs-6" value="{{ paiement.demande.etat }}">
-                            </div>
-                            <div class="mb-3 ">
-                                <label >Mode Paiement</label>
-                                <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.mode }}">
-                            </div>
-                            <div class="mb-3 reference">
-                                <label >Référence Paiement</label>
-                                <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.reference }}">
-                            </div>
-                        </div>  
-                    </div>
+            <div class="col-lg-4 mb-2" id="paiement_demande">
+                <div align="right">
+                    <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
+                </div>                                
+                <div class="card mb-2 pb-0">
+                    <h2 class="fs-title">Traitement du dossier</h2>
+                    <div class="row">
+                        <hr class="mb-3" />
+                        <div class="mb-3 ">
+                            <label >Date création dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Référent chargé du dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.referent }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Contrôleur chargé du traitement</label>
+                            {% if dossier.controleur %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.controleur }}">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+{#                         
+                        <div class="mb-3 ">
+                            <label >Visite du site pour inspection</label>
+                            {% if dossier.visite %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Rapport de visite</label>
+                            {% if dossier.rapport %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite réalisée et Rapport élaboré">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Résultat de conformité</label>
+                            {% if dossier.attestation %}
+                                <input type="text" disabled readonly class="bg-success bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Résultat inspection disponile">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-success  form-control text-light form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div> #}
+                    </div>  
                 </div>
-                <div id="validation_demande">
-                    {{ form_start(dossierForm, {'attr': {'id': 'formDemande'}}) }}
+                <div id="validation_dossier" class="mt-4">
+                    {{ form_start(dossierForm) }}
                     <div class="card mb-2 pb-0">
-                        <h2 class="fs-title">Validation de la demande</h2>
+                        <h2 class="fs-title">Planification visite d'inspection</h2>
                         <div class="row">
                             <hr class="mb-3" />
                             <div class="">
-                                {{ form_label(dossierForm.referent) }}<br />
-                                {{ form_widget(dossierForm.referent) }}<br />
+                                {{ form_label(dossierForm.dateVisite) }}<br />
+                                {{ form_widget(dossierForm.dateVisite) }}<br />
                             </div>
                             <div class="form-error">
-                                {{ form_errors(dossierForm.referent) }}
+                                {{ form_errors(dossierForm.dateVisite) }}
                             </div>
                         </div>  
                     </div>
                     </div>
                     <div align="right">
                         <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
-                        <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider la Demande</button>
+                        <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider Planification visite</button>
                     </div>                                
                     {{ form_end(dossierForm) }}
                 </div>
@@ -451,10 +526,16 @@
             $('.natureTravaux1').show(); 
         }
 
+        {# $(".bloc_1").hide();  #}
+        $(".bloc_2").hide();
+        $(".bloc_3").hide();
+        $(".bloc_4").hide();
+        $(".bloc_5").hide();
+
         $(".btn_bloc_1").on('click', function(){ showhide_bloc(1); });  
         $(".btn_bloc_2").on('click', function(){ showhide_bloc(2); });  
-        $(".btn_bloc_3").on('click', function(){ showhide_bloc(3); });  
         $(".btn_bloc_4").on('click', function(){ showhide_bloc(4); });  
+        $(".btn_bloc_3").on('click', function(){ showhide_bloc(3); });  
         $(".btn_bloc_5").on('click', function(){ showhide_bloc(5); });  
 
         function showhide_bloc(x) {

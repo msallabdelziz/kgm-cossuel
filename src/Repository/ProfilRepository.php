@@ -2,30 +2,30 @@
 
 namespace App\Repository;
 
-use App\Entity\RespoFrontOffice;
+use App\Entity\Profil;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method RespoFrontOffice|null find($id, $lockMode = null, $lockVersion = null)
- * @method RespoFrontOffice|null findOneBy(array $criteria, array $orderBy = null)
- * @method RespoFrontOffice[]    findAll()
- * @method RespoFrontOffice[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Profil|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Profil|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Profil[]    findAll()
+ * @method Profil[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RespoFrontOfficeRepository extends ServiceEntityRepository
+class ProfilRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, RespoFrontOffice::class);
+        parent::__construct($registry, Profil::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(RespoFrontOffice $entity, bool $flush = true): void
+    public function add(Profil $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -37,7 +37,7 @@ class RespoFrontOfficeRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(RespoFrontOffice $entity, bool $flush = true): void
+    public function remove(Profil $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -46,15 +46,15 @@ class RespoFrontOfficeRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return RespoFrontOffice[] Returns an array of RespoFrontOffice objects
+    //  * @return Profil[] Returns an array of Profil objects
     //  */
     /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.exampleField = :val')
             ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
+            ->orderBy('p.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
@@ -63,10 +63,10 @@ class RespoFrontOfficeRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?RespoFrontOffice
+    public function findOneBySomeField($value): ?Profil
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.exampleField = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()

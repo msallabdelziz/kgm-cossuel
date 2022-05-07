@@ -33,7 +33,7 @@
                         {% endif %}
                         <tr class="{{ cur }}">
                             <td scope="row"><a href="{{ path('app_agent_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.matricule }}</a></td>
-                            <td><a href="{{ path('app_agent_show', {'id': reg.id }) }}" class="text-dark text-decoration-none">{{ reg.nom }}</a></td>
+                            <td><a href="{{ path('app_agent_show', {'id': reg.id }) }}" class="text-dark text-decoration-none">{{ reg.nom }}  {{ reg.prenom }}</a></td>
                             {# <td align="center">
                             {% if reg.agent.count >0 %}
                                 <a href="{{ path('app_agent_show', {'id': reg.id }) }}" class="badge bg-success text-decoration-none text-light rounded-pill fw-normal">{{ reg.agent.count }}</a>
@@ -58,17 +58,17 @@
                     <div class="container">
                         {{ form_start(agentForm) }}
                             <div class="row">
-                                <div class="col-lg-5">
+                                <div class="col-lg-12">
                                     {{ form_row(agentForm.matricule) }}
-                                </div>
-                                <div class="col-lg-7">
-                                {{ form_row(agentForm.agence) }}
                                 </div>
                                 <div class="col-lg-5">
                                 {{ form_row(agentForm.nom) }}
                                 </div>
                                 <div class="col-lg-7">
                                 {{ form_row(agentForm.prenom) }}
+                                </div>
+                                <div class="col-lg-12">
+                                {{ form_row(agentForm.profil) }}
                                 </div>
                                 <div class="col-lg-12">
                                 {{ form_row(agentForm.adresse) }}

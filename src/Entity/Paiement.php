@@ -46,7 +46,7 @@ class Paiement
     #[ORM\OneToOne(targetEntity: Demande::class, cascade: ['persist', 'remove'])]
     private $demande;
 
-    #[ORM\ManyToOne(targetEntity: Comptable::class, inversedBy: 'paiement')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'paiement')]
     private $comptable;
 
     public function __construct()
@@ -194,12 +194,12 @@ class Paiement
         return $this;
     }
 
-    public function getComptable(): ?Comptable
+    public function getComptable(): ?Agent
     {
         return $this->comptable;
     }
 
-    public function setComptable(?Comptable $comptable): self
+    public function setComptable(?Agent $comptable): self
     {
         $this->comptable = $comptable;
 

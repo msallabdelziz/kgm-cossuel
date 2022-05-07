@@ -38,7 +38,7 @@
                                 {% endif %}
                                 <tr class="{{ cur }}">
                                     <td scope="row"><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.matricule }}</a></td>
-                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
+                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}  {{ dep.prenom }}</a></td>
 {#                                     
                                     <td align="center">
                                     {% if dep.localite.count >0 %}
@@ -85,6 +85,10 @@
                             <div class="ms-4">{{ agent.prenom }}</div>
                         </div>
                         <div class="col-12 mb-2">
+                            <label class="fw-light fs-7">Fonction</label>
+                            <div class="ms-4">{{ agent.profil }}</div>
+                        </div>
+                        <div class="col-12 mb-2">
                             <label class="fw-light fs-7">Adresse</label>
                             <div class="ms-4">{{ agent.adresse }}</div>
                         </div>
@@ -102,7 +106,11 @@
                             <label for="" class="fw-light fs-7">Profil utilisateur</label>
                             <div class="ms-4">
                                 {{ form_start(formUtil) }}
-                                {{ form_widget(formUtil.profil, {'attr': {'name': 'profil'}}) }}
+                                <div class="form-control">
+                                {% if agent.profil %}
+                                    <span class="fw-bold">{{ agent.profil.nom }}</span>
+                                {% endif %}
+                                </div>
                                 <div class="mt-2" align="right">
                                     <a class="btn btn-secondary px-1 ms-2" href="{{ path('app_agent_show', { 'id' : agent.id}) }}" title="Annuler">
                                         <svg class="bi" width="20" height="20" fill="orange">

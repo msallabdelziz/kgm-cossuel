@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}COSSUEL - Demandes{% endblock %}
+{% block title %}COSSUEL - Dossiers{% endblock %}
 {% block body %}
 
     <form method="post" id="form_affichage_demande" action="{{ path(page_list) }}">
@@ -7,9 +7,9 @@
     </form>
 
     {% if app.session.get('affichage_demande') is not defined or app.session.get('affichage_demande') == "listing" %}
-        {% include "installation/_index_list.html.twig" %}
+        {% include "dossier/_index_list.html.twig" %}
     {% else %}
-        {% include "installation/_index_card.html.twig" %}
+        {% include "dossier/_index_card.html.twig" %}
     {% endif %}
 
 {% endblock %}

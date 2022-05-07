@@ -3,13 +3,17 @@
 namespace App\Form;
 
 use App\Entity\Agent;
+use App\Entity\Profil;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class AgentType extends AbstractType
 {
@@ -37,6 +41,16 @@ class AgentType extends AbstractType
             'required' => true,
             'label' => 'Prénom'
         ])
+        ->add('profil', EntityType::class, [
+            'class' => Profil::class,
+            'attr' => [
+                'class' => 'form-select',
+            ],
+            'label' => 'Fonction/Rôle',
+            'choice_label' => 'nom',
+            'required' => false,
+        ])
+
         ->add('adresse', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
@@ -47,6 +61,9 @@ class AgentType extends AbstractType
         ->add('telephone', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
+            ],
+            'constraints' => [
+                new Regex('/^(0|[1-9][0-9]*)$/')
             ],
             'required' => true,
             'label' => 'Téléphone'
@@ -62,15 +79,14 @@ class AgentType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
-            'label' => 'Photo (PDF file)',
+            'label' => 'Photo',
             'mapped' => false,
             'required' => false,
             'constraints' => [
                 new File([
-                    'maxSize' => '1024k',
+                    'maxSize' => '2M',
                     'mimeTypes' => [
-                        'application/pdf',
-                        'application/x-pdf',
+                        'image/*',
                     ],
                     
                 ])

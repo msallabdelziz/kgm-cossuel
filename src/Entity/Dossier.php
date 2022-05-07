@@ -31,7 +31,16 @@ class Dossier
     private $dateCloture;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $affecte;
+    private $affecte = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $visite = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $rapport = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $attestation = false;
 
     #[ORM\OneToOne(targetEntity: Demande::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -40,13 +49,13 @@ class Dossier
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: Visite::class)]
     private $visites;
 
-    #[ORM\ManyToOne(targetEntity: RespoFrontOffice::class, inversedBy: 'dossier')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'dossier')]
     private $respoFrontOffice;
 
-    #[ORM\ManyToOne(targetEntity: Controleur::class, inversedBy: 'dossier')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'dossier')]
     private $controleur;
 
-    #[ORM\ManyToOne(targetEntity: Referent::class, inversedBy: 'dossier')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'dossier')]
     private $referent;
 
     public function __construct()
@@ -122,6 +131,42 @@ class Dossier
         return $this;
     }
 
+    public function getVisite(): ?bool
+    {
+        return $this->visite;
+    }
+
+    public function setVisite(bool $visite): self
+    {
+        $this->visite = $visite;
+
+        return $this;
+    }
+
+    public function getRapport(): ?bool
+    {
+        return $this->rapport;
+    }
+
+    public function setRapport(bool $rapport): self
+    {
+        $this->rapport = $rapport;
+
+        return $this;
+    }
+
+    public function getAttestation(): ?bool
+    {
+        return $this->attestation;
+    }
+
+    public function setAttestation(bool $attestation): self
+    {
+        $this->attestation = $attestation;
+
+        return $this;
+    }
+
     public function getDemande(): ?Demande
     {
         return $this->demande;
@@ -164,42 +209,60 @@ class Dossier
         return $this;
     }
 
-    public function getRespoFrontOffice(): ?RespoFrontOffice
+    public function getRespoFrontOffice(): ?Agent
     {
         return $this->respoFrontOffice;
     }
 
-    public function setRespoFrontOffice(?RespoFrontOffice $respoFrontOffice): self
+    public function setRespoFrontOffice(?Agent $respoFrontOffice): self
     {
         $this->respoFrontOffice = $respoFrontOffice;
 
         return $this;
     }
 
-    public function getControleur(): ?Controleur
+    public function getControleur(): ?Agent
     {
         return $this->controleur;
     }
 
-    public function setControleur(?Controleur $controleur): self
+    public function setControleur(?Agent $controleur): self
     {
         $this->controleur = $controleur;
 
         return $this;
     }
 
-    public function getReferent(): ?Referent
+    public function getReferent(): ?Agent
     {
         return $this->referent;
     }
 
-    public function setReferent(?Referent $referent): self
+    public function setReferent(?Agent $referent): self
     {
         $this->referent = $referent;
 
         return $this;
     }
 
+
+    public function getEtat(): ?string
+    {
+        $etat = "Affectation";
+        if($this->affecte == true && $this->visite == false && $this->rapport == false && $this->attestation == false) {
+            $etat = "Visite";
+        } 
+        elseif($this->affecte == true && $this->visite == true && $this->rapport == false && $this->attestation == false) {
+            $etat = "Rapport";
+        }
+        elseif($this->affecte == true && $this->visite == true && $this->rapport == true && $this->attestation == false) {
+            $etat = "Attestation";
+        }
+        elseif($this->affecte == true && $this->visite == true && $this->rapport == true && $this->attestation == true) {
+            $etat = "Clôturé";
+        }
+        return $etat;
+    }
 
     public function __toString()
     {

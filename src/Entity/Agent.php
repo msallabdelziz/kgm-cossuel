@@ -16,7 +16,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity
  * @UniqueEntity("email")
- * @UniqueEntity("photo")
  * @UniqueEntity("matricule")
  */
 class Agent
@@ -46,28 +45,48 @@ class Agent
     #[ORM\Column(type: 'string', length: 255, unique:true)]
     private $email;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $photo;
 
     #[ORM\Column(type: 'integer', nullable:true)]
     private $id_agence;
 
-    #[ORM\Column(type: 'string', length: 255, nullable:true)]
-    private $fonction;
+    #[ORM\ManyToOne(targetEntity: Profil::class, inversedBy: 'agent')]
+    private $profil;
+
+    #[ORM\OneToMany(mappedBy: 'caissier', targetEntity: Recu::class)]
+    private $recu;
+
+    #[ORM\OneToMany(mappedBy: 'comptable', targetEntity: Paiement::class)]
+    private $paiement;
+
+    #[ORM\OneToMany(mappedBy: 'controleur', targetEntity: Dossier::class)]
+    private $dossierControleur;
+
+    #[ORM\OneToMany(mappedBy: 'referent', targetEntity: Dossier::class)]
+    private $dossierReferent;
+
+    #[ORM\OneToMany(mappedBy: 'respoFrontOffice', targetEntity: Dossier::class)]
+    private $dossierRFO;
+
+    #[ORM\OneToMany(mappedBy: 'agent', targetEntity: AffectationsAgents::class)]
+    private $affectation;
 
     /**
      * @var File
      */
     private $tof;
 
-    #[ORM\OneToMany(mappedBy: 'agent', targetEntity: AffectationsAgents::class)]
-    private $affectation;
-
     public function __construct()
     {
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
         $this->affectation = new ArrayCollection();
+        $this->recu = new ArrayCollection();
+        $this->paiement = new ArrayCollection();
+        $this->dossierReferent = new ArrayCollection();
+        $this->dossierControleur = new ArrayCollection();
+        $this->dossierRFO = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,14 +178,14 @@ class Agent
         return $this;
     }
 
-    public function getFonction(): ?string
+    public function getProfil(): ?Profil
     {
-        return $this->fonction;
+        return $this->profil;
     }
 
-    public function setFonction(string $fonction): self
+    public function setProfil(?Profil $profil): self
     {
-        $this->fonction = $fonction;
+        $this->profil = $profil;
 
         return $this;
     }
@@ -176,7 +195,7 @@ class Agent
         return $this->id_agence;
     }
 
-    public function setIdAgence(int $id_agence): self
+    public function setIdAgence(? int $id_agence): self
     {
         $this->id_agence = $id_agence;
 
@@ -235,6 +254,156 @@ class Agent
             // set the owning side to null (unless already changed)
             if ($affectation->getAgent() === $this) {
                 $affectation->setAgent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Recu>
+     */
+    public function getRecu(): Collection
+    {
+        return $this->recu;
+    }
+
+    public function addRecu(Recu $recu): self
+    {
+        if (!$this->recu->contains($recu)) {
+            $this->recu[] = $recu;
+            $recu->setCaissier($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecu(Recu $recu): self
+    {
+        if ($this->recu->removeElement($recu)) {
+            // set the owning side to null (unless already changed)
+            if ($recu->getCaissier() === $this) {
+                $recu->setCaissier(null);
+            }
+        }
+
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, Paiement>
+     */
+    public function getPaiement(): Collection
+    {
+        return $this->paiement;
+    }
+
+    public function addPaiement(Paiement $paiement): self
+    {
+        if (!$this->paiement->contains($paiement)) {
+            $this->paiement[] = $paiement;
+            $paiement->setComptable($this);
+        }
+
+        return $this;
+    }
+
+    public function removePaiement(Paiement $paiement): self
+    {
+        if ($this->paiement->removeElement($paiement)) {
+            // set the owning side to null (unless already changed)
+            if ($paiement->getComptable() === $this) {
+                $paiement->setComptable(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dossier>
+     */
+    public function getDossierReferent(): Collection
+    {
+        return $this->dossierReferent;
+    }
+
+    public function addDossierReferent(Dossier $dossier): self
+    {
+        if (!$this->dossierReferent->contains($dossier)) {
+            $this->dossierReferent[] = $dossier;
+            $dossier->setReferent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDossierReferent(Dossier $dossier): self
+    {
+        if ($this->dossierReferent->removeElement($dossier)) {
+            // set the owning side to null (unless already changed)
+            if ($dossier->getReferent() === $this) {
+                $dossier->setReferent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dossier>
+     */
+    public function getDossierControleur(): Collection
+    {
+        return $this->dossierControleur;
+    }
+
+    public function addDossierControleur(Dossier $dossier): self
+    {
+        if (!$this->dossierControleur->contains($dossier)) {
+            $this->dossierControleur[] = $dossier;
+            $dossier->setControleur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDossierControleur(Dossier $dossier): self
+    {
+        if ($this->dossierControleur->removeElement($dossier)) {
+            // set the owning side to null (unless already changed)
+            if ($dossier->getControleur() === $this) {
+                $dossier->setControleur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dossier>
+     */
+    public function getDossierRFO(): Collection
+    {
+        return $this->dossierRFO;
+    }
+
+    public function addDossierRFO(Dossier $dossier): self
+    {
+        if (!$this->dossierRFO->contains($dossier)) {
+            $this->dossierRFO[] = $dossier;
+            $dossier->setRespoFrontOffice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDossierRFO(Dossier $dossier): self
+    {
+        if ($this->dossierRFO->removeElement($dossier)) {
+            // set the owning side to null (unless already changed)
+            if ($dossier->getRespoFrontOffice() === $this) {
+                $dossier->setRespoFrontOffice(null);
             }
         }
 

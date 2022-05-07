@@ -63,6 +63,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->demande = new ArrayCollection();
         $this->created_by = "";
+        $this->adresse = "";
         $this->created_at = new \DateTimeImmutable();
         $this->type = "";
         $this->id_type = "";

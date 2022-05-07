@@ -48,6 +48,25 @@ class DossierRepository extends ServiceEntityRepository
     // /**
     //  * @return Dossier[] Returns an array of Dossier objects
     //  */
+    public function findByEtat($value)
+    {
+        $v="d.affecte = 0 and d.visite = 0 and d.rapport = 0";
+        if($value=="Visite") { $v="d.affecte = 1 and d.visite = 0 and d.rapport = 0"; }
+        elseif($value=="Rapport") { $v="d.affecte = 1 and d.visite = 1 and d.rapport = 0"; }
+        elseif($value=="Attestation") { $v="d.affecte = 1 and d.visite = 1 and d.rapport = 1"; }
+        
+        return $this->createQueryBuilder('d')
+            ->andWhere($v)
+            ->orderBy('d.id', 'ASC')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    // /**
+    //  * @return Dossier[] Returns an array of Dossier objects
+    //  */
     /*
     public function findByExampleField($value)
     {

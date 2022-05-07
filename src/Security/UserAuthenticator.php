@@ -49,6 +49,9 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
+        // Initialisation de certaines variables de session
+        $request->getSession()->set('affichage_demande', "listing");
+
         // For example:
         // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
         return new RedirectResponse($this->urlGenerator->generate('main'));

@@ -3,7 +3,7 @@
 {% block title %}Administration{% endblock %}
 {% block body %}
     <style>
-    #synthese_demande input[disabled] {
+    input[disabled] {
         background-color:#f1f5f9;
         border: 1px solid #7a7b7c;
         color: gray;
@@ -18,7 +18,7 @@
     }
 
     #paiement_demande .card {
-        background-color:#ffc328;
+        background-color:#fff;
         box-shadow: 0 0 0 2px white, 0 0 0 3px #000
     }
     
@@ -363,7 +363,7 @@
                         <hr class="mb-3" />
                         <div class="mb-3 ">
                             <label >Statut Paiement</label>
-                            <input type="text" disabled readonly class="bg-warning form-control text-success form-control py-1 fw-bold fs-6" value="{{ paiement.demande.etat }}">
+                            <input type="text" disabled readonly class="form-control text-success form-control py-1 fw-bold fs-6" value="{{ paiement.demande.etat }}">
                         </div>
                         <div class="mb-3 ">
                             <label >Mode Paiement</label>

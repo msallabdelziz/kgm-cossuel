@@ -32,6 +32,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
@@ -42,7 +44,8 @@ class InstallationController extends AbstractController
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_soumission');
-
+        
+        $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
@@ -66,6 +69,7 @@ class InstallationController extends AbstractController
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_paiement');
 
+        $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
@@ -89,6 +93,7 @@ class InstallationController extends AbstractController
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_validation');
 
+        $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
@@ -154,14 +159,38 @@ class InstallationController extends AbstractController
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => false,
+            'constraints' => [
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (!is_numeric($object)) {
+                            $context
+                                ->buildViolation('Format incorrect !')
+                                ->addViolation();
+                        }
+                    }
+                }),
+            ],
+            'required' => true,
             'label' => 'Latitude'
         ])
         ->add('longitude', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => false,
+            'constraints' => [
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (!is_numeric($object)) {
+                            $context
+                                ->buildViolation('Format incorrect !')
+                                ->addViolation();
+                        }
+                    }
+                }),
+            ],
+        'required' => true,
             'label' => 'Longitude'
         ])
         ->add('usages', ChoiceType::class, [
@@ -198,12 +227,36 @@ class InstallationController extends AbstractController
                 'attr' => [
                     'class' => 'form-control on_alimente0'
                 ],
+                'constraints' => [
+                    new Callback(function($object, ExecutionContextInterface $context) {
+                        $v = $object;
+                        if($object) {
+                            if (strlen($object) !=7) {
+                                $context
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->addViolation();
+                            }
+                        }
+                    }),
+                ],
                 'required' => false,
                 'label' => 'Numéro Compteur Voisin'
             ])
             ->add('compteur', TextType::class, [
                 'attr' => [
                     'class' => 'form-control on_alimente1'
+                ],
+                'constraints' => [
+                    new Callback(function($object, ExecutionContextInterface $context) {
+                        $v = $object;
+                        if($object) {
+                            if (strlen($object) !=7) {
+                                $context
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->addViolation();
+                            }
+                        }
+                    }),
                 ],
                 'required' => false,
                 'label' => 'Numéro Compteur'
@@ -301,7 +354,8 @@ class InstallationController extends AbstractController
                 ])
             ->add('niveau', TypeIntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'min' => 1
                 ],
                 'required' => false,
                 'label' => 'Nombre de niveaux'
@@ -315,7 +369,8 @@ class InstallationController extends AbstractController
             ])
             ->add('priece', TypeIntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'min' => 2
                 ],
                 'required' => false,
                 'label' => 'Nombre de Pièces'

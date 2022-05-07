@@ -17,7 +17,7 @@ use App\Form\AgentType;
 use App\Repository\AffectationsAgentsRepository;
 use App\Repository\AgenceRepository;
 use App\Repository\AgentRepository;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use App\Repository\UtilisateurRepository;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -41,8 +41,9 @@ class AgentController extends AbstractController
 
 
     #[Route('/add', name: 'add')]
-    public function create(Request $request, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
+    public function create(Request $request, ManagerRegistry $doctrine, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
     {
+        $entityManager = $doctrine->getManager();
         $agent = new Agent();
         $form = $this->createForm(AgentType::class, $agent);
         $form->add(
@@ -79,19 +80,21 @@ class AgentController extends AbstractController
 
                 $agent->setPhoto($newFilename);
             }
-
+            
             $agentRepository->add($agent);
-
-            if ($request->request->count() > 0) {
+            $agence = $form->get('agence')->getData();
+            if($agence) {
                 $agaff = new AffectationsAgents();
-                $idAg = $request->request->get('agence');
-                $agence = $agenceRepository->find($idAg);
+                $agence = $agenceRepository->find($agence);
                 //dump($agence);
                 $agaff->setAgence($agence)
                     ->setAgent($agent)
                     ->setDateAffectation(new \DateTime());
                 $agaffRepository->add($agaff);
             }
+
+            $this->addFlash('success', 'Agent créé avec succès !.');
+
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
         return $this->renderForm('agent/add.html.twig', [
@@ -104,23 +107,11 @@ class AgentController extends AbstractController
 
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(AgentRepository $agentRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
+    public function update(AgentRepository $agentRepository, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
         $agent = $agentRepository->find($id);
+
         $form = $this->createForm(AgentType::class, $agent);
-        $form->add(
-            'agence',
-            EntityType::class,
-            [
-                'attr' => ['class' => "form-select mb-2"],
-                'mapped' => false,
-                'class' => Agence::class,
-                'choice_label' => 'nom',
-                'placeholder' => '',
-                'label' => 'Agence',
-                'required' => false
-            ]
-        );
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $photoFile = $form->get('photo')->getData();
@@ -141,6 +132,18 @@ class AgentController extends AbstractController
                 $agent->setPhoto($newFilename);
             }
             $agentRepository->add($agent);
+            // Si agent utilisateur
+            $utilisateur = $utilisateurRepository->findOneBy(array("type"=>'agent', "id_type"=>$agent->getId()));
+            if($utilisateur) {
+                $profil="ROLE_USER";
+                if($agent->getProfil()) {
+                    $profil = "ROLE_".strtoupper($agent->getProfil()->getCode());
+                }
+                $utilisateur->setRoles([$profil]);
+                $utilisateurRepository->add($utilisateur);
+            }
+
+            $this->addFlash('success', 'Les informations ont été enregistrées avec succès !.');
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
 
@@ -179,8 +182,9 @@ class AgentController extends AbstractController
                 $agentRepository->add($agent);
                 $agaff->setAgent($agent)->setDateAffectation(new \DateTime());
                 $agaffRepository->add($agaff);
-                $this->addFlash('success', 'OK SENT.');
+                $this->addFlash('success', 'Compte utilisateur créé avec succès !.');
             }
+            $this->addFlash('success', 'Les informations ont été enregistrées avec succès !.');
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
         return $this->renderForm('agent/affect.html.twig', [
@@ -217,51 +221,33 @@ class AgentController extends AbstractController
         $agent = $entityManager->getRepository(Agent::class)->find($agent);
         $utilisateur = new Utilisateur();
         $form = $this->createFormBuilder($utilisateur, ['method' => 'POST'])
-            ->add('profil', ChoiceType::class, [
-                'mapped' => false,
-                'required' => true,
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'choices' => [
-                    'Agent d\'accueil' => 'accueil', 
-                    'Caissier' => 'caissier', 
-                    'DAF' => 'daf',
-                    'Responsable Front Office' => 'rfo',
-                    'Référent' => 'referent',
-                    'Contrôleur' => 'controlleur',
-                ],
-                'label_attr' => [
-                    'class' => 'form-check-label'
-                ],
-                'label' => 'Profil Utilisateur'
-            ])
             ->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-                $utilisateur->setAdresse($agent->getAdresse());
-                $utilisateur->setNom($agent->getNom());
-                $utilisateur->setPrenom($agent->getPrenom());
-                $utilisateur->setTelephone($agent->getTelephone());
-                $utilisateur->setEmail($agent->getEmail());
-                $utilisateur->setIdType($agent->getId());
-                $utilisateur->setType("agent");
-                $utilisateur->setIsVerified(1);
-                $utilisateur->setLogin($agent->getMatricule());
-                $utilisateur->setPassword($agent->getMatricule());
-                    // encode the plain password
-                $utilisateur->setPassword(
-                    $userPasswordHasher->hashPassword(
-                            $utilisateur,
-                            $agent->getMatricule()
-                        )
-                    );
-            
+            $utilisateur->setAdresse($agent->getAdresse());
+            $utilisateur->setNom($agent->getNom());
+            $utilisateur->setPrenom($agent->getPrenom());
+            $utilisateur->setTelephone($agent->getTelephone());
+            $utilisateur->setEmail($agent->getEmail());
+            $utilisateur->setIdType($agent->getId());
+            $utilisateur->setType("Agent");
+            $utilisateur->setIsVerified(1);
+            $utilisateur->setLogin($agent->getMatricule());
+            $utilisateur->setPassword($agent->getMatricule());
+                // encode the plain password
+            $utilisateur->setPassword(
+                $userPasswordHasher->hashPassword(
+                        $utilisateur,
+                        $agent->getMatricule()
+                    )
+                );
                 
-                $profil = $form->get('profil')->getData();
-                $profil="ROLE_".strtoupper($profil);
-                $utilisateur->setRoles([$profil]);
+            $profil="ROLE_USER";
+            if($agent->getProfil()) {
+                $profil = "ROLE_".strtoupper($agent->getProfil()->getCode());
+            }
+            $utilisateur->setRoles([$profil]);
             $this->addFlash('success', 'OK SENT.');
             $entityManager->persist($utilisateur);
             $entityManager->flush();

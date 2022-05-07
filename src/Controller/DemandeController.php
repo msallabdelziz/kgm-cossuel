@@ -6,7 +6,6 @@ use App\Entity\Agence;
 use App\Entity\Agent;
 use App\Entity\Demande;
 use App\Entity\Dossier;
-use App\Entity\Referent;
 use App\Repository\AgentRepository;
 use App\Repository\DemandeRepository;
 use App\Repository\DossierRepository;
@@ -42,7 +41,7 @@ class DemandeController extends AbstractController
         $dossier = new Dossier;
         $dossier->setDemande($demande);
         $form = $this->createFormBuilder($dossier)
-        ->add('agent', EntityType::class, [
+        ->add('referent', EntityType::class, [
             'mapped' => false,
             'attr' => [
                 'class' => 'form-select'
@@ -51,8 +50,11 @@ class DemandeController extends AbstractController
                 return $er->createQueryBuilder('agt')
                 ->select('agt')
                 ->join('App\Entity\Agence', 'agc', 'WITH', 'agt.id_agence = agc.id')
-                ->where('agc.id = :val')
+                ->join('App\Entity\Profil', 'prof', 'WITH', 'agt.profil = prof.id')
+                ->where('agc.localite = :val')
+                ->andWhere('prof.code = :val2')
                 ->setParameter('val', $localite->getId())
+                ->setParameter('val2', 'referent')
                 ;
             },
             'class' => Agent::class,
@@ -72,20 +74,20 @@ class DemandeController extends AbstractController
             $installation->setStep($step);
             $installationRepository->add($installation);
 
-            $agent=$request->request->get("agent");
-            if($agent) {
-                $agent=$agentRepository->find($agent);
-            }
             $demande->setEtat("Demande validée");
             $demandeRepository->add($demande);
 
-            $dossier->setReferent($agent);
+            $id_agent=$form->get('referent')->getData();
+            if($id_agent) {
+                $agent=$agentRepository->find($id_agent);
+                $dossier->setReferent($agent);
+            } 
             $dossier->setDateCreation(new DateTime());
             $dossier->setHeureCreation(new DateTime());
             $dossier->setNum($demande->getNumero());
             $dossierRepository->add($dossier);
 
-
+            $this->addFlash("success", "La demande a été validée. Le dossier est créé et affecté au référent ".$dossier->getReferent()." !");
             return $this->redirectToRoute('app_demande_show', array('id' => $demande->getId())); 
         }
 

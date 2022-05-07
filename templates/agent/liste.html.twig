@@ -19,7 +19,7 @@
                     <th scope="col">Nom</th> 
                     <th class="text-center" scope="col">Téléphone</th> 
                     <th scope="col">Adresse Email</th>
-                    <th scope="col">Adresse</th>
+                    <th scope="col">Fonction</th>
                     <th scope="col">Agence</th>
                 </tr>
               </thead>
@@ -27,10 +27,10 @@
                 {% for ag in agents %}
                     <tr>
                         <td scope="row"><a href="{{ path('app_agent_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.matricule }}</a></td>
-                        <td>{{ ag.nom }}</td>
+                        <td>{{ ag.nom }}  {{ ag.prenom }}</td>
                         <td>{{ ag.telephone }}</td>
                         <td>{{ ag.email }}</td>
-                        <td>{{ ag.adresse }}</td>
+                        <td>{{ ag.profil }}</td>
                         <td>{{ ag.nom }}</td>
                         <td class="text-end">
                             <a href="{{ path('app_affecter_index', {'id': ag.id }) }}" class="btn btn-sm py-0 fs-7 btn-secondary">Affecter</a>

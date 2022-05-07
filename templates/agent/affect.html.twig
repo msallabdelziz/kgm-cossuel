@@ -38,7 +38,7 @@
                                 {% endif %}
                                 <tr class="{{ cur }}">
                                     <td scope="row"><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.matricule }}</a></td>
-                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
+                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}  {{ dep.prenom }}</a></td>
 {#                                     
                                     <td align="center">
                                     {% if dep.localite.count >0 %}
@@ -66,22 +66,22 @@
                 </nav>
                 <div class="container">
                     <div class="row p-2 bg-light bg-opacity-25 border rounded">
-                        <div class="col-6 mb-2">
+                        <div class="col-5 mb-2">
                             <label class="fw-light fs-7">Matricule</label>
                             <div class="ms-4">{{ agent.matricule }}</div>
                         </div>
-                        <div class="col-6 mb-2">
-                            <label class="fw-light fs-7">Agence</label>
+                        <div class="col-7 mb-2 bg-warning border border-dark">
+                            <label class="fs-7">Agence</label>
                             <div class="ms-4">
                                 {{ form_start(formAgaff) }}
                                 {{ form_widget(formAgaff.agence) }}
                                 <a class="btn px-1 ms-2" href="{{ path('app_agent_show', { 'id' : agent.id}) }}" title="Annuler">
-                                    <svg class="bi" width="20" height="20" fill="orange">
+                                    <svg class="bi" width="24" height="24" fill="red">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-circle') }}"></use>
                                     </svg>
                                 </a>
                                 <button class="btn px-1" type="submit">
-                                    <svg class="bi" width="20" height="20" fill="green">
+                                    <svg class="bi" width="24" height="24" fill="green">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check-circle') }}"></use>
                                     </svg>
                                 </button>
@@ -95,6 +95,10 @@
                         <div class="col-6 mb-2">
                             <label class="fw-light fs-7">Prénom</label>
                             <div class="ms-4">{{ agent.prenom }}</div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label class="fw-light fs-7">Fonction</label>
+                            <div class="ms-4">{{ agent.profil }}</div>
                         </div>
                         <div class="col-12 mb-2">
                             <label class="fw-light fs-7">Adresse</label>
