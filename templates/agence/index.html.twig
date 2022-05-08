@@ -36,8 +36,8 @@
                 <tr>
                     <th scope="col">Code</th> 
                     <th scope="col">Nom</th> 
-                    <th scope="col">Localité</th> 
-                    <th scope="col">Adresse</th> 
+                    <th class="priority-4" scope="col">Localité</th> 
+                    <th class="priority-5" scope="col">Adresse</th> 
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
                 </tr>
@@ -47,8 +47,8 @@
                     <tr>
                         <td scope="row"><a href="{{ path('app_agence_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.code }}</a></td>
                         <td>{{ reg.nom }}</td>
-                        <td>{{ reg.localite.nom }}</td>
-                        <td>{{ reg.adresse }}</td>
+                        <td class="priority-4">{{ reg.localite.nom }}</td>
+                        <td class="priority-5">{{ reg.adresse }}</td>
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}
                                 <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>

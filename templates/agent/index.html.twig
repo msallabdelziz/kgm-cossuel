@@ -36,9 +36,9 @@
                 <tr>
                     <th scope="col">Matricule</th> 
                     <th scope="col">Nom</th> 
-                    <th scope="col">Fonction</th>
-                    <th class="text-center" scope="col">Téléphone</th> 
-                    <th scope="col">Adresse Email</th>
+                    <th class="priority-3" scope="col">Fonction</th>
+                    <th class="priority-4 text-center" scope="col">Téléphone</th> 
+                    <th class="priority-5" scope="col">Adresse Email</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
@@ -49,9 +49,9 @@
                     <tr>
                         <td scope="row"><a href="{{ path('app_agent_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.matricule }}</a></td>
                         <td>{{ ag.nom }} {{ ag.prenom }}</td>
-                        <td>{{ ag.profil }}</td>
-                        <td>{{ ag.telephone }}</td>
-                        <td>{{ ag.email }}</td>
+                        <td class="priority-3">{{ ag.profil }}</td>
+                        <td class="priority-4">{{ ag.telephone }}</td>
+                        <td class="priority-5">{{ ag.email }}</td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}

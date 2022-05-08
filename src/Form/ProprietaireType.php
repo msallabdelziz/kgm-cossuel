@@ -11,7 +11,9 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class ProprietaireType extends AbstractType
 {
@@ -57,7 +59,17 @@ class ProprietaireType extends AbstractType
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/')
+                new Regex('/^(0|[1-9][0-9]*)$/'),
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (strlen($object) >15) {
+                            $context
+                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone !')
+                                ->addViolation();
+                        }
+                    }
+                }),
             ],
             'required' => true,
             'label' => 'Téléphone'
@@ -74,7 +86,17 @@ class ProprietaireType extends AbstractType
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/')
+                new Regex('/^(0|[1-9][0-9]*)$/'),
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (strlen($object) >15) {
+                            $context
+                                ->buildViolation('Trop de caractères saisis !')
+                                ->addViolation();
+                        }
+                    }
+                }),
             ],
             'required' => true,
             'label' => 'Numéro Piece'

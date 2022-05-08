@@ -35,10 +35,10 @@
             <thead>
                 <tr>
                     <th scope="col">Type</th> 
-                    <th>Identifiant</th> 
-                    <th>Nom et Prénoms</th> 
-                    <th>Email</th>
-                    <th>Téléphone</th>
+                    <th class="priority-1">Identifiant</th> 
+                    <th class="priority-1">Nom et Prénoms</th> 
+                    <th class="priority-5">Email</th>
+                    <th class="priority-4">Téléphone</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
@@ -48,10 +48,10 @@
                 {% for ag in les_utilisateur %}
                     <tr>
                         <td scope="row"><a href="{{ path('app_utilisateur_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.type }}</a></td>
-                        <td>{{ ag.login }}</td>
-                        <td>{{ ag.nom }} {{ ag.prenom }}</td>
-                        <td>{{ ag.email }}</td>
-                        <td>{{ ag.telephone }}</td>
+                        <td class="priority-1">{{ ag.login }}</td>
+                        <td class="priority-1">{{ ag.nom }} {{ ag.prenom }}</td>
+                        <td class="priority-5">{{ ag.email }}</td>
+                        <td class="priority-4">{{ ag.telephone }}</td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}

@@ -65,7 +65,7 @@
 			</li>
 		{% endif %}
 
-		{% if is_granted('ROLE_ADMIN') %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
 			<li class="nav-item">
 				<a href="{{ path('app_agent_index') }}">
 					<span class="icon">
@@ -76,6 +76,8 @@
 					<span class="text">Gestion Agents</span>
 				</a>
 			</li>
+		{% endif %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO') %}
 			<li class="nav-item {% if app.session.get('menu') in ['electricien', 'proprietaire'] %}active{% endif %}">
 				<a href="{{ path('app_electricien_index') }}">
 					<span class="icon">
@@ -218,7 +220,7 @@
 			</li>
 		{% endif %}
 
-		{% if is_granted('ROLE_ADMIN') %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DAF') or is_granted('ROLE_ACCUEIL') %}
 			<li class="nav-item {% if app.session.get('menu') == 'utilisateur' %}active{% endif %}">
 				<a href="{{ path('app_utilisateur_index') }}">
 					<span class="icon">

@@ -64,10 +64,10 @@
                 <tr>
                     <th scope="col">N° demande</th> 
                     <th scope="col">Usage</th> 
-                    <th>Localité</th>
-                    <th>Adresse</th>
-                    <th>Type Construction</th>
-                    <th>Electricien</th>
+                    <th class="priority-4">Localité</th>
+                    <th class="priority-5">Adresse</th>
+                    <th class="priority-3">Type Construction</th>
+                    <th class="priority-4">Electricien</th>
                     <th>Statut demande</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
@@ -98,22 +98,22 @@
                             {% endif %}
                         </td>
                         <td><a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">{{ ag.usages }}</a></td>
-                        <td>
+                        <td class="priority-4">
                             {% if ag.localite is not null %}
                                 {{ ag.localite.nom }}
                             {% else %}
                                 <span class="text-danger">-</span>
                             {% endif %}
                         </td>
-                        <td>{{ ag.adresse }}</td>
-                        <td>
+                        <td class="priority-5">{{ ag.adresse }}</td>
+                        <td class="priority-3">
                             {% if ag.typeconstruction is not null %}
                                 {{ ag.typeconstruction.nom }}
                             {% else %}
                                 <span class="text-danger">-</span>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="priority-4">
                             {% if ag.electricien is not null %}
                                 {{ ag.electricien.nom ~ " " ~ ag.electricien.prenom }}
                             {% else %}

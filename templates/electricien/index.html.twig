@@ -47,8 +47,8 @@
                     <th scope="col">Téléphone</th> 
                     <th>Nom</th>
                     <th>Prénom</th>
-                    <th>Localité</th>
-                    <th>Adresse</th>
+                    <th class="priority-4">Localité</th>
+                    <th class="priority-5">Adresse</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
@@ -60,8 +60,8 @@
                         <td scope="row"><a href="{{ path('app_electricien_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.telephone }}</a></td>
                         <td>{{ ag.nom }}</td>
                         <td>{{ ag.prenom }}</td>
-                        <td>{{ ag.localite }}</td>
-                        <td>{{ ag.adresse }}</td>
+                        <td class="priority-4">{{ ag.localite }}</td>
+                        <td class="priority-5">{{ ag.adresse }}</td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}
