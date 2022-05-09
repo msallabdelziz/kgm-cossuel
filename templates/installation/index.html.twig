@@ -17,18 +17,13 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-        $(window).keydown(function(event){
-            if(event.keyCode == 13) {
-            event.preventDefault();
-            return false;
-            }
+        $('#val_affichage_demande').on('change', function() {
+            optSel=$('#val_affichage_demande').find("option:selected");
+            valSel=optSel.val();
+            $("#affichage_demande").val(valSel);
+            $("#form_affichage_demande").submit();
         });
     });
-    $('#val_affichage_demande').on('change', function() {
-        optSel=$('#val_affichage_demande').find("option:selected");
-        valSel=optSel.val();
-        $("#affichage_demande").val(valSel);
-        $("#form_affichage_demande").submit();
-    });
+
 </script>
 {% endblock %}

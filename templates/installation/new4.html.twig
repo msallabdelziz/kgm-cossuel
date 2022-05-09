@@ -97,18 +97,13 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-    $(window).keydown(function(event){
-        if(event.keyCode == 13) {
-        event.preventDefault();
-        return false;
-        }
+        $("#telephone_electricien").keydown(function(event){
+            if(event.keyCode == 13) {
+                $("#rech_electricien").val($("#telephone_electricien").val());
+                $("#form_rech_electricien").submit();
+            }
+        });
     });
-    });
-    $("#telephone_electricien").keydown(function(event){
-        if(event.keyCode == 13) {
-            $("#rech_electricien").val($("#telephone_electricien").val());
-            $("#form_rech_electricien").submit();
-        }
-    });
+
 </script>
 {% endblock %}

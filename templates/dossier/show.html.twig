@@ -420,10 +420,10 @@
                             {% if dossier.visite %}
                                 <div class="row">
                                     <div class="col-7">
-                                        <input type="text" disabled readonly class="bg-success bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" disabled readonly class="bg-success bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="">
                                     </div>
                                 </div>
                             {% else %}
@@ -458,12 +458,6 @@
     {% set installation = demande.installation %}
 <script>
     $(document).ready(function() {
-        $(window).keydown(function(event){
-            if(event.keyCode == 13) {
-            event.preventDefault();
-            return false;
-            }
-        });
 
         $('.reference').hide();
         if ("{{ paiement.mode }}"!="Espèce") {

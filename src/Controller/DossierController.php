@@ -30,18 +30,24 @@ class DossierController extends AbstractController
         $request->getSession()->set('sousmenu', 'dossier_affectation');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
+        $val_rech=""; $val_filtre = array("etat"=>"Affectation"); $page = 0; $orderBy = "";
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
+        
+        if($request->request->get("val_rech")) {
+            $val_rech = $request->request->get("val_rech");
+        }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Affectation",
             'page_list' => "app_dossier_affectation",
-            'les_dossier' => $dossierRepository->findByEtat("Affectation"),
+            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -53,18 +59,24 @@ class DossierController extends AbstractController
         $request->getSession()->set('sousmenu', 'dossier_visite');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
+        $val_rech=""; $val_filtre = array("etat"=>"Visite"); $page = 0; $orderBy = "";
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
+
+        if($request->request->get("val_rech")) {
+            $val_rech = $request->request->get("val_rech");
+        }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Visite",
             'page_list' => "app_dossier_visite",
-            'les_dossier' => $dossierRepository->findByEtat("Visite"),
+            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -76,18 +88,24 @@ class DossierController extends AbstractController
         $request->getSession()->set('sousmenu', 'dossier_rapport');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
+        $val_rech=""; $val_filtre = array("etat"=>"Rapport"); $page = 0; $orderBy = "";
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
+
+        if($request->request->get("val_rech")) {
+            $val_rech = $request->request->get("val_rech");
+        }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Rapport",
             'page_list' => "app_dossier_rapport",
-            'les_dossier' => $dossierRepository->findByEtat("Rapport"),
+            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -99,18 +117,24 @@ class DossierController extends AbstractController
         $request->getSession()->set('sousmenu', 'dossier_attestation');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
+        $val_rech=""; $val_filtre = array("etat"=>"Attestation"); $page = 0; $orderBy = "";
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
+
+        if($request->request->get("val_rech")) {
+            $val_rech = $request->request->get("val_rech");
+        }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Attestation",
             'page_list' => "app_dossier_attestation",
-            'les_dossier' => $dossierRepository->findByEtat("Attestation"),
+            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
         ]);
     }
 

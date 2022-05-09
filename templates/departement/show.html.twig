@@ -10,7 +10,7 @@
             <a href="{{ path('app_region_show', { 'id': departement.region.id}) }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Départements de {{ departement.region.nom }}</a>
         </header>
         <div class="row">
-            <div class="col-lg-5 mb-2 shadow border border-light card0 p-3 me-4">
+            <div class="col-lg-5 mb-2 shadow border border-light card0 p-3 me-4 priority-4">
                 <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
                     <div class="container-fluid">
                         <span class="navbar-brand mb-0 h1">Région de {{ departement.region.nom }}</span>
@@ -118,6 +118,7 @@
                             <tr>
                                 <th width="20%" scope="col">Code</th> 
                                 <th scope="col">Nom</th> 
+                                <th scope="col">Agence</th> 
                                 <th width="60"></th> 
                             </tr>
                         </thead>
@@ -126,6 +127,7 @@
                                 <tr>
                                     <td scope="row"><a href="" class="text-dark text-decoration-none fw-bold">{{ loc.code }}</a></td>
                                     <td><a href="" class="text-dark text-decoration-none">{{ loc.nom }}</a></td>
+                                    <td><a href="" class="text-dark text-decoration-none">{% if loc.agence %} {{ loc.agence.nom }} {% endif %}</a></td>
                                     <td>
                                         <a href="{{ path('app_localite_edit', {'id': loc.id }) }}" class="mx-1" title="Modifier">
                                             <svg class="bi" width="12" height="12" fill="black">

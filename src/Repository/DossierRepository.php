@@ -64,6 +64,57 @@ class DossierRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
+    {
+        $les_col0=array("num");
+        $les_col1=array("compteur", "compteurVoisin", "abonnement", "adresse", "bp", "nomSite", "usages", "activite", "habitation");
+        $les_col2=array("numero");
+        $str='1 = 0';
+        foreach($les_col0 as $col) {
+            $str.=' or a.'.$col.' like :val';
+        }
+        foreach($les_col1 as $col) {
+            $str.=' or b.'.$col.' like :val';
+        }
+        foreach($les_col2 as $col) {
+            $str.=' or c.'.$col.' like :val';
+        }
+        $q = $this->createQueryBuilder('a');
+        $q->select('a')
+        ->join('App\Entity\Demande', 'c', 'WITH', 'a.demande = c.id')
+        ->join('App\Entity\Installation', 'b', 'WITH', 'c.installation = b.id');
+        if($val_rech) {
+            $q->andWhere($str)
+            ->setParameter('val', '%'.$val_rech.'%');
+        }
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                if($p=="etat") {
+                    $restr="a.affecte = 0 and a.visite = 0 and a.rapport = 0";
+                    if($v=="Visite") { $restr="a.affecte = 1 and a.visite = 0 and a.rapport = 0"; }
+                    elseif($v=="Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 0"; }
+                    elseif($v=="Attestation") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1"; }
+                    $q->andWhere($restr);
+                } else {
+                    $q->andWhere('a.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                }
+                $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+    
     // /**
     //  * @return Dossier[] Returns an array of Dossier objects
     //  */

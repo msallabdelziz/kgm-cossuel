@@ -64,6 +64,53 @@ class InstallationRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
+    {
+        $les_col0=array("numero");
+        $les_col1=array("compteur", "compteurVoisin", "abonnement", "adresse", "bp", "nomSite", "usages", "activite", "habitation");
+        $str='1 = 0';
+        foreach($les_col1 as $col) {
+            $str.=' or a.'.$col.' like :val';
+        }
+        foreach($les_col0 as $col) {
+            $str.=' or b.'.$col.' like :val';
+        }
+
+        $q = $this->createQueryBuilder('a')
+        ->leftjoin('App\Entity\Demande', 'b', 'WITH', 'a.id = b.installation');
+        if($val_rech) {
+            $q->andWhere($str)
+            ->setParameter('val', '%'.$val_rech.'%');
+        }
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                if($p=="etat") {
+                    $restr="a.step = 0";
+                    if($v=="Saisie") { $restr='a.step < 7'; }
+                    elseif($v=="Soumis") $restr='a.step = 7 or a.step = 8';
+                    elseif($v=="Payé") $restr='a.step = 9';
+                    elseif($v=="Validé") $restr='a.step = 10';
+                    $q->andWhere($restr);
+                } else {
+                    $q->andWhere('a.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                }
+                $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+    
     // /**
     //  * @return Installation[] Returns an array of Installation objects
     //  */

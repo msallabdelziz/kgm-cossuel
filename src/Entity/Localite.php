@@ -24,7 +24,7 @@ class Localite
     #[ORM\ManyToOne(targetEntity: Departement::class, inversedBy: 'localite')]
     private $departement;
 
-    #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Agence::class)]
+    #[ORM\ManyToOne(targetEntity: Agence::class, inversedBy: 'localite')]
     private $agence;
 
     #[ORM\OneToMany(mappedBy: 'localite', targetEntity: Electricien::class)]
@@ -43,7 +43,6 @@ class Localite
     {
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
-        $this->agence = new ArrayCollection();
         $this->electricien = new ArrayCollection();
         $this->proprietaire = new ArrayCollection();
         $this->installation = new ArrayCollection();
@@ -78,32 +77,14 @@ class Localite
         return $this;
     }
 
-    /**
-     * @return Collection<int, Agence>
-     */
-    public function getAgence(): Collection
+    public function getAgence(): ?Agence
     {
         return $this->agence;
     }
 
-    public function addAgence(Agence $agence): self
+    public function setAgence(?Agence $agence): self
     {
-        if (!$this->agence->contains($agence)) {
-            $this->agence[] = $agence;
-            $agence->setLocalite($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAgence(Agence $agence): self
-    {
-        if ($this->agence->removeElement($agence)) {
-            // set the owning side to null (unless already changed)
-            if ($agence->getLocalite() === $this) {
-                $agence->setLocalite(null);
-            }
-        }
+        $this->agence = $agence;
 
         return $this;
     }

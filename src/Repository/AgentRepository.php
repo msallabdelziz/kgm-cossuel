@@ -62,6 +62,42 @@ class AgentRepository extends ServiceEntityRepository
         ;
     }
     
+    /**
+     * @return Agent[] Returns an array of Agent objects
+     */
+    
+    public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
+    {
+        $les_col=array("matricule", "nom", "prenom", "adresse", "email", "telephone");
+        $str='1 = 0';
+        foreach($les_col as $col) {
+            $str.=' or a.'.$col.' like :val';
+        }
+        $q = $this->createQueryBuilder('a');
+        if($val_rech) {
+            $q->andWhere($str)
+            ->setParameter('val', '%'.$val_rech.'%');
+        }
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                $q->andWhere('a.'.$p.' = :val'.$ix)
+                ->setParameter('val'.$ix, "$v");
+                $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+    
     // /**
     //  * @return Agent[] Returns an array of Agent objects
     //  */

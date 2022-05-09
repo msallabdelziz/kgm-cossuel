@@ -13,12 +13,14 @@
 			{# Debut - Utilisateur Connecté #}
 			<li>
 				<div class="px-3 user-logged d-flex align-items-center flex-wrap col">
-					<div class="photo col-4">
-						<img src="{{ asset('assets/img/avatar.jpg') }}" alt="AVATAR"/>
+					<div class="photo col-3 ps-1">
+						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-plus-lg" viewBox="0 0 32 32">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-badge') }}"></use>
+						</svg>
 					</div>
-					<div class="infos col-8">
-						<h5 class="nom tb fw-normal text-nowrap" title="{{ app.user.prenom }} {{ app.user.nom }}">{{ app.user.prenom }}</h5>
-						<p class="poste small fw-light">{{ app.user.roles[0] }}</p>
+					<div class="infos col-9">
+						<h5 class="nom tb fw-normal text-nowrap fs-6 mb-1" title="{{ app.user.prenom }} {{ app.user.nom }}">{{ app.user.prenom }}</h5>
+						<p class="poste small fw-light fs-8">{{ app.user.roles[0] | replace({'ROLE_':''}) }}</p>
 					</div>
 				</div>
 			</li>
@@ -216,6 +218,19 @@
 						</svg>
 					</span>
 					<span class="text">Statistiques</span>
+				</a>
+			</li>
+		{% endif %}
+
+		{% if is_granted('ROLE_ADMIN') %}
+			<li class="nav-item {% if app.session.get('menu') == 'rapport' %}active{% endif %}">
+				<a href="{{ path('app_rapport_index') }}">
+					<span class="icon">
+						<svg class="bi" width="24" height="24" fill="black">
+							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#folder-check') }}"></use>
+						</svg>
+					</span>
+					<span class="text">Gestion Rapports</span>
 				</a>
 			</li>
 		{% endif %}

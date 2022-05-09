@@ -96,18 +96,12 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-    $(window).keydown(function(event){
-        if(event.keyCode == 13) {
-        event.preventDefault();
-        return false;
-        }
-    });
-    });
-    $("#telephone_proprietaire").keydown(function(event){
-        if(event.keyCode == 13) {
-            $("#rech_proprietaire").val($("#telephone_proprietaire").val());
-            $("#form_rech_proprietaire").submit();
-        }
+        $("#telephone_proprietaire").keydown(function(event){
+            if(event.keyCode == 13) {
+                $("#rech_proprietaire").val($("#telephone_proprietaire").val());
+                $("#form_rech_proprietaire").submit();
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -53,12 +53,18 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Saisie"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 1,
             'page_list' => "app_installation_index",
             'affichage' => $mode_affichage,
             'etatDemande' => "en soumission",
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -77,12 +83,18 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Soumis"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 0,
             'affichage' => $mode_affichage,
             'page_list' => "app_installation_index2",
             'etatDemande' => "en attente de paiement",
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -101,12 +113,18 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Payé"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 0,
             'page_list' => "app_installation_index3",
             'affichage' => $mode_affichage,
             'etatDemande' => "en attente de validation",
+            'val_rech' => $val_rech,
         ]);
     }
 

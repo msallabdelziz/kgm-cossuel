@@ -25,15 +25,20 @@ use Symfony\Component\Validator\Constraints\Regex;
 #[Route('/utilisateur')]
 class UtilisateurController extends AbstractController
 {
-    #[Route('/', name: 'app_utilisateur_index', methods: ['GET'])]
+    #[Route('/', name: 'app_utilisateur_index', methods: ['GET', 'POST'])]
     public function index(Request $request, UtilisateurRepository $utilisateurRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'utilisateur');
         $request->getSession()->set('sousmenu', '');
 
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
         return $this->render('utilisateur/index.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findAll(),
+            'les_utilisateur' => $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'val_rech' => $val_rech,
         ]);
     }
 

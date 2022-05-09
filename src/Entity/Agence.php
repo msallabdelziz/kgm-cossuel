@@ -35,7 +35,7 @@ class Agence
     #[ORM\Column(type: 'string', length: 255)]
     private $adresse;
 
-    #[ORM\ManyToOne(targetEntity: Localite::class, inversedBy: 'agence')]
+    #[ORM\OneToMany(mappedBy: 'agence', targetEntity: Localite::class)]
     private $localite;
 
     #[ORM\OneToMany(mappedBy: 'agence', targetEntity: AffectationsAgents::class)]
@@ -46,6 +46,7 @@ class Agence
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
         $this->affectation = new ArrayCollection();
+        $this->localite = new ArrayCollection();
 
     }
 
@@ -114,14 +115,32 @@ class Agence
         return $this;
     }
 
-    public function getLocalite(): ?Localite
+    /**
+     * @return Collection<int, Localite>
+     */
+    public function getLocalite(): Collection
     {
         return $this->localite;
     }
 
-    public function setLocalite(?Localite $localite): self
+    public function addLocalite(Localite $localite): self
     {
-        $this->localite = $localite;
+        if (!$this->localite->contains($localite)) {
+            $this->localite[] = $localite;
+            $localite->setAgence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocalite(Localite $localite): self
+    {
+        if ($this->localite->removeElement($localite)) {
+            // set the owning side to null (unless already changed)
+            if ($localite->getAgence() === $this) {
+                $localite->setAgence(null);
+            }
+        }
 
         return $this;
     }

@@ -25,17 +25,22 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AgentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, ManagerRegistry $doctrine): Response
+    public function index(Request $request, AgentRepository $agentRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agent');
         $request->getSession()->set('sousmenu', '');
 
-        $entityManager = $doctrine->getManager();
-        $ag = $entityManager->getRepository(Agent::class)->findAll();
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+        $ag = $agentRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+
         return $this->render('agent/index.html.twig', [
             'controller_name' => 'AgentController',
-            'les_agent' => $ag
+            'les_agent' => $ag,
+            'val_rech' => $val_rech,
         ]);
     }
 

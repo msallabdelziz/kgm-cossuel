@@ -55,17 +55,6 @@ class AgenceType extends AbstractType
                 'required' => true,
                 'label' => 'Email'
             ])
-            ->add('localite', EntityType::class, [
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'mapped' => true,
-                'class' => Localite::class,
-                'choice_label' => 'nom',
-                'label' => 'Localité',
-                'required' => true
-                ]
-            )
         ;
     }
 

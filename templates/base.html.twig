@@ -28,6 +28,9 @@
 				<section class="section">
 					<div class="container-fluid pt-4">
 		{% endif %}
+		{% if val_rech is defined %}
+		    {% include "include/_search_liste.html.twig" %}
+		{% endif %}
 		
 		{% block body %}{% endblock %}
 
