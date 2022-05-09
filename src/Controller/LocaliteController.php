@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Departement;
 use App\Entity\Localite;
+use App\Entity\Departement;
 use App\Form\LocaliteFormType;
-use App\Repository\DepartementRepository;
 use App\Repository\LocaliteRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/localite", name="app_localite_")
@@ -79,5 +80,27 @@ class LocaliteController extends AbstractController
             'les_localite' => $localiteRepository->findBy([],['code'=>'asc']),
             'localite' => $localite,
         ]);
-    }    
+    }
+    
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
+    public function delete(EntityManagerInterface $manager, Localite $localite): Response
+    {
+        if (!$localite) {
+            $this->addFlash(
+                "success",
+                "Region en question n'a pas èté trouvé"
+            );
+            return $this->redirectToRoute('app_localite_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $manager->remove($localite);
+        $manager->flush();
+
+        $this->addFlash(
+            "success",
+            "Localité a été supprimer avec succès"
+        ); 
+        return $this->redirectToRoute('app_localite_index');  
+    }
+
 }

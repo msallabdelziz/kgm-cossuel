@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Departement;
 use App\Entity\Region;
+use App\Entity\Departement;
 use App\Form\DepartementFormType;
-use App\Repository\DepartementRepository;
 use App\Repository\RegionRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/departement", name="app_departement_")
@@ -79,5 +80,27 @@ class DepartementController extends AbstractController
             'les_departement' => $departementRepository->findBy([],['code'=>'asc']),
             'departement' => $departement,
         ]);
-    }    
+    }
+    
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
+    public function delete(EntityManagerInterface $manager, Departement $departement): Response
+    {
+        if (!$departement) {
+            $this->addFlash(
+                "success",
+                "Region en question n'a pas èté trouvé"
+            );
+            return $this->redirectToRoute('app_departement_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $manager->remove($departement);
+        $manager->flush();
+
+        $this->addFlash(
+            "success",
+            "Departement a été supprimer avec succès"
+            
+        ); 
+        return $this->redirectToRoute('app_departement_index');  
+    }
 }
