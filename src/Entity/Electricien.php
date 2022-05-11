@@ -51,9 +51,19 @@ class Electricien
     public function __construct()
     {
         $this->created_by = "";
-        $this->role = "";
+        $this->role = "ROLE_CLIENT";
         $this->created_at = new \DateTimeImmutable();
         $this->installation = new ArrayCollection();
+    }
+
+    public function setFromUtilisateur(Utilisateur $utilisateur): self {
+        $this->prenom = $utilisateur->getPrenom();
+        $this->nom = $utilisateur->getNom();
+        $this->adresse = $utilisateur->getAdresse();
+        $this->email = $utilisateur->getEmail();
+        $this->telephone = $utilisateur->getTelephone();
+        $this->typePiece = ""; $this->numPiece = "";
+        return $this;
     }
 
     public function getId(): ?int

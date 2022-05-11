@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Electricien;
+use App\Entity\Proprietaire;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
@@ -52,11 +54,21 @@ class RegistrationController extends AbstractController
             // Quelle valeur prendre pour type utilisateur ?
             if($form->get('type')->getData()=="Proprietaire") {
                 $user->setType("Proprietaire");
+                // Nouveau proprietaire à créer !!!
+                $proprietaire = new Proprietaire();
+                $proprietaire = $proprietaire->setFromUtilisateur($user);
+                $entityManager->persist($proprietaire);
+                $entityManager->flush();
+                $user->setIdType($proprietaire->getId());
             } else {
                 $user->setType("Electricien");
+                // Nouveau electricien à créer !!!
+                $electricien = new Electricien();
+                $electricien = $electricien->setFromUtilisateur($user);
+                $entityManager->persist($electricien);
+                $entityManager->flush();
+                $user->setIdType($electricien->getId());
             }
-
-
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -91,8 +103,8 @@ class RegistrationController extends AbstractController
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
         } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-            return $this->redirectToRoute('app_register');
+            $this->addFlash('error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+            return $this->redirectToRoute('app_register_confirm');
         }
 
         // @TODO Change the redirect on success and handle or remove the flash message in your templates
@@ -111,4 +123,28 @@ class RegistrationController extends AbstractController
             'controller_name' => 'RegistrationController',
         ]);
     }
+
+    #[Route('/register_confirm', name: 'app_register_confirm')]
+    public function registerConfirm(Request $request): Response
+    {
+        // @TODO Change the redirect on success and handle or remove the flash message in your templates
+        return $this->render('registration/register_confirm.html.twig', [
+        ]);
+    }
+
+    #[Route('/register_confirm2', name: 'app_register_confirm2')]
+    public function sendEmailVerification(Request $request): Response
+    {
+        $user = $this->getUser();
+        // generate a signed url and email it to the user
+        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            (new TemplatedEmail())
+                ->from(new Address('yatamala.net@gmail.com', 'COSSUEL - Inscription'))
+                ->to($user->getEmail())
+                ->subject('Please Confirm your Email')
+                ->htmlTemplate('registration/confirmation_email.html.twig')
+        );
+        return $this->redirectToRoute('app_register_ok');
+    }
+
 }

@@ -83,6 +83,12 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.7"
     },
+    "knplabs/knp-components": {
+        "version": "v3.5.0"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v5.8.0"
+    },
     "knplabs/knp-snappy": {
         "version": "v1.4.1"
     },
@@ -97,9 +103,6 @@
         "files": [
             "config/packages/knp_snappy.yaml"
         ]
-    },
-    "knplabs/knp-time-bundle": {
-        "version": "v1.18.0"
     },
     "laminas/laminas-code": {
         "version": "4.5.1"
@@ -246,6 +249,15 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "symfony/apache-pack": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "9d254a22efca7264203eea98b866f16f944b2f09"
+        }
     },
     "symfony/asset": {
         "version": "v6.0.7"

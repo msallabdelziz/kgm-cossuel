@@ -48,6 +48,9 @@ class Demande
     #[ORM\Column(type: 'integer', nullable:true)]
     private $demande_parente;
 
+    #[ORM\Column(type: 'integer', nullable:true)]
+    private $id_paiement;
+
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'demande')]
     private $utilisateur;
 
@@ -200,12 +203,24 @@ class Demande
     
     public function getDemandeParente(): ?int
     {
-        return $this->demande;
+        return $this->demande_parente;
     }
 
-    public function setDemande(?int $demande): self
+    public function setDemandeParente(?int $demande_parente): self
     {
-        $this->demande = $demande;
+        $this->demande_parente = $demande_parente;
+
+        return $this;
+    }
+
+    public function getIdPaiement(): ?int
+    {
+        return $this->id_paiement;
+    }
+
+    public function setIdPaiement(?int $id_paiement): self
+    {
+        $this->id_paiement = $id_paiement;
 
         return $this;
     }

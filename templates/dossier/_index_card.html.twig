@@ -1,0 +1,171 @@
+    <section class="container">
+        <div class="row">
+            <div class="card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="fw-bold">Dossiers en attente de {{ etatDossier }}</h4>
+                        <select name="val_affichage_demande" id="val_affichage_demande" class="bg-warning bg-opacity-50 form-select-sm">
+                            <option {% if affichage == 'listing' %} selected="selected" {% endif %} value="listing">Affichage en Listing</option>
+                            <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
+                        </select>
+                    </div>
+                </div>
+                <span class="divider">
+                    <hr></span>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
+                <div class="col-2 offset-3 fs-6 border-bottom">
+                    <select name="" id="" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Localité ...</option>
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="" id="" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Usage installation ...</option>
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="" id="" class="form-select form-select-sm border-success py-1">
+                        <option value="">Statut dossier ...</option>
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                <div class="col-1" align="center">
+                    <svg class="bi pt" width="28" height="28" fill="#c32424">
+                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                    </svg>
+                </div>
+            </div>
+            {% if les_dossier|length == 0 %}
+                <br />
+                <div class="row pt-20">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Dossiers ({{ les_dossier|length }})</div>
+
+            {# Affichage des dossiers en format card #}
+
+            <div class="row mt-4">
+                {% for doss in les_dossier %}
+                    {% set demande = doss.demande %}
+                    {% set installation = demande.installation %}
+                    {% set electricien = installation.electricien %}
+                    {% set proprietaire = installation.proprietaire %}
+
+                    {% set badge_etat = "danger" %}
+                    {% if doss.etat == "Visite" %}
+                        {% set badge_etat = "warning" %}
+                    {% elseif doss.etat == "Rapport" %}
+                        {% set badge_etat = "warning" %}
+                    {% elseif doss.etat == "Attestation" %}
+                        {% set badge_etat = "success" %}
+                    {% endif %}
+                    {% set badge_usage = "warning" %}
+                    {% set text_usage = "text-dark" %}
+                    {% if installation.usages != "domestique" %}
+                        {% set badge_usage = "primary text-light" %}
+                        {% set text_usage = "text-light" %}
+                    {% endif %}
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card-orig border-dark mb-3">
+                            <h5 class="card-header border-dark bg-{{badge_usage}} py-1 px-2 pt">
+                                    <a title="Afficher les détails la demande" class="text-decoration-none" href="{{ path('app_dossier_show', {'id': doss.id }) }}">
+                                        <span class="{{text_usage}}">Dossier n° {{ demande.numero }}</span>
+                                    </a>
+                                    <a target="_blank" title="Générer la demande en pdf" class="text-decoration-none float-end p-0 m-0" href="{{ path('app_installation_showpdf', {'id': installation.id }) }}">
+                                    <svg class="bi pt" width="22" height="22" fill="white">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                                    </svg>
+                                    </a>
+                            </h5>
+                            <div class="card-body">
+                                <h6 class="card-title" align="right">
+                                    {# <a href="{{ path('app_dossier_show', {'id': doss.id }) }}"><span class="badge fs-7 bg-{{badge_usage}}">{{ installation.usages }}</span></a> #}
+                                    <a class="" href="{{ path('app_dossier_show', {'id': doss.id }) }}">
+                                        <span class="badge badge-{{ badge_etat }} fs-7 px-1">
+                                            En Attente de {{ doss.etat }}
+                                        </span>
+                                    </a>
+                                </h6>
+                                <p class="card-text fs-7">
+                                    {% if doss.referent %}
+                                    <div class="mb-2 border-0 text-muted" title="Référent">
+                                        <svg class="bi pt" width="22" height="22" fill="gray">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-workspace') }}"></use>
+                                        </svg>
+                                        {{ doss.referent  | length < 30 ? doss.referent : doss.referent|slice(0, 27) ~ '...'}}
+									</div>
+                                    {% endif %}
+                                    <div class="mb-2 border-0 text-muted" title="Controleur">
+                                        <svg class="bi pt" width="22" height="22" fill="red">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-rolodex') }}"></use>
+                                        </svg>
+                                    {% if doss.controleur %}
+                                        {{ doss.controleur  | length < 30 ? doss.controleur : doss.controleur|slice(0, 27) ~ '...'}}
+                                    {% else %}
+                                        <span class="text-danger">Non affecté à controleur</span>
+                                    {% endif %}
+									</div>
+                                    <div class="mb-2 border-0 text-muted" title="Localisation installation">
+                                        <svg class="bi pt" width="20" height="20" fill="#6d0d2b">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#geo-alt') }}"></use>
+                                        </svg>
+                                        {% if installation.localite is not null %}
+                                            {{ installation.localite.departement.nom }} - {{ installation.localite.nom }}
+                                        {% else %}
+                                            <span class="text-danger">-</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="ms-2 fs-7">
+                                        {% if installation.typeconstruction is not null %}
+                                            [<span class="text-dark fw-bold">{{ installation.typeconstruction.nom }}]</span>
+                                            {{ installation.adresse | length < 15 ? installation.adresse : installation.adresse|slice(0, 12) ~ '...' }}
+                                        {% else %}
+                                            <span class="text-danger">-</span>
+                                        {% endif %}
+                                    </p>
+                                        <div class="mt-2 pt-2 border-top border-secondary text-dark">
+                                            <div class="row">
+                                                <div class="col-5">
+                                                    <svg class="bi pt" width="20" height="20" fill="orange">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightning-charge') }}"></use>
+                                                    </svg>
+                                                    {{ demande.puissance }} kW
+                                                </div>
+                                                <div class="col-7">
+                                                    <svg class="bi pt" width="20" height="20" fill="blue">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
+                                                    </svg>
+                                                    {{ demande.cout|number_format(0, ',', ' ') }} FCFA
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>
+                            <div class="card-footer text-muted text-end">
+                            {% if not doss.affecte %}
+                                <a href="{{ path('app_dossier_affecter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Affecter à un contrôleur</a>
+                            {% elseif not doss.visite %}
+                                <a href="{{ path('app_dossier_visiter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Planifier une visite</a>
+                            {% elseif not doss.rapport %}
+                                <a href="{{ path('app_dossier_show', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Elaborer rapport de visite</a>
+                            {% elseif not doss.attestation %}
+                                <a href="{{ path('app_dossier_show', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Planifier une visite</a>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </section>

@@ -63,6 +63,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->demande = new ArrayCollection();
         $this->created_by = "";
+        $this->adresse = "";
         $this->created_at = new \DateTimeImmutable();
         $this->type = "";
         $this->id_type = "";
@@ -128,7 +129,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_CLIENT';
 
         return array_unique($roles);
     }

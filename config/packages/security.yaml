@@ -21,6 +21,7 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\UserAuthenticator
+            user_checker: App\Security\UserChecker
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -35,10 +36,32 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/main, roles: [IS_AUTHENTICATED_FULLY, ROLE_USER] }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/main, roles: [IS_AUTHENTICATED_FULLY, ROLE_USER] }
+        - { path: ^/region, roles: [ROLE_ADMIN] }
+        - { path: ^/departement, roles: [ROLE_ADMIN] }
+        - { path: ^/localite, roles: [ROLE_ADMIN] }
+        - { path: ^/agence, roles: [ROLE_ADMIN] }
+        - { path: ^/electricien, roles: [ROLE_ACCUEIL] }
+        - { path: ^/proprietaire, roles: [ROLE_ACCUEIL] }
+        - { path: ^/installation/soumission, roles: [ROLE_PUBLIC] }
+        - { path: ^/installation/paiement, roles: [ROLE_CAISSIER] }
+        - { path: ^/installation/validation, roles: [ROLE_RFO] }
+        - { path: ^/dossier/affectation, roles: [ROLE_REFERENT] }
+        - { path: ^/dossier/visite, roles: [ROLE_CONTROLEUR] }
+        - { path: ^/dossier/rapport, roles: [ROLE_CONTROLEUR] }
+        - { path: ^/utilisateur, roles: [ROLE_ADMIN] }
+
+    role_hierarchy:
+            ROLE_ADMIN: ROLE_DAF, ROLE_REFERENT, ROLE_RFO, ROLE_ACCUEIL
+            ROLE_DAF: ROLE_COMPTABLE
+            ROLE_COMPTABLE: ROLE_CAISSIER
+            ROLE_ACCUEIL: ROLE_PUBLIC
+            ROLE_REFERENT: ROLE_CONTROLEUR
+            ROLE_CAISSIER: ROLE_USER
+            ROLE_CONTROLEUR: ROLE_USER
+            ROLE_RFO: ROLE_USER
+            ROLE_PUBLIC: ROLE_USER
+            
 
 when@test:
     security:

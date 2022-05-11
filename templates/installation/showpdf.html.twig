@@ -276,13 +276,7 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-        $(window).keydown(function(event){
-            if(event.keyCode == 13) {
-            event.preventDefault();
-            return false;
-            }
-        });
-
+        
         // Bloc 1
         $('.alimente0').show(); $('.alimente1').hide();
         optSel=$('#form_alimente'); valSel=optSel.val();

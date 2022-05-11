@@ -219,7 +219,8 @@ class InstallationType extends AbstractType
             ])
             ->add('priece', IntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'min' => 2
                 ],
                 'required' => false,
                 'label' => 'Nbre Pièces'

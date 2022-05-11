@@ -15,6 +15,7 @@ use App\Form\InstallationType;
 use App\Repository\DemandeRepository;
 use App\Repository\ElectricienRepository;
 use App\Repository\InstallationRepository;
+use App\Repository\PaiementRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\TypeConstructionRepository;
 use Dompdf\Dompdf;
@@ -31,37 +32,99 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
 {
-    #[Route('/', name: 'app_installation_index', methods: ['GET'])]
-    public function index(InstallationRepository $installationRepository): Response
+    #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_soumission');
+        
+        $affichage_demande=$request->getSession()->get('affichage_demande');
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Saisie"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 1,
+            'page_list' => "app_installation_index",
+            'affichage' => $mode_affichage,
             'etatDemande' => "en soumission",
+            'val_rech' => $val_rech,
         ]);
     }
 
-    #[Route('/paiement', name: 'app_installation_index2', methods: ['GET'])]
-    public function index2(InstallationRepository $installationRepository): Response
+    #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
+    public function index2(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_paiement');
+
+        $affichage_demande=$request->getSession()->get('affichage_demande');
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Soumis"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 0,
+            'affichage' => $mode_affichage,
+            'page_list' => "app_installation_index2",
             'etatDemande' => "en attente de paiement",
+            'val_rech' => $val_rech,
         ]);
     }
 
-    #[Route('/validation', name: 'app_installation_index3', methods: ['GET'])]
-    public function index3(InstallationRepository $installationRepository): Response
+    #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
+    public function index3(Request $request, InstallationRepository $installationRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_validation');
+
+        $affichage_demande=$request->getSession()->get('affichage_demande');
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByEtat("Payé"),
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'modif' => 0,
+            'page_list' => "app_installation_index3",
+            'affichage' => $mode_affichage,
             'etatDemande' => "en attente de validation",
+            'val_rech' => $val_rech,
         ]);
     }
 
@@ -114,14 +177,38 @@ class InstallationController extends AbstractController
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => false,
+            'constraints' => [
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (!is_numeric($object)) {
+                            $context
+                                ->buildViolation('Format incorrect !')
+                                ->addViolation();
+                        }
+                    }
+                }),
+            ],
+            'required' => true,
             'label' => 'Latitude'
         ])
         ->add('longitude', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => false,
+            'constraints' => [
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (!is_numeric($object)) {
+                            $context
+                                ->buildViolation('Format incorrect !')
+                                ->addViolation();
+                        }
+                    }
+                }),
+            ],
+        'required' => true,
             'label' => 'Longitude'
         ])
         ->add('usages', ChoiceType::class, [
@@ -158,12 +245,36 @@ class InstallationController extends AbstractController
                 'attr' => [
                     'class' => 'form-control on_alimente0'
                 ],
+                'constraints' => [
+                    new Callback(function($object, ExecutionContextInterface $context) {
+                        $v = $object;
+                        if($object) {
+                            if (strlen($object) !=7) {
+                                $context
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->addViolation();
+                            }
+                        }
+                    }),
+                ],
                 'required' => false,
                 'label' => 'Numéro Compteur Voisin'
             ])
             ->add('compteur', TextType::class, [
                 'attr' => [
                     'class' => 'form-control on_alimente1'
+                ],
+                'constraints' => [
+                    new Callback(function($object, ExecutionContextInterface $context) {
+                        $v = $object;
+                        if($object) {
+                            if (strlen($object) !=7) {
+                                $context
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->addViolation();
+                            }
+                        }
+                    }),
                 ],
                 'required' => false,
                 'label' => 'Numéro Compteur'
@@ -188,6 +299,7 @@ class InstallationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $step = 2;
             if($installation->getStep()<$step) { 
+                $installation->setCreatedby($this->getUser()->getId());
                 $installation->setStep($step); 
                 $installation->setEtat("En Saisie 2/6"); 
             }
@@ -260,7 +372,8 @@ class InstallationController extends AbstractController
                 ])
             ->add('niveau', TypeIntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'min' => 1
                 ],
                 'required' => false,
                 'label' => 'Nombre de niveaux'
@@ -274,7 +387,8 @@ class InstallationController extends AbstractController
             ])
             ->add('priece', TypeIntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'min' => 2
                 ],
                 'required' => false,
                 'label' => 'Nombre de Pièces'
@@ -544,6 +658,7 @@ class InstallationController extends AbstractController
                 // ...
             }
             $demande->setInstallation($installation);
+            $demande->setCreatedby($this->getUser()->getId());
             $demandeRepository->add($demande);
             $numD=str_pad($demande->getId(), 8, '0', STR_PAD_LEFT);
 
@@ -589,54 +704,19 @@ class InstallationController extends AbstractController
         ]);
     }
 
-    // Generation fichier pdf 
-    #[Route('/{id}/data', name: 'app_installation_data', methods: ['GET'])]
-    public function datae(Installation $installation, InstallationRepository $installationRepository)
-    {
-                // Configure Dompdf according to your needs
-                $pdfOptions = new Options();
-                $pdfOptions->set('defaultFont', 'Arial');
-                
-                // Instantiate Dompdf with our options
-                $dompdf = new Dompdf($pdfOptions);
-                /*return (
-                        $this->render('installation/datae.html.twig', [
-                            'les_installation' => $installationRepository->findAll(),
-                            'installation' => $installation,
-                        ]);
-                        */
-                // Retrieve the HTML generated in our twig file
-                $html = $this->renderView('installation/data.html.twig', [
-                    'les_installation' => $installationRepository->findAll(),
-                    'installation' => $installation,
-                ]);
-                
-                // Load HTML to Dompdf
-                $dompdf->loadHtml($html);
-                
-                // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
-                $dompdf->setPaper('A4', 'portrait');
-        
-                // Render the HTML as PDF
-                $dompdf->render();
-        
-                // Output the generated PDF to Browser (force download)
-                $dompdf->stream("mypdf.pdf", [
-                    "Attachment" => false
-                ]);
-        
-        
-        //$electricien = $electricienRepository->findAll();
-
-        
-    }
-
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
-    public function show(Installation $installation): Response
+    public function show(Installation $installation, PaiementRepository $paiementRepository): Response
     {
-        return $this->render('installation/show.html.twig', [
-            'installation' => $installation,
-        ]);
+        if($installation->getStep()<=7) {
+            return $this->render('installation/show.html.twig', [
+                'installation' => $installation,
+            ]);
+        } elseif($installation->getDemandeCourante()) {
+            $paiement = $paiementRepository->find($installation->getDemandeCourante()->getIdPaiement());
+            return $this->render('paiement/show.html.twig', [
+                'paiement' => $paiement,
+            ]);
+        }
     }
 
     #[Route('/{id}/edit', name: 'app_installation_edit', methods: ['GET', 'POST'])]
@@ -688,6 +768,7 @@ class InstallationController extends AbstractController
         // $html .= '<style>'.file_get_contents('../public/assets/css/style.css').' </style>';
         // $html .= '<style>'.file_get_contents('../public/assets/css/bootstrap.min.css').' </style>';
 
+        // echo $html;
         // Load HTML to Dompdf
         $dompdf->loadHtml($html);
         

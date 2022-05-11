@@ -18,8 +18,12 @@ class RegionController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(RegionRepository $regionRepository): Response
+    public function index(Request $request, RegionRepository $regionRepository): Response
     {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'localite');
+        $request->getSession()->set('sousmenu', '');
+
         return $this->render('region/index.html.twig', [
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
         ]);

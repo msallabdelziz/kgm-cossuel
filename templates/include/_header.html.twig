@@ -116,18 +116,20 @@
 						<button class="dropdown-toggle bg-transparent border-0" type="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
 							<div class="profile-info">
 								<div class="info">
-									<div class="fs-8 text-warning bg-black border px-2 py-0">{{ app.user.prenom }} {{ app.user.nom }} ( {{ app.user.login }})</div>
+									<div class="fs-8 text-warning bg-black border px-2 py-0">{{ app.user.prenom }} {{ app.user.nom }}</div>
 									<div class="image ms-2 border-0">
-										<img src="{{ asset('assets/img/none.png') }}" alt=""/>
+										<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#333" class="bi bi-plus-lg" viewBox="0 0 32 32">
+											<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-badge') }}"></use>
+										</svg>
 									</div>
 								</div>
 							</div>
 						</button>
 						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
 							<li>
-								<a href="#0">
+								<a href="{{ path('app_utilisateur_user') }}" 
 									<i class="lni lni-user"></i>
-									Mon Profil
+									 Mon Profil
 								</a>
 							</li>
 

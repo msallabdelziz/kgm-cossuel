@@ -28,7 +28,10 @@
 				<section class="section">
 					<div class="container-fluid pt-4">
 		{% endif %}
-
+		{% if val_rech is defined %}
+		    {% include "include/_search_liste.html.twig" %}
+		{% endif %}
+		
 		{% block body %}{% endblock %}
 
 	    {% if app.user %}
@@ -77,7 +80,7 @@
 			{% if label=="notice" %} 
 				{% set label="warning" %}
 			{% endif %}
-				<div class="col-4 p-2 m-2 right alert alert-{{ label }} alert-dismissible fade show position-absolute top-0 end-0" role="alert">
+				<div class="col-4 p-2 m-2 mb-5 right alert alert-{{ label }} alert-dismissible fade show position-fixed bottom-0 end-0" role="alert">
 					{{ message }}
 				<button type="button" class="btn-close my-1 py-2" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
@@ -86,4 +89,3 @@
 	</body>
 </html>
 {% block javascripts %}{% endblock %}
-

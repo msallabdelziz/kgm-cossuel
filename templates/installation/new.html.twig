@@ -15,12 +15,17 @@
                 <div class="container">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
-                            <span class="navbar-brand mb-0 fs-4 fw-400">
-                            <svg class="bi" width="24" height="24" fill="black">
-                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                            </svg>
-                            Saisie Nouvelle demande: <span class="text-danger">Etape 1 sur 6</span>
-                            </span>
+                            <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                                <div class="col">
+                                    <svg class="bi" width="24" height="24" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                    </svg>
+                                    Saisie Nouvelle demande
+                                </div>
+                                <div class="col" align="right">
+                                        <span class="text-danger">[Etape 1 sur 6]</span>
+                                </div>
+                            </div>
                         </div>
                     </nav>
                     <div class="container">

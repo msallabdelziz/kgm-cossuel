@@ -20,10 +20,15 @@ class DepartementController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(DepartementRepository $departementRepository): Response
+    public function index(Request $request, DepartementRepository $departementRepository): Response
     {
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
         return $this->render('departement/index.html.twig', [
-            'les_departement' => $departementRepository->findBy([],['code'=>'asc']),
+            'les_departement' => $departementRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'val_rech' => $val_rech,
         ]);
     }
     /**

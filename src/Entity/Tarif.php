@@ -23,10 +23,10 @@ class Tarif
     private $puissance;
 
     #[ORM\Column(type: 'integer')]
-    private $coutPremierIns;
+    private $cout1;
 
     #[ORM\Column(type: 'integer')]
-    private $coutDeuxiemeIns;
+    private $cout2;
 
     public function __construct()
     {
@@ -63,26 +63,26 @@ class Tarif
         return $this;
     }
 
-    public function getCoutPremierIns(): ?int
+    public function getCout1(): ?int
     {
-        return $this->coutPremierIns;
+        return $this->cout1;
     }
 
-    public function setCoutPremierIns(int $coutPremierIns): self
+    public function setCout1(int $cout1): self
     {
-        $this->coutPremierIns = $coutPremierIns;
+        $this->cout1 = $cout1;
 
         return $this;
     }
 
-    public function getCoutDeuxiemeIns(): ?int
+    public function getCout2(): ?int
     {
-        return $this->coutDeuxiemeIns;
+        return $this->cout2;
     }
 
-    public function setCoutDeuxiemeIns(int $coutDeuxiemeIns): self
+    public function setCout2(int $cout2): self
     {
-        $this->coutDeuxiemeIns = $coutDeuxiemeIns;
+        $this->cout2 = $cout2;
 
         return $this;
     }

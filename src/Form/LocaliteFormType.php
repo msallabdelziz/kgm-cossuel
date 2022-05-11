@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Agence;
 use App\Entity\Localite;
 use App\Entity\Departement;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -24,6 +25,15 @@ class LocaliteFormType extends AbstractType
             'group_by' => 'region.nom',
             'choice_label' => 'nom',
             'label' => 'Département'
+        ])
+        ->add('agence', EntityType::class, [
+            'class' => Agence::class,
+            'attr' => [
+                'class' => 'form-select',
+            ],
+            'choice_label' => 'nom',
+            'label' => 'Agence d\'affiliation',
+            'required' => false,
         ])
         ->add('code', TextType::class, [
             'attr' => [

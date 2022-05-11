@@ -25,7 +25,7 @@ class Recu
     #[ORM\OneToOne(targetEntity: Paiement::class, cascade: ['persist', 'remove'])]
     private $paiement;
 
-    #[ORM\ManyToOne(targetEntity: Caissier::class, inversedBy: 'recu')]
+    #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'recu')]
     private $caissier;
 
     public function __construct()
@@ -75,12 +75,12 @@ class Recu
         return $this;
     }
 
-    public function getCaissier(): ?Caissier
+    public function getCaissier(): ?Agent
     {
         return $this->caissier;
     }
 
-    public function setCaissier(?Caissier $caissier): self
+    public function setCaissier(?Agent $caissier): self
     {
         $this->caissier = $caissier;
 

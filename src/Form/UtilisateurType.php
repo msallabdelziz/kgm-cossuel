@@ -15,23 +15,13 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class UtilisateurType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('type', ChoiceType::class, [
-            'choices'  => [
-                'Electricien' => 'Electricien',
-                'Propriétaire Installation' => 'Proprietaire',
-            ],
-            'attr' => [
-                'class' => 'form-select'
-            ],
-            'data' => "Electricien",
-            'label' => 'Profil Utilisateur'
-        ])
         ->add('prenom', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
@@ -57,6 +47,9 @@ class UtilisateurType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
+            'constraints' => [
+                new Regex('/^(0|[1-9][0-9]*)$/')
+            ],
             'required' => true,
             'label' => 'Téléphone'
         ])
@@ -72,70 +65,6 @@ class UtilisateurType extends AbstractType
             ->add('created_by')
             ->add('updated_at')
             ->add('updated_by')*/
-            ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
-                'attr' => [
-                    'autocomplete' => 'new-password',
-                    'class' => 'form-control'
-                ],
-                'label' => 'Mot de passe',
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez entrer un mot de passe',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Le mot de passe doit comporter au moins {{ limit }} caractères',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
-            ])
-            ->add('type_login', ChoiceType::class, [
-                'choices'  => [
-                    'Mon Email' => 'Email',
-                    'Mon numéro de téléphone' => 'Telephone',
-                ],
-                'mapped' => false,
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                // 'data' => "Email",
-                'label' => 'Identifiant à utiliser'
-            ])
-            ->add('plainPassword', RepeatedType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'type' => PasswordType::class,
-                'invalid_message' => 'Les mots de passe doivent correspondre !',
-                'mapped' => false,
-                'required' => true,
-                'first_options'  => [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'label' => 'Mot de passe'
-                ],
-                'second_options' => [
-                    'attr' => [
-                        'class' => 'form-control'
-                    ],
-                    'label' => 'Répéter le Mot de passe'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez entrer à nouveau le mot de passe',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Le mot de passe doit comporter au moins {{ limit }} caractères',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
-            ])
         ;
     }
 
