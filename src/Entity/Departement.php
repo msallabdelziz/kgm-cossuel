@@ -24,6 +24,7 @@ class Departement
     private $region;
 
     #[ORM\OneToMany(mappedBy: 'departement', targetEntity: Localite::class)]
+    // #[ORM\JoinColumn(name: "id", onDelete: "CASCADE")]
     private $localite;
 
     #[ORM\Column(type: 'string', length: 255)]

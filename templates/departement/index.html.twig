@@ -63,7 +63,7 @@
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                 </svg>
                             </a>
-                            <a href="" class="mx-1" title="Supprimer">
+                            <a href="{{ path('app_departement_delete', {'id': reg.id }) }}" {'id': departement.id }) }}" onclick="return confirm('Etes-vous sûr de vouloir supprimer ce departement ?')" class="mx-1" title="Supprimer">
                                 <svg class="bi" width="16" height="16" fill="red">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
                                 </svg>

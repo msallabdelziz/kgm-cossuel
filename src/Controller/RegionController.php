@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Region;
 use App\Form\RegionFormType;
 use App\Repository\RegionRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,5 +82,28 @@ class RegionController extends AbstractController
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
             'region' => $region,
         ]);
-    }    
+    }   
+    
+
+    
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
+    public function delete(EntityManagerInterface $manager, Region $region): Response
+    {
+        if (!$region) {
+            $this->addFlash(
+                "success",
+                "Region en question n'a pas èté trouvé"
+            );
+            return $this->redirectToRoute('app_region_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $manager->remove($region);
+        $manager->flush();
+
+        $this->addFlash(
+            "success",
+            "Region a èté supprimer avec succès"
+        ); 
+        return $this->redirectToRoute('app_region_index');  
+    }
 }
