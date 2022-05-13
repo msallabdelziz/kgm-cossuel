@@ -1,0 +1,31 @@
+
+		<!-- Fichiers JS -->
+		<!-- JavaScript: Bootstrap Bundle with Popper -->
+		<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
+		<script src="{{ asset('assets/js/main.js') }}"></script>
+		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
+		<script>
+		$('body').on('click', '[data-bs-toggle="modal"]', function(){
+        	$($(this).data("bs-target")+' .modal-body').load($(this).data("bs-remote"));
+    	});  
+
+		$(document).ready(function() {
+			$(window).keydown(function(event) {
+				if(event.keyCode == 13) {
+				event.preventDefault();
+				return false;
+				}
+			});
+
+			if($("#val_rech0").length) {
+				$("#val_rech0").keydown(function(event) {
+					if(event.keyCode == 13) {
+						$("#val_rech").val($("#val_rech0").val());
+						$("#form_rech_list").submit();
+					}
+				});
+			}
+
+		});
+		</script>

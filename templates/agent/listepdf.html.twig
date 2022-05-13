@@ -1,0 +1,33 @@
+
+    <section class="container">
+       
+        <div class="row">
+            <div class="bg-body shadow bg-light">
+            <table class="table table-striped table-hover table-sm pt-0 mt-0">
+              <caption align="top" class="fs-5 mt-0 pt-0">Liste des agents ({{ agents|length }})</caption>
+              <thead>
+                <tr>
+                    <th scope="col">Matricule</th> 
+                    <th scope="col">Nom</th> 
+                    <th class="text-center" scope="col">Téléphone</th> 
+                    <th scope="col">Adresse Email</th>
+                    <th scope="col">Adresse</th>
+                    <th scope="col">Agence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ag in les_agent %}
+                    <tr>
+                        <td>{{ ag.nom }}</td>
+                        <td>{{ ag.telephone }}</td>
+                        <td>{{ ag.email }}</td>
+                        <td>{{ ag.adresse }}</td>
+                        <td>{{ ag.nom }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}
