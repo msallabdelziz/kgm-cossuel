@@ -87,18 +87,18 @@
 {% block javascripts %}
 <script>
     $(document).ready(function () {
-        $('.intervenantAutre1').hide(); $('.natureTravaux1').hide();
+        $('.intervenantAutre1').hide(); $("#form_intervenant").prop('required',false); $('.natureTravaux1').hide();
         optSel=$('input[type=radio][name="form[intervenantAutre]"]:checked');
         valSel=optSel.val();
         if (valSel==1) {
-            $('.intervenantAutre1').show(); 
+            $('.intervenantAutre1').show(); $("#form_intervenant").prop('required',true);
         }
         $('input[type=radio][name="form[intervenantAutre]"]').change(function() {
-            $('.intervenantAutre1').hide();
+            $('.intervenantAutre1').hide(); $("#form_intervenant").prop('required',false);
             optSel=$('input[type=radio][name="form[intervenantAutre]"]:checked');
             valSel=optSel.val();
             if (valSel==1) {
-                $('.intervenantAutre1').show(); 
+                $('.intervenantAutre1').show(); $("#form_intervenant").prop('required',true);
             }
         });
 

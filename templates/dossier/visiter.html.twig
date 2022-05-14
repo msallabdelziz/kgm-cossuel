@@ -44,14 +44,17 @@
         {% set link_action = 'app_dossier_rapport' %}
         {% set libelle_action = 'Elaborer le rapport de visite' %}
     {% elseif not dossier.attestation %}
-        {% set action_demande = "Résultat Conformité" %}
+        {% set action_demande = "Résultat Inspection" %}
         {% set link_liste = 'app_dossier_attestation' %}
         {% set link_action = 'app_dossier_attestation' %}
-        {% set libelle_action = 'Confirmer Résultats Conformité' %}
+        {% set libelle_action = 'Confirmer Résultats Inspection' %}
     {% endif %}
 
     {% set demande = dossier.demande %}
     {% set installation = demande.installation %}
+    {% if app.session.get('page_liste_dossier') is defined and app.session.get('page_liste_dossier') %}
+        {% set link_liste = app.session.get('page_liste_dossier') %}
+    {% endif %}
     
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
@@ -400,7 +403,13 @@
                     <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                 </div>                                
                 <div class="card mb-2 pb-0">
-                    <h2 class="fs-title">Traitement du dossier</h2>
+                    <h2 class="fs-title">Traitement du dossier
+                        <div class="float-end">
+                            <a data-toggle="modal" data-target="#modal" href="{{ path('app_dossier_histo', {'id': dossier.id}) }}" title="Historique du traitement">
+                                <svg class="bi pt" width="24" height="24" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+                            </a>
+                        </div>
+                    </h2>
                     <div class="row">
                         <hr class="mb-3" />
                         <div class="mb-3 ">
@@ -455,6 +464,10 @@
                             <div class="">
                                 {{ form_label(dossierForm.dateVisite) }}<br />
                                 {{ form_widget(dossierForm.dateVisite) }}<br />
+                            </div>
+                            <div class="">
+                                {{ form_label(dossierForm.rapport) }}<br />
+                                {{ form_widget(dossierForm.rapport) }}<br />
                             </div>
                             <div class="form-error">
                                 {{ form_errors(dossierForm.dateVisite) }}

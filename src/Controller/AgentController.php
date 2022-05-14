@@ -18,6 +18,7 @@ use App\Repository\AffectationsAgentsRepository;
 use App\Repository\AgenceRepository;
 use App\Repository\AgentRepository;
 use App\Repository\UtilisateurRepository;
+use App\Services\Tools;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -112,7 +113,7 @@ class AgentController extends AbstractController
 
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(AgentRepository $agentRepository, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
+    public function update(AgentRepository $agentRepository, Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
         $agent = $agentRepository->find($id);
 
@@ -147,6 +148,8 @@ class AgentController extends AbstractController
                 $utilisateur->setRoles([$profil]);
                 $utilisateurRepository->add($utilisateur);
             }
+
+            // $tools->notifMail("mlthioune@gmail.com", "Mise à jour agent effectuée !", "Notification COSSUEL");
 
             $this->addFlash('success', 'Les informations ont été enregistrées avec succès !.');
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
@@ -253,7 +256,7 @@ class AgentController extends AbstractController
                 $profil = "ROLE_".strtoupper($agent->getProfil()->getCode());
             }
             $utilisateur->setRoles([$profil]);
-            $this->addFlash('success', 'OK SENT.');
+            $this->addFlash('success', 'Compte utilisateur créé pour l\'agent '.$agent);
             $entityManager->persist($utilisateur);
             $entityManager->flush();
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);

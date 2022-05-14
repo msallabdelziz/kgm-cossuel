@@ -28,11 +28,25 @@
 				<section class="section">
 					<div class="container-fluid pt-4">
 		{% endif %}
-		{% if val_rech is defined %}
-		    {% include "include/_search_liste.html.twig" %}
+
+		{% set les_route0 = [
+			"app_login",
+			"app_resetpass",
+			"app_forgot_password_request",
+			"app_register",
+			"app_reset_password",
+			"app_verify_email",
+			"app_register_ok",
+			"app_register_confirm",
+			"app_register_confirm2",
+		] %}
+		{% if app.user or (app.request.get('_route') in les_route0) %}
+			{% if val_rech is defined %}
+				{% include "include/_search_liste.html.twig" %}
+			{% endif %}
+			
+			{% block body %}{% endblock %}
 		{% endif %}
-		
-		{% block body %}{% endblock %}
 
 	    {% if app.user %}
 					</div>
@@ -62,6 +76,19 @@
 			{% include "include/_footer.html.twig" %}
 		{% endif %}
 
+		{# read and display all flash messages #}
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+			{% if label=="notice" %} 
+				{% set label="warning" %}
+			{% endif %}
+				<div class="col-4 p-2 m-2 mb-5 pe-4 right alert alert-{{ label }} alert-dismissible fade show position-fixed bottom-0 end-0" role="alert">
+					{{ message }}
+				<button type="button" class="btn-close my-1 py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+		{% endfor %}
+
 		{# Modal Dialog #}
 		<!-- Modal -->
 		<div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -74,18 +101,6 @@
 		</div>
 		</div>
 
-		{# read and display all flash messages #}
-		{% for label, messages in app.flashes %}
-			{% for message in messages %}
-			{% if label=="notice" %} 
-				{% set label="warning" %}
-			{% endif %}
-				<div class="col-4 p-2 m-2 mb-5 right alert alert-{{ label }} alert-dismissible fade show position-fixed bottom-0 end-0" role="alert">
-					{{ message }}
-				<button type="button" class="btn-close my-1 py-2" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div>
-			{% endfor %}
-		{% endfor %}
 	</body>
 </html>
 {% block javascripts %}{% endblock %}

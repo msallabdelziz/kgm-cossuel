@@ -49,6 +49,21 @@ class Rapport
     }
 
     /**
+     * @return Collection<int, PointVerification>
+     */
+    public function getPointVerification(): Collection
+    {
+        $les_rub = $this->rubriques;
+        $les_pt = new ArrayCollection();
+        foreach ($les_rub as $rub) {
+            foreach ($rub->getPointVerification() as $pt) {
+                $les_pt->add($pt);
+            }
+        }
+        return $les_pt;
+    }
+
+    /**
      * @return Collection<int, Rubrique>
      */
     public function getRubriques(): Collection

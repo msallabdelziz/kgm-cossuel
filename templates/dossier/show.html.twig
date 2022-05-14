@@ -23,30 +23,42 @@
     }
     
     </style>
+    {% set link_action = "" %}
     {% if not dossier.affecte %}
         {% set action_demande = "Affectation" %}
         {% set link_liste = 'app_dossier_affectation' %}
-        {% set link_action = 'app_dossier_affecter' %}
+        {% if is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_affecter' %}
+        {% endif %}
         {% set libelle_action = 'Affecter à un contrôleur' %}
     {% elseif not dossier.visite %}
         {% set action_demande = "Planification Visite" %}
         {% set link_liste = 'app_dossier_visite' %}
-        {% set link_action = 'app_dossier_visiter' %}
+        {% if is_granted('ROLE_CONTROLEUR') %}
+            {% set link_action = 'app_dossier_visiter' %}
+        {% endif %}
         {% set libelle_action = 'Planifier une visite' %}
     {% elseif not dossier.rapport %}
         {% set action_demande = "Rapport de Visite" %}
         {% set link_liste = 'app_dossier_rapport' %}
-        {% set link_action = 'app_dossier_rapport' %}
+        {% if is_granted('ROLE_CONTROLEUR') %}
+            {% set link_action = 'app_dossier_rapporter' %}
+        {% endif %}
         {% set libelle_action = 'Elaborer le rapport de visite' %}
     {% elseif not dossier.attestation %}
-        {% set action_demande = "Résultat Conformité" %}
+        {% set action_demande = "Résultat Inspection" %}
         {% set link_liste = 'app_dossier_attestation' %}
-        {% set link_action = 'app_dossier_attestation' %}
-        {% set libelle_action = 'Confirmer Résultats Conformité' %}
+        {% if is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_attestation' %}
+        {% endif %}
+        {% set libelle_action = 'Confirmer Résultats Inspection' %}
     {% endif %}
 
     {% set demande = dossier.demande %}
     {% set installation = demande.installation %}
+    {% if app.session.get('page_liste_dossier') is defined and app.session.get('page_liste_dossier') %}
+        {% set link_liste = app.session.get('page_liste_dossier') %}
+    {% endif %}
     
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
@@ -393,10 +405,18 @@
             <div class="col-lg-4 mb-2" id="paiement_demande">
                 <div align="right">
                     <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
+                    {% if link_action %}
                     <a href="{{ path(link_action, {'id': dossier.id }) }}" class="next action-button btn btn-primary btn my-3">{{ libelle_action }}</a>
+                    {% endif %}
                 </div>                                
                 <div class="card mb-2 pb-0">
-                    <h2 class="fs-title">Traitement du dossier</h2>
+                    <h2 class="fs-title">Traitement du dossier
+                        <div class="float-end">
+                            <a data-bs-toggle="modal" data-bs-target="#modal" href="{{ path('app_dossier_histo', {'id': dossier.id}) }}" title="Historique du traitement">
+                                <svg class="bi pt" width="24" height="24" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+                            </a>
+                        </div>
+                    </h2>
                     <div class="row">
                         <hr class="mb-3" />
                         <div class="mb-3 ">
@@ -423,7 +443,11 @@
                                         <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
                                     </div>
                                     <div class="col-5">
-                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y') }}">
+                                    </div>
+                                    <div class="col-12">
+                                        Modèle Rapport d'inspection
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.rapport.libelle }} - {{ dossier.visiteCourante.rapport.PointVerification.count }} points de vérification">
                                     </div>
                                 </div>
                             {% else %}
@@ -435,7 +459,7 @@
                             {% if dossier.rapport %}
                                 <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite réalisée et Rapport élaboré">
                             {% else %}
-                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non finalisé">
                             {% endif %}
                         </div>
                         <div class="mb-3 ">

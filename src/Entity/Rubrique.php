@@ -15,18 +15,21 @@ class Rubrique
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[ORM\Column(type: 'integer')]
+    private $numero;
+
     #[ORM\Column(type: 'string', length: 255)]
     private $libelle;
 
     #[ORM\ManyToOne(targetEntity: Rapport::class, inversedBy: 'rubriques')]
     private $rapport;
 
-    #[ORM\OneToMany(mappedBy: 'rubrique', targetEntity: DetailVerification::class)]
-    private $detailVerifications;
+    #[ORM\OneToMany(mappedBy: 'rubrique', targetEntity: PointVerification::class)]
+    private $pointVerification;
 
     public function __construct()
     {
-        $this->detailVerifications = new ArrayCollection();
+        $this->pointVerification = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -46,6 +49,18 @@ class Rubrique
         return $this;
     }
 
+    public function getNumero(): ?int
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(int $numero): self
+    {
+        $this->numero = $numero;
+
+        return $this;
+    }
+
     public function getRapport(): ?Rapport
     {
         return $this->rapport;
@@ -59,29 +74,29 @@ class Rubrique
     }
 
     /**
-     * @return Collection<int, DetailVerification>
+     * @return Collection<int, PointVerification>
      */
-    public function getDetailVerifications(): Collection
+    public function getPointVerification(): Collection
     {
-        return $this->detailVerifications;
+        return $this->pointVerification;
     }
 
-    public function addDetailVerification(DetailVerification $detailVerification): self
+    public function addPointVerification(PointVerification $pointVerification): self
     {
-        if (!$this->detailVerifications->contains($detailVerification)) {
-            $this->detailVerifications[] = $detailVerification;
-            $detailVerification->setRubrique($this);
+        if (!$this->pointVerification->contains($pointVerification)) {
+            $this->pointVerification[] = $pointVerification;
+            $pointVerification->setRubrique($this);
         }
 
         return $this;
     }
 
-    public function removeDetailVerification(DetailVerification $detailVerification): self
+    public function removePointVerification(PointVerification $pointVerification): self
     {
-        if ($this->detailVerifications->removeElement($detailVerification)) {
+        if ($this->pointVerification->removeElement($pointVerification)) {
             // set the owning side to null (unless already changed)
-            if ($detailVerification->getRubrique() === $this) {
-                $detailVerification->setRubrique(null);
+            if ($pointVerification->getRubrique() === $this) {
+                $pointVerification->setRubrique(null);
             }
         }
 

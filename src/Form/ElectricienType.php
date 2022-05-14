@@ -65,7 +65,7 @@ class ElectricienType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone !')
+                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone ! Au max 15')
                                 ->addViolation();
                         }
                     }
@@ -90,9 +90,9 @@ class ElectricienType extends AbstractType
                 new Callback(function($object, ExecutionContextInterface $context) {
                     $v = $object;
                     if($object) {
-                        if (strlen($object) >15) {
+                        if (strlen($object) >11) {
                             $context
-                                ->buildViolation('Trop de caractères saisis !')
+                                ->buildViolation('Format incorrect ! Chiffres attendus, 11 au max !')
                                 ->addViolation();
                         }
                     }

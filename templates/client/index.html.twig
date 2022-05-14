@@ -44,7 +44,9 @@
                 <td>{{ client.updatedBy }}</td>
                 <td>
                     <a href="{{ path('app_client_show', {'id': client.id}) }}">show</a>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}
@@ -55,5 +57,7 @@
         </tbody>
     </table>
 
+    {% if is_granted('ROLE_ADMIN') %}
     <a href="{{ path('app_client_new') }}">Create new</a>
+    {% endif %}
 {% endblock %}

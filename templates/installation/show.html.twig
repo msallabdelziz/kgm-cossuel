@@ -20,6 +20,11 @@
         {% set action_demande = "Validation" %}
         {% set link_liste = 'app_installation_index3' %}
     {% endif %}
+
+    {% if app.session.get('page_liste_demande') is defined and app.session.get('page_liste_demande') %}
+        {% set link_liste = app.session.get('page_liste_demande') %}
+    {% endif %}
+
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
@@ -66,15 +71,17 @@
                                             {% if installation.step > 1 %}
                                                 {% set link_edit = 'app_installation_add' ~ installation.step %}
                                             {% endif %}
-                                            <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-success btn my-3">Finaliser la saisie</a>
+                                            {% if is_granted('ROLE_PUBLIC') %}
+                                                <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-success btn my-3">Finaliser la saisie</a>
+                                            {% endif %}
                                         {% else %}
                                             <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                                            {% if installation.step==7 %}
-                                            <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Enregistrer Paiement</a>
-                                            {# {% elseif installation.step==8 %}
-                                            <a href="{{ path('app_paiement_add2', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Confirmer Paiement</a>
-                                            {% elseif installation.step==9 %}
-                                            <a href="#" class="next action-button btn btn-success btn my-3 ms-5">Valider la demande</a> #}
+                                            {% if installation.step==7 and is_granted('ROLE_PUBLIC') %}
+                                                <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Enregistrer Paiement</a>
+                                                {# {% elseif installation.step==8 %}
+                                                <a href="{{ path('app_paiement_add2', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Confirmer Paiement</a>
+                                                {% elseif installation.step==9 %}
+                                                <a href="#" class="next action-button btn btn-success btn my-3 ms-5">Valider la demande</a> #}
                                             {% endif %}
                                         {% endif %}
                                     </div>                                

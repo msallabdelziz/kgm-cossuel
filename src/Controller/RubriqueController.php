@@ -40,6 +40,8 @@ class RubriqueController extends AbstractController
         $form = $this->createForm(RubriqueFormType::class, $rubrique);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $rapport = $rapportRepository->find($rapport->getId());
+            $rubrique->setRapport($rapport);
             $rubriqueRepository->add($rubrique);
             // do anything else you need here, like send an email
 
@@ -81,7 +83,7 @@ class RubriqueController extends AbstractController
     public function show(Rubrique $rubrique, RubriqueRepository $rubriqueRepository): Response
     {
         return $this->render('rubrique/show.html.twig', [
-            'les_rubrique' => $rubriqueRepository->findBy([],['libelle'=>'asc']),
+            'les_rubrique' => $rubriqueRepository->findBy([],['numero'=>'asc']),
             'rubrique' => $rubrique,
         ]);
     }    

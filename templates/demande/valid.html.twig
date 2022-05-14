@@ -37,6 +37,14 @@
     {% set link_liste = 'app_installation_index3' %}
     {% set installation = demande.installation %}
 
+    {% if installation.step == 9 %}
+        {% set link_liste = 'app_installation_index3' %}
+    {% endif %}
+
+    {% if app.session.get('page_liste_demande') is defined and app.session.get('page_liste_demande') %}
+        {% set link_liste = app.session.get('page_liste_demande') %}
+    {% endif %}
+
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
@@ -352,8 +360,17 @@
 
             <div class="col-lg-4 mb-2">
                 <div id="paiement_demande" class="mb-4">
+                <div align="right">
+                    <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
+                </div>                                
                     <div class="card mb-2 pb-0">
-                        <h2 class="fs-title">Données sur le paiement</h2>
+                        <h2 class="fs-title">Données sur le paiement
+                        <div class="float-end">
+                            <a data-toggle="modal" data-target="#modal" href="{{ path('app_demande_histo', {'id': demande.id}) }}" title="Historique du traitement">
+                                <svg class="bi pt" width="24" height="24" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+                            </a>
+                        </div>
+                        </h2>
                         <div class="row">
                             <hr class="mb-3" />
                             <div class="mb-3 ">

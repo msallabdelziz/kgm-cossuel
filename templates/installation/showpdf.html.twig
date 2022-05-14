@@ -1,326 +1,313 @@
+{% set proprietaire = installation.proprietaire %}
+{% set electricien = installation.electricien %}
+{% set typeConstruction = installation.typeConstruction %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-{% block title %}-{% endblock %}
-{% block body %}
-    <style>
-    #synthese_demande input[disabled] {
-        background-color:#fff7e3;
-        border: 1px solid #7a7b7c;
-        color: black;
-        font-weight:500;
-    }
-    </style>
-    <section class="container-fluid">
-        <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
-                <span class="fs-4">Soumission de demandes </span>
-            </a>
-        </header>
-        <div class="row">
-            <div class="col-lg-10 mb-2  p-3">
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+      integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+      crossorigin="anonymous"
+    />
+    {% if installation.usages == "domestique" %}
+    <link rel="stylesheet" href="{{absolute_url(asset('assets/css/demande-A.css'))}}" />
+    {% else %}
+    <link rel="stylesheet" href="{{absolute_url(asset('assets/css/demande-B.css'))}}" />
+    {% endif %}
 
-                <div class="container">
-                    <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
-                        <div class="container-fluid ps-4">
-                            <span class="navbar-brand mb-0 fs-4 fw-400">
-                            <svg class="bi" width="24" height="24" fill="black">
-                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
-                            </svg>
-                            Détails de la demande</span>
-                        </div>
-                    </nav>
-                    <div class="container">
-                            <div class="row">
-                            	<fieldset id="synthese_demande">
-                                {% if installation.demandeCourante %}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Puissance demandée et tarif</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                    </div>
-                                </div>
-                                {% endif %}
-                                {# BLOC 1 #}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Données de base de la demande</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                        <div class="col-lg-8">
-                                            <label for="form_usage" >Usage Installation</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.usages }}" id="form_usage">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="form_alimente" >Installation déja alimentée ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.alimente }}" id="form_alimente">
-                                        </div>
-                                        <div class="col-lg-4 alimente1">
-                                            <label for="form_compteur" >Numéro Compteur</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.compteur }}" id="form_compteur">
-                                        </div>
-                                        <div class="col-lg-4 alimente1">
-                                            <label for="form_abonnement" >Numéro Abonnement</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.abonnement }}" id="form_abonnement">
-                                        </div>
-                                        <div class="col-lg-4 alimente1">
-                                            <label for="form_grstReseau" >Gestionnaire Réseau</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.grstReseau }}" id="form_grstReseau">
-                                        </div>
-                                        <div class="col-lg-4 alimente0">
-                                            <label for="form_compteurVoisin" >Numéro Compteur Voisin</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.compteurVoisin }}" id="form_compteurVoisin">
-                                        </div>
-                                        <hr class="my-3" />
-                                        <div class="col-lg-4">
-                                            <label for="form_localite" >Localité</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.localite }}" id="form_localite">
-                                        </div>
-                                        <div class="col-lg-8">
-                                            <label for="form_adresse" >Adresse</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.adresse }}" id="form_adresse">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="form_habitation" >Habitation</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.habitation }}" id="form_habitation">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label for="form_bp" >Boite Postale</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.bp }}" id="form_bp">
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <label for="form_lattitude" >Latitude</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.lattitude }}" id="form_lattitude">
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <label for="form_longitude" >Longitude</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.longitude }}" id="form_longitude">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                {# BLOC 2 #}
-                                {% if installation.typeConstruction %}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Caractéristiques du site</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                        <div class="col-lg-4">
-                                            <label for="form_collectif collectif1" >Bien Collectif ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.collectif }}" id="form_collectif">
-                                        </div>
-                                        <div class="col-lg-4 collectif1">
-                                            <label for="form_nomSite" >Nom du site</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.nomSite }}" id="form_nomSite">
-                                        </div>
-                                        <div class="col-lg-4 collectif1">
-                                            <label for="form_logement" >Nombre de logements</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.logement }}" id="form_logement">
-                                        </div>
-                                        <hr class="my-3" />
-                                        <div class="col-lg-6">
-                                            <label for="form_typeConstruction" >Type de construction</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_typeConstruction">
-                                        </div>
-                                        <div class="col-lg-3 typeConstruction1">
-                                            <label for="form_niveau" >Nombre de niveaux</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.niveau }}" id="form_niveau">
-                                        </div>
-                                        <div class="col-lg-6 typeConstruction3">
-                                            <label for="form_activite" >Activités</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.activite }}" id="form_activite">
-                                        </div>
-                                        <div class="col-lg-3 typeConstruction1 typeConstruction2">
-                                            <label for="form_priece" >Nombre de pièces</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.priece }}" id="form_priece">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
+    <title>Formulaire de Demande COSSUEL</title>
+  </head>
+  <body style="border:0px; background-color:#fff; padding:0px; margin:0px;">
+    <div class="container" style="width:850px; margin:0px;">
+      <div class="invoice">
+        <div class="row ">
+          <div class="col-6 logo ">
+            <svg
+              width="203"
+              height="70"
+              viewBox="0 0 203 70"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+            >
+              <rect width="202.062" height="70" fill="url(#pattern0)" />
+              <defs>
+                <pattern
+                  id="pattern0"
+                  patternContentUnits="objectBoundingBox"
+                  width="1"
+                  height="1"
+                >
+                  <use
+                    xlink:href="#image0_212_2254"
+                    transform="translate(-0.117857 -0.206186) scale(0.00357143 0.0103093)"
+                  />
+                </pattern>
+                <image
+                  id="image0_212_2254"
+                  width="353"
+                  height="135"
+                  xlink:href="data:image/png;base64,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"
+                />
+              </defs>
+            </svg>
+          </div>
+          <div class="col-6">
+            <h3 class="text-center text-demande">DEMANDE D'ATTESTATION DE CONFORMITE</h3> 
+            <p class="document-type">Installation à usage {% if installation.usages != "domestique" %} non {% endif %}domestique</p>
 
-                                {# BLOC 3 #}
-                                {% if installation.natureTravaux %}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Caractéristiques de l'installation</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                        <div class="col-lg-6">
-                                            <label for="form_natureTravaux" >Nature des travaux</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.natureTravaux }}" id="form_natureTravaux">
-                                        </div>
-                                        <div class="col-lg-2 natureTravaux1">
-                                            <label for="form_neuf15" >Neufs_15</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neuf15 }}" id="form_neufs_15">
-                                            <label for="form_existant15" >Existants_15</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existant15 }}" id="form_existant15">
-                                        </div>
-                                        <div class="col-lg-2 natureTravaux1">
-                                            <label for="form_neuf25" >Neufs_25</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neuf25 }}" id="form_neuf25">
-                                            <label for="form_existant25" >Existants_25</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existant25 }}" id="form_existant25">
-                                        </div>
-                                        <div class="col-lg-2 natureTravaux1">
-                                            <label for="form_neufAutre" >Neufs_Autres</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neufAutre }}" id="form_neufAutre">
-                                            <label for="form_existantAutre" >Existants_Autres</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existantAutre }}" id="form_existantAutre">
-                                        </div>
-                                        <hr class="my-3" />
-                                        <div class="col-lg-4">
-                                            <label for="form_puissance" >Puissance Limitée ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.puissance }}" id="form_puissance">
-                                        </div>
-                                        <hr class="my-3" />
-                                        <div class="col-lg-4 intervenantAutre1">
-                                            <label for="form_intervenantAutre" >Autres intervenants ?</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.intervenantAutre }}" id="form_intervenantAutre">
-                                        </div>
-                                        <div class="col-lg-8 intervenantAutre1">
-                                            <label for="form_intervenant" >Intervenants</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.intervenant }}" id="form_intervenant">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
-
-                                {# BLOC 4 #}
-                                {% if installation.electricien %}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Informations sur l'électricien installateur</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                        <div class="col-lg-3">
-                                            <label >Nom</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.nom }}">
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <label >Prénom</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.prenom }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Localité</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.localite }}">
-                                        </div>
-                                        <div class="col-lg-8">
-                                            <label >Adresse</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.adresse }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Téléphone</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.telephone }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Email</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.email }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Type de pièce</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.typePiece }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Numéro Pièce</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.numPiece }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}                                
-
-                                {# BLOC 5 #}
-                                {% if installation.proprietaire %}
-                                <div class="card mb-2">
-                                    <h2 class="fs-title">Informations sur le propriétaire de l'installation</h2>
-                                    <div class="row">
-                                        <hr class="mb-3" />
-                                        <div class="col-lg-3">
-                                            <label >Nom</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.nom }}">
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <label >Prénom</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.prenom }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Localité</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.localite }}">
-                                        </div>
-                                        <div class="col-lg-8">
-                                            <label >Adresse</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.adresse }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Téléphone</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.telephone }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Email</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.email }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Type de pièce</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.typePiece }}">
-                                        </div>
-                                        <div class="col-lg-4">
-                                            <label >Numéro Pièce</label>
-                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.numPiece }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                </fieldset>
-                            </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-    </section>
-{% endblock %}
+        <div class="clear"></div>
+        <div class="row m-1 font-size:16px;">
+          <div class="col-4">
+            <div class="d-flex justify-content-between">
+                Agence:
+                <span class="indentif">Cossuel Dakar 1</span>
+              </div>
+          </div>
+          <div class="col-4">
+            <div class="d-flex  justify-content-between">
+                Demande Num:
+                <span class="indentif">{{installation.demandeCourante.numero}}</span>
+              </div>
+        </div>
+        <div class="col-4">
+            <div class="d-flex justify-content-between">
+                Du:
+                <span class="indentif">{{installation.demandeCourante.dateCreation | date("d/m/Y h:i")}}</span>
+              </div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+            <div class="row border">
+          <div class="col-12">
+            <div class="bg-orange">INFORMATIONS INSTALLEUR</div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Nom du contact:
+              <span class="indentif">{{electricien.prenom}} {{electricien.nom}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Adresse:
+              <span class="indentif">{{electricien.adresse}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Ville:
+              <span class="indentif">{{electricien.localite}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Téléphone:
+              <span class="indentif">{{electricien.telephone}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              E-Mail:
+              <span class="indentif">{{electricien.email}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Type Pièce :
+              <span class="indentif">{{electricien.typePiece}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Numéro Pièce:
+              <span class="indentif">{{electricien.numPiece}}</span>
+            </div>
+          </div>
+         
+       </div>
+        <div class="clear"></div>
 
-{% block javascripts %}
-<script>
-    $(document).ready(function() {
-        
-        // Bloc 1
-        $('.alimente0').show(); $('.alimente1').hide();
-        optSel=$('#form_alimente'); valSel=optSel.val();
-        if (valSel==1) {
-            $('.alimente1').show(); $('.alimente0').hide();
-        }
+        <div class="row border">
+            <div class="col-12">
+              <div class="bg-orange">INSTALLATION ELECTRIQUE</div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Etat Installation:</span>
+                <span class="indentif">{% if installation.alimente %} Alimentée {% else %} Non alimenté {% endif %}</span>
+              </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Num Compteur:</span>
+                    <span class="indentif">{% if installation.alimente %} {{installation.compteur}} {% else %} {{installation.compteurVoisin }}  {% endif %}</span>
+                  </div>
+            </div>
+            <div class="col-7">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Propriètaire Installation:</span>
+                  <span class="indentif">{{proprietaire.prenom}} {{proprietaire.nom}}</span>
+                </div>
+              </div>
+              <div class="col-5"></div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type Pièce:</span>
+                  <span class="indentif">{{proprietaire.typePiece}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Num Piece:</span>
+                  <span class="indentif">{{proprietaire.numPiece}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <div>Type Batiment:</div>
+                  <div class="indentif">{% if installation.collectif %} Collectif {% else %} Non collectif {% endif %}</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Adresse:</span>
+                  <span class="indentif">{{proprietaire.adresse}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Téléphone:</span>
+                  <span class="indentif">{{proprietaire.telephone}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Ville:</span>
+                  <span class="indentif">
+                    {{proprietaire.localite}}</span>
+                </div>
+              </div>
+              <div class="col-6"></div>
+              <div class="col-6">
+                  <div class="row">
+                        <div class="col-6">
+                            <span> Latitude:</span> <span class="indentif">{{installation.lattitude}}</span>
+                        </div>
+                        <div class="col-6">
+                            <span>Longitude:</span> <span class="indentif">{{installation.longitude}}</span>
+                        </div>
+                    </div>                    
+              </div>
+       </div>
 
-        // Bloc 2
-        $('.collectif0').show(); $('.collectif1').hide();
-        optSel=$('#form_collectif');
-        valSel=optSel.val();
-        if (valSel==1) {
-            $('.collectif1').show(); $('.collectif0').hide();
-        }
-        $('.typeConstruction1').hide(); $('.typeConstruction2').hide();  $('.typeConstruction3').hide();
-        optSel=$('#form_typeConstruction');
-        valSel=optSel.val();
-        if (valSel == "Maison" || valSel == "IGH (Immeuble de Grande Hauteur)") {
-            $('.typeConstruction1').show(); 
-        }
-        else if (valSel == "Appartement") {
-            $('.typeConstruction2').show();
-        }
-        else if (valSel == "Etablissement Public") {
-            $('.typeConstruction3').show(); 
-        }
+        <div class="clear"></div>
+           <div class="row border">
+            <div class="col-12">
+                <div class="bg-orange">TYPE DE CONSTRUCTION A USAGE DOMESTIQUE</div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type de Construction:</span>
+                  <span class="indentif">{{typeConstruction.nom}}</span>
+                </div>
+              </div>
+              <div class="col-5">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Nombre de pièces principales:</span>
+                  <span class="indentif">{{installation.priece}}</span>
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type Opération:</span>
+                  <span class="indentif">Opération non collective</span>
+                </div>
+              </div>
+       </div>
 
-        // Bloc 3
-        $('.intervenantAutre1').hide(); $('.natureTravaux1').hide();
-        optSel=$('#form_intervenantAutre');
-        valSel=optSel.val();
-        if (valSel==1) {
-            $('.intervenantAutre1').show(); 
-        }
-        optSel=$('#form_natureTravaux');
-        valSel=optSel.val();
-        if (valSel == "Rénovation Partielle") {
-            $('.natureTravaux1').show(); 
-        }
+        <div class="clear"></div>
+        <div class="row border">
+         <div class="col-12">
+             <div class="bg-orange">TRAVAUX</div>
+           </div>
+           <div class="col-6">
+             <div class="d-flex justify-content-between mb-1">
+               Nature Travaux:
+               <span class="indentif">{{installation.natureTravaux.nom}}</span>
+             </div>
+             <div class="d-flex justify-content-between mb-1">
+                <span>Autres Intervanants:</span>
+                <span class="indentif">{% if installation.intervenantAutre %} {{installation.intervenant}} {% else %} - {% endif %}</span>
+              </div>
+           </div>
+           <div class="col-6">
+           </div>
+             
+    </div>
 
-        // Bloc 4
+    <div class="clear"></div>
+    <div class="row">
+        <div class="col-9">
+                <div class="row border">
+                 <div class="col-12">
+                     <div class="bg-orange">TARIFICATION</div>
+                   </div>
+                   <div class="col-6">
+                     <div class="d-flex justify-content-between mb-1">
+                       <span>Info Visite:</span>
+                       <span class="indentif">1 ère Vistite</span>
+                     </div>
+                   </div>
+                   <div class="col-6"></div>
+                   <div class="col-6">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Puissance Demandée</span>
+                        <span class="indentif">{{installation.demandeCourante.puissance}} Kw</span>
+                      </div>
+                   </div>
+                   <div class="col-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Tarif</span>
+                        <span class="indentif">{{installation.demandeCourante.cout}} FCFA</span>
+                      </div>
+                   </div>
+                   <div class="col-2"></div>
+                     
+                </div>
+        </div>
+        <div class="col-3 signature" align="center">Signature</div>
+    </div>
+    <div class="clear"></div>
+    
+        <p class="bottom-page text-center">
+          <div class="text ">Comité Sénégalaise pour la Sécurité des Usagers de l'Electricité
+            (COSSUEL) Organisme agréé par le Ministère chargé de l'Energie
+            suuivant le decret No 0022609 du 22 Août 2019 Adresse: 2 Rue Wagane
+            Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL
+            Téléphone: (+221) 76 644 76 02/ 33 842 01 81 Email: cossuel@cossuel.sn</div>
+        </p>
+      </div>
+    </div>
 
-        // Bloc 5
-
-    });
-</script>
-{% endblock %}
+  </body>
+</html>

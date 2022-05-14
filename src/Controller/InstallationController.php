@@ -20,6 +20,8 @@ use App\Repository\ProprietaireRepository;
 use App\Repository\TypeConstructionRepository;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,24 +29,57 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
 {
+    #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
+    public function index0(Request $request, InstallationRepository $installationRepository): Response
+    {
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('sousmenu', 'demande_all');
+        $request->getSession()->set('page_liste_demande', 'app_installation_index0');
+
+        $affichage_demande=$request->getSession()->get('affichage_demande');
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+        }
+
+        return $this->render('installation/index0.html.twig', [
+            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'page_list' => "app_installation_index0",
+            'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
+        ]);
+    }
+
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
     public function index(Request $request, InstallationRepository $installationRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_soumission');
-        
+        $request->getSession()->set('page_liste_demande', 'app_installation_index');
+
         $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
@@ -74,6 +109,7 @@ class InstallationController extends AbstractController
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_paiement');
+        $request->getSession()->set('page_liste_demande', 'app_installation_index2');
 
         $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
@@ -104,6 +140,7 @@ class InstallationController extends AbstractController
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_validation');
+        $request->getSession()->set('page_liste_demande', 'app_installation_index3');
 
         $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
@@ -170,6 +207,18 @@ class InstallationController extends AbstractController
             'attr' => [
                 'class' => 'form-control'
             ],
+            'constraints' => [
+                new Callback(function($object, ExecutionContextInterface $context) {
+                    $v = $object;
+                    if($object) {
+                        if (!is_numeric($object) || strlen($object)>5) {
+                            $context
+                                ->buildViolation('Format incorrect ! Doit être numérique sur 5 chiffres au max !')
+                                ->addViolation();
+                        }
+                    }
+                }),
+            ],
             'required' => false,
             'label' => 'Boite Postale'
         ])
@@ -183,7 +232,7 @@ class InstallationController extends AbstractController
                     if($object) {
                         if (!is_numeric($object)) {
                             $context
-                                ->buildViolation('Format incorrect !')
+                                ->buildViolation('Format incorrect ! Doit être numérique.')
                                 ->addViolation();
                         }
                     }
@@ -202,7 +251,7 @@ class InstallationController extends AbstractController
                     if($object) {
                         if (!is_numeric($object)) {
                             $context
-                                ->buildViolation('Format incorrect !')
+                                ->buildViolation('Format incorrect ! Doit être numérique.')
                                 ->addViolation();
                         }
                     }
@@ -249,9 +298,9 @@ class InstallationController extends AbstractController
                     new Callback(function($object, ExecutionContextInterface $context) {
                         $v = $object;
                         if($object) {
-                            if (strlen($object) !=7) {
+                            if (strlen($object) !=7 || !is_numeric($object)) {
                                 $context
-                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 chiffres attendus !')
                                     ->addViolation();
                             }
                         }
@@ -268,9 +317,9 @@ class InstallationController extends AbstractController
                     new Callback(function($object, ExecutionContextInterface $context) {
                         $v = $object;
                         if($object) {
-                            if (strlen($object) !=7) {
+                            if (strlen($object) !=7 || !is_numeric($object)) {
                                 $context
-                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 caractères attendus !')
+                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 chiffres attendus !')
                                     ->addViolation();
                             }
                         }
@@ -746,13 +795,13 @@ class InstallationController extends AbstractController
         return $this->redirectToRoute('app_installation_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/showpdf', name: 'app_installation_showpdf', methods: ['GET'])]
-    public function showpdf(Request $request, Installation $installation)
+    #[Route('/{id}/showpdf0', name: 'app_installation_showpdf0', methods: ['GET'])]
+    public function showpdf0(Request $request, Installation $installation)
     {
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        
+        // $pdfOptions->set('defaultFont', 'Arial');
+
         // Instantiate Dompdf with our options
         $dompdf = new Dompdf($pdfOptions);
         
@@ -773,7 +822,7 @@ class InstallationController extends AbstractController
         $dompdf->loadHtml($html);
         
         // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
-        $dompdf->setPaper('A4', 'portrait');
+       $dompdf->setPaper('A4', 'portrait');
 
         // Render the HTML as PDF
         $dompdf->render();
@@ -782,5 +831,124 @@ class InstallationController extends AbstractController
         $dompdf->stream("demandeCOSSUEL.pdf", [
             "Attachment" => false
         ]);
+
+        return new Response($dompdf->output());
+
+    }
+
+    #[Route('/{id}/showpdf', name: 'app_installation_showpdf', methods: ['GET'])]
+    public function showpdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
+    {
+        
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('installation/showpdf.html.twig', [
+            'installation' => $installation,
+            'title' => "Formulaire de demande COSSUEL"
+        ]);
+        
+        // echo $html;
+        $filename = 'DemandeCOSSUEL_'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+
+        if(!file_exists($fich)) {
+            $knpSnappyPdf
+            ->setOption('no-outline', true)
+            ->setOption('encoding', 'UTF-8')
+            ->setOption('page-size','LETTER')
+            ->generateFromHtml($html, $fich);
+        }
+    
+        
+        // display the file contents in the browser instead of downloading it
+        return $this->file($fich, 'fich_temp_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+        // return new Response(
+        //     $knpSnappyPdf
+        //     ->setOption('no-outline', true)
+        //     ->setOption('encoding', 'UTF-8')
+        //     ->setOption('page-size','LETTER')
+        //     ->getOutputFromHtml($html),
+        //     200,
+        //     array(
+        //         'Content-Type'          => 'application/pdf',
+        //         'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+        //     )
+        // );
+    }
+
+    #[Route('/{id}/facturepdf', name: 'app_installation_facturepdf', methods: ['GET'])]
+    public function facturepdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
+    {
+        
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('installation/facturepdf.html.twig', [
+            'installation' => $installation,
+            'title' => "Facture de demande COSSUEL"
+        ]);
+        // echo $html;
+        $filename = 'FactureDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+
+        if(!file_exists($fich)) {
+            $knpSnappyPdf
+            ->setOption('no-outline', true)
+            ->setOption('encoding', 'UTF-8')
+            ->setOption('page-size','LETTER')
+            ->generateFromHtml($html, $fich);
+        }
+    
+        // display the file contents in the browser instead of downloading it
+        return $this->file($fich, 'fich_temp_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+        //     return new Response(
+        //     $knpSnappyPdf
+        //     ->setOption('no-outline', true)
+        //     ->setOption('encoding', 'UTF-8')
+        //     ->setOption('page-size','LETTER')
+        //     ->getOutputFromHtml($html),
+        //     200,
+        //     array(
+        //         'Content-Type'          => 'application/pdf',
+        //         'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+        //     )
+        // );
+    }
+
+    #[Route('/{id}/recupdf', name: 'app_installation_recupdf', methods: ['GET'])]
+    public function recupdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
+    {
+        
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('installation/recupdf.html.twig', [
+            'installation' => $installation,
+            'title' => "Recu de paiement de demande COSSUEL"
+        ]);
+        // echo $html;
+        $filename = 'PaiementDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+
+        if(!file_exists($fich)) {
+            $knpSnappyPdf
+            ->setOption('no-outline', true)
+            ->setOption('encoding', 'UTF-8')
+            ->setOption('page-size','LETTER')
+            ->generateFromHtml($html, $fich);
+        }
+        
+        // display the file contents in the browser instead of downloading it
+        return $this->file($fich, 'fich_temp_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+        // return new Response(
+        //     $knpSnappyPdf
+        //     ->setOption('no-outline', true)
+        //     ->setOption('encoding', 'UTF-8')
+        //     ->setOption('page-size','LETTER')
+        //     ->getOutputFromHtml($html),
+        //     200,
+        //     array(
+        //         'Content-Type'          => 'application/pdf',
+        //         'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+        //     )
+        // );
     }
 }

@@ -65,7 +65,7 @@ class ProprietaireType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone !')
+                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone ! Au max 15 !')
                                 ->addViolation();
                         }
                     }
@@ -92,8 +92,8 @@ class ProprietaireType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de caractères saisis !')
-                                ->addViolation();
+                            ->buildViolation('Format incorrect ! Chiffres attendus, 11 au max !')
+                            ->addViolation();
                         }
                     }
                 }),

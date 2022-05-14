@@ -18,23 +18,53 @@ class Visite
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'datetime')]
-    private $dateVisite;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $datePlanifie;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $dateRealise;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $dateRapporte;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private $dateAtteste;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $etat;
 
-    #[ORM\OneToMany(mappedBy: 'visite', targetEntity: Verification::class)]
-    private $verication;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $planifie = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $realise = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $rapporte = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $atteste = false;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $conclusion = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $commentaire;
+
+    #[ORM\OneToMany(mappedBy: 'visite', targetEntity: DetailVerification::class)]
+    private $detailVerification;
 
     #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'visites')]
     private $dossier;
+
+    #[ORM\ManyToOne(targetEntity: Rapport::class)]
+    private $rapport;
 
     public function __construct()
     {
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
-        $this->verication = new ArrayCollection();
+        $this->detailVerification = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -42,15 +72,47 @@ class Visite
         return $this->id;
     }
 
-    public function getDateVisite(): ?\DateTimeInterface
+    public function getDatePlanifie(): ?\DateTimeInterface
     {
-        return $this->dateVisite;
+        return $this->datePlanifie;
     }
 
-    public function setDateVisite(\DateTimeInterface $dateVisite): self
+    public function setDatePlanifie(\DateTimeInterface $datePlanifie): self
     {
-        $this->dateVisite = $dateVisite;
+        $this->datePlanifie = $datePlanifie;
+        return $this;
+    }
 
+    public function getDateRapporte(): ?\DateTimeInterface
+    {
+        return $this->dateRapporte;
+    }
+
+    public function setDateRapporte(\DateTimeInterface $dateRapporte): self
+    {
+        $this->dateRapporte = $dateRapporte;
+        return $this;
+    }
+
+    public function getDateAtteste(): ?\DateTimeInterface
+    {
+        return $this->dateAtteste;
+    }
+
+    public function setDateAtteste(\DateTimeInterface $dateAtteste): self
+    {
+        $this->dateAtteste = $dateAtteste;
+        return $this;
+    }
+
+    public function getDateRealise(): ?\DateTimeInterface
+    {
+        return $this->dateRealise;
+    }
+
+    public function setDateRealise(\DateTimeInterface $dateRealise): self
+    {
+        $this->dateRealise = $dateRealise;
         return $this;
     }
 
@@ -69,27 +131,27 @@ class Visite
     /**
      * @return Collection<int, Verification>
      */
-    public function getVerication(): Collection
+    public function getDetailVerification(): Collection
     {
-        return $this->verication;
+        return $this->detailVerification;
     }
 
-    public function addVerication(Verification $verication): self
+    public function addDetailVerification(DetailVerification $detailVerification): self
     {
-        if (!$this->verication->contains($verication)) {
-            $this->verication[] = $verication;
-            $verication->setVisite($this);
+        if (!$this->detailVerification->contains($detailVerification)) {
+            $this->detailVerification[] = $detailVerification;
+            $detailVerification->setVisite($this);
         }
 
         return $this;
     }
 
-    public function removeVerication(Verification $verication): self
+    public function removeDetailVerification(DetailVerification $detailVerification): self
     {
-        if ($this->verication->removeElement($verication)) {
+        if ($this->detailVerication->removeElement($detailVerification)) {
             // set the owning side to null (unless already changed)
-            if ($verication->getVisite() === $this) {
-                $verication->setVisite(null);
+            if ($detailVerification->getVisite() === $this) {
+                $detailVerification->setVisite(null);
             }
         }
 
@@ -108,9 +170,81 @@ class Visite
         return $this;
     }
 
+    public function getRapport(): ?Rapport
+    {
+        return $this->rapport;
+    }
+
+    public function setRapport(?Rapport $rapport): self
+    {
+        $this->rapport = $rapport;
+
+        return $this;
+    }
+
+    public function getCommentaire(): ?string
+    {
+        return $this->commentaire;
+    }
+
+    public function setCommentaire(string $commentaire): self
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function getPlanifie(): ?bool
+    {
+        return $this->planifie;
+    }
+
+    public function setPlanifie(bool $planifie): self
+    {
+        $this->planifie = $planifie;
+
+        return $this;
+    }
+
+    public function getRealise(): ?bool
+    {
+        return $this->realise;
+    }
+
+    public function setRealise(bool $realise): self
+    {
+        $this->realise = $realise;
+
+        return $this;
+    }
+
+    public function getRapporte(): ?bool
+    {
+        return $this->rapporte;
+    }
+
+    public function setRapporte(bool $rapporte): self
+    {
+        $this->rapporte = $rapporte;
+
+        return $this;
+    }
+
+    public function getAtteste(): ?bool
+    {
+        return $this->atteste;
+    }
+
+    public function setAtteste(bool $atteste): self
+    {
+        $this->atteste = $atteste;
+
+        return $this;
+    }
+
     public function __toString()
     {
-        return "[".$this->getId()." ".$this->getDateVisite()->format("d-m-y")."]";
+        return "[".$this->getId()." ".$this->getDatePlanifie()->format("d-m-y")."]";
     }
 
 }

@@ -590,7 +590,7 @@ class Installation
     {
         $les_demande = $this->demande;
         if($les_demande->count()) {
-            return $les_demande->first();
+            return $les_demande->last();
         } else {
             return null;
         }

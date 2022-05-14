@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
 use App\Repository\PaiementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaiementRepository::class)]
@@ -49,12 +51,16 @@ class Paiement
     #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'paiement')]
     private $comptable;
 
+    #[ORM\OneToMany(mappedBy: 'paiement_id', targetEntity: Remboursement::class)]
+    private $remboursements;
+
     public function __construct()
     {
         $this->created_by = "";
         $this->dateSaisie = new \DateTime();
         $this->created_at = new \DateTimeImmutable();
         $this->paiementEffectue = false;
+        $this->remboursements = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -209,6 +215,36 @@ class Paiement
     public function __toString()
     {
         return "[".$this->getReference()." ".$this->getDatePaiement()->format("d/m/Y")."]";
+    }
+
+    /**
+     * @return Collection<int, Remboursement>
+     */
+    public function getRemboursements(): Collection
+    {
+        return $this->remboursements;
+    }
+
+    public function addRemboursement(Remboursement $remboursement): self
+    {
+        if (!$this->remboursements->contains($remboursement)) {
+            $this->remboursements[] = $remboursement;
+            $remboursement->setPaiementId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRemboursement(Remboursement $remboursement): self
+    {
+        if ($this->remboursements->removeElement($remboursement)) {
+            // set the owning side to null (unless already changed)
+            if ($remboursement->getPaiementId() === $this) {
+                $remboursement->setPaiementId(null);
+            }
+        }
+
+        return $this;
     }
 
 }

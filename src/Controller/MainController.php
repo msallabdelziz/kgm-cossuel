@@ -6,7 +6,7 @@ use App\Entity\Demande;
 use App\Entity\Dossier;
 use App\Entity\Electricien;
 use App\Entity\Installation;
-use App\Repository\DemandeRepository;
+use App\Entity\Utilisateur;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,14 +20,26 @@ class MainController extends AbstractController
      */
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        $em = $doctrine->getManager();
+
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'main');
         $request->getSession()->set('sousmenu', '');
 
-        $em = $doctrine->getManager();
+        $restr_dem=array(); $restr_dos=array();
+
+        $user = $this->getUser();
+        if($user) {
+            $utilisateur=$em->getRepository(Utilisateur::class)->find($user->getId());
+            $role=$utilisateur->getRoles()[0];
+            if($role=="ROLE_PUBLIC") {
+                $restr_dem=array("created_by"=>$utilisateur->getId());
+            }
+        }
+        
         $les_install = $em->getRepository(Installation::class)->findByEtat("Saisie");
-        $les_demande = $em->getRepository(Demande::class)->findAll();
-        $les_dossier = $em->getRepository(Dossier::class)->findAll();
+        $les_demande = $em->getRepository(Demande::class)->findBy($restr_dem);
+        $les_dossier = $em->getRepository(Dossier::class)->findBy($restr_dos);
 
         $last_demande = $em->getRepository(Demande::class)->findBy(array('etat' => 'Soumis'),array('dateCreation' => 'DESC'),10 ,0);
         $last_client = $em->getRepository(Electricien::class)->findBy(array(),array('id' => 'DESC'),5 ,0);
@@ -44,7 +56,7 @@ class MainController extends AbstractController
             "Dossier créé"=>0,
             "Dossier affecté"=>0,
             "Dossier avec visite planifiée"=>0,
-            "Dossier avec rapport établi"=>0,
+            "Dossier avec rapport en attente"=>0,
             "Dossier cloturé"=>0,
         ];
 
@@ -62,7 +74,7 @@ class MainController extends AbstractController
             $etat = $dossier->getEtat();
             if($etat=="Affectation") { $les_stat0["Dossier affecté"] = $les_stat0["Dossier affecté"]+1; }
             if($etat=="Visite") { $les_stat0["Dossier avec visite planifiée"] = $les_stat0["Dossier avec visite planifiée"]+1; }
-            if($etat=="Rapport") { $les_stat0["Dossier avec rapport établi"] = $les_stat0["Dossier avec rapport établi"]+1; }
+            if($etat=="Rapport") { $les_stat0["Dossier avec rapport en attente"] = $les_stat0["Dossier avec rapport en attente"]+1; }
             if($etat=="Attestation") { $les_stat0["Dossier cloturé"] = $les_stat0["Dossier cloturé"]+1; }
         }
 

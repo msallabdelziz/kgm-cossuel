@@ -21,7 +21,7 @@ class RapportController extends AbstractController
     public function index(Request $request, RapportRepository $rapportRepository): Response
     {
         // Définition en session du module en cours
-        $request->getSession()->set('menu', 'localite');
+        $request->getSession()->set('menu', 'rapport');
         $request->getSession()->set('sousmenu', '');
 
         return $this->render('rapport/index.html.twig', [
@@ -74,9 +74,20 @@ class RapportController extends AbstractController
     /**
      * @Route("/{id}", name="show")
      */
-    public function show(Rapport $rapport, RapportRepository $rapportRepository): Response
+    public function showpdf(Rapport $rapport, RapportRepository $rapportRepository): Response
     {
         return $this->render('rapport/show.html.twig', [
+            'les_rapport' => $rapportRepository->findBy([],['libelle'=>'asc']),
+            'rapport' => $rapport,
+        ]);
+    }    
+
+    /**
+     * @Route("/{id}/showpdf", name="showpdf")
+     */
+    public function show(Rapport $rapport, RapportRepository $rapportRepository): Response
+    {
+        return $this->render('rapport/showpdf.html.twig', [
             'les_rapport' => $rapportRepository->findBy([],['libelle'=>'asc']),
             'rapport' => $rapport,
         ]);

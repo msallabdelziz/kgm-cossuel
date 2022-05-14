@@ -41,6 +41,7 @@ security:
         - { path: ^/departement, roles: [ROLE_ADMIN] }
         - { path: ^/localite, roles: [ROLE_ADMIN] }
         - { path: ^/agence, roles: [ROLE_ADMIN] }
+        - { path: ^/agent, roles: [ROLE_ADMIN] }
         - { path: ^/electricien, roles: [ROLE_ACCUEIL] }
         - { path: ^/proprietaire, roles: [ROLE_ACCUEIL] }
         - { path: ^/installation/soumission, roles: [ROLE_PUBLIC] }

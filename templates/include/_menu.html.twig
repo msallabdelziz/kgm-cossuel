@@ -67,7 +67,7 @@
 			</li>
 		{% endif %}
 
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+		{% if is_granted('ROLE_ADMIN') %}
 			<li class="nav-item">
 				<a href="{{ path('app_agent_index') }}">
 					<span class="icon">
@@ -106,6 +106,17 @@
                     <ul id="ddmenu_2" class="dropdown-nav collapse {% if app.session.get('menu') == 'demande' %}show{% endif %}">
 		
 		{% if is_granted('ROLE_PUBLIC') %}
+                        <li>
+                            <a href="{{ path('app_installation_index0') }}" class="{% if app.session.get('sousmenu') == 'demande_all' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#list') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Toutes les demandes</span>
+							</a>
+                        </li>
+		{% endif %}		{% if is_granted('ROLE_PUBLIC') %}
                         <li>
                             <a href="{{ path('app_installation_index') }}" class="{% if app.session.get('sousmenu') == 'demande_soumission' %}active{% endif %}"> 
 								<span class="icon">
@@ -158,6 +169,18 @@
                     </a>
                     <ul id="ddmenu_3" class="dropdown-nav collapse {% if app.session.get('menu') == 'dossier' %}show{% endif %}">
 		
+		{% if is_granted('ROLE_REFERENT') or is_granted('ROLE_CONTROLEUR') %}
+                        <li>
+                            <a href="{{ path('app_dossier_index0') }}" class="{% if app.session.get('sousmenu') == 'dossier_index0' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#list-check') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Tous les Dossiers</span>
+							</a>
+                        </li>
+		{% endif %}
 		{% if is_granted('ROLE_REFERENT') %}
                         <li>
                             <a href="{{ path('app_dossier_affectation') }}" class="{% if app.session.get('sousmenu') == 'dossier_affectation' %}active{% endif %}"> 
@@ -202,7 +225,7 @@
 										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#clipboard-check-fill') }}"></use>
 									</svg>
 								</span>
-								<span class="text">Clôture Dossiers</span>
+								<span class="text">Attestation Inspection</span>
 							</a>
                         </li>
 		{% endif %}
@@ -235,7 +258,7 @@
 			</li>
 		{% endif %}
 
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DAF') or is_granted('ROLE_ACCUEIL') %}
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_DAF') %}
 			<li class="nav-item {% if app.session.get('menu') == 'utilisateur' %}active{% endif %}">
 				<a href="{{ path('app_utilisateur_index') }}">
 					<span class="icon">

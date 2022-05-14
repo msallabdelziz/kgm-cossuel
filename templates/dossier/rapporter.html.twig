@@ -1,0 +1,441 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <style>
+    #synthese_demande input[disabled] {
+        background-color:#f1f5f9;
+        border: 1px solid #7a7b7c;
+        color: gray;
+        font-weight:normal;
+    }
+    #synthese_demande .card {
+        background-color:#ffffff;
+    }
+    #synthese_demande label, #synthese_demande .fs-title {
+        color:gray;
+        font-weight:normal;
+    }
+
+    .latlong {
+        width: 100px;
+        padding: 1px;
+        min-height: 12px;
+        background-color: #fff0cc;
+        color:red;
+        font-weight: bold;
+    }
+
+    #paiement_demande .card {
+        background-color:#fff;
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #000
+    }
+    
+    #validation_dossier .card {
+        background-color:#ffc328;
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #000
+    }
+    
+    </style>
+    {% if not dossier.affecte %}
+        {% set action_demande = "Affectation" %}
+        {% set link_liste = 'app_dossier_affectation' %}
+        {% set link_action = 'app_dossier_affecter' %}
+        {% set libelle_action = 'Affecter à un contrôleur' %}
+    {% elseif not dossier.visite %}
+        {% set action_demande = "Planification Visite" %}
+        {% set link_liste = 'app_dossier_visite' %}
+        {% set link_action = 'app_dossier_visite' %}
+        {% set libelle_action = 'Planifier une visite' %}
+    {% elseif not dossier.rapport %}
+        {% set action_demande = "Rapport de Visite" %}
+        {% set link_liste = 'app_dossier_show' %}
+        {% set link_action = 'app_dossier_rapport' %}
+        {% set libelle_action = 'Elaborer le rapport de visite' %}
+    {% elseif not dossier.attestation %}
+        {% set action_demande = "Résultat Inspection" %}
+        {% set link_liste = 'app_dossier_attestation' %}
+        {% set link_action = 'app_dossier_attestation' %}
+        {% set libelle_action = 'Confirmer Résultats Inspection' %}
+    {% endif %}
+
+    {% set demande = dossier.demande %}
+    {% set installation = demande.installation %}
+    {% if app.session.get('page_liste_dossier') is defined and app.session.get('page_liste_dossier') %}
+        {% set link_liste = app.session.get('page_liste_dossier') %}
+    {% endif %}
+
+    <section class="container">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">{{ action_demande }} de dossiers </span>
+            </a>
+        </header>
+
+        <div class="container">
+            <nav class="navbar shadow bg-warning border border-dark mt-2 p-0">
+                <div class="container-fluid ps-4">
+                        <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                            <div class="col">
+                                <svg class="bi" width="24" height="24" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                </svg>
+                                Détails du dossier
+                            </div>
+                            <div class="col" align="right">
+                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                            </div>
+                        </div>
+
+                </div>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-2">
+                {{ form_start(dossierForm) }}
+                
+                <div align="right">
+                    <a href="{{ path(link_liste, {'id' : dossier.id }) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
+                    <button id="btn_submit" type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider le rapport</button>
+                </div>
+                <fieldset id="synthese_demande">
+
+                <div id="validation_dossier" class="">
+                    <div class="card mb-2 pb-0">
+                        <h2 class="fs-title text-dark">
+                            Rapport d'inspection
+                            <div class="float-end fs-8">
+                                {{ form_label(dossierForm.dateVisite) }}
+                                {{ form_widget(dossierForm.dateVisite) }}
+                                {{ form_errors(dossierForm.dateVisite) }}
+                            </div>
+                        </h2>
+                    </div>
+                    <hr class="mb-3" />
+                        <div class="row mb-2" align="right">
+                                    <div class="border p-2">
+                                        <label class="me-4 text-dark fs-6 ">Localisation du Site de l'installation</label>
+                                        {{ form_label(dossierForm.latitude) }}
+                                        {{ form_widget(dossierForm.latitude) }}
+                                        {{ form_errors(dossierForm.latitude) }}
+                                        
+                                        {{ form_label(dossierForm.longitude) }}
+                                        {{ form_widget(dossierForm.longitude) }}
+                                        {{ form_errors(dossierForm.longitude) }}
+    
+                                        <button id="find_btn" class="ms-4 btn btn-sm btn-secondary action fs-7">Géolocaliser...</button>
+                                    </div>
+                        </div>
+                    <div class="">
+                    {% set rub = "" %}
+                    {% set ix = 0 %}
+                        {% for pt in les_detailverif %}
+                            {% if rub != pt.pointverification.rubrique.id %}
+                                {% if rub %}
+                                    </div>
+                                {% endif %}
+                                <div id="zrub_{{ ix }}">
+                                <div class="shadow bg-warning bg-opacity-50 border border-secondary mb-2 p-2 fw-bold">
+                                    {{ pt.pointverification.rubrique.numero }}- {{ pt.pointverification.rubrique.libelle }}
+                                </div>
+                                {% set rub = pt.pointverification.rubrique.id %}
+                                {% set ix = ix + 1 %}
+                            {% endif %}
+                            <div class="shadow p-4 pt-2 mb-3">
+                                {% set inp1 = attribute(dossierForm, 'conclusion_'~pt.id) %}
+                                {% set inp2 = attribute(dossierForm, 'comment_'~pt.id) %}
+                                <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                    <svg class="bi" width="20" height="20" fill="#333">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                    </svg> {{ pt.pointVerification.objetVerification }}
+                                    <div class="float-end">
+                                        <span class="text-danger fs-8 fw-light pt" id="btn_unactive_{{ pt.id }}">Effacer</span>
+                                    </div>
+                                </div>
+                                <div class="ps-4">
+                                    <div class="row fw-light">
+                                        <div class="col-5 shadow p-2">
+                                            <svg class="bi" width="24" height="24" fill="green">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                            </svg>
+                                            {{ pt.pointVerification.libelleConclusion1 }}
+                                            <div class="float-end">
+                                                <svg class="bi" width="24" height="24" fill="gray" id="chk0_{{ pt.id }}">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="col-5 offset-1 shadow p-2">
+                                            <svg class="bi" width="24" height="24" fill="red">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                            </svg>
+                                            {{ pt.pointVerification.libelleConclusion2 }}
+                                            <div class="float-end">
+                                                <svg class="bi" width="24" height="24" fill="gray" id="chk1_{{ pt.id }}">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mt-1">
+                                            {{ form_row(inp1) }}
+                                        </div>
+                                        <div class="mt-1">
+                                            {{ form_widget(inp2) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        <div align="right">
+                            {% if step > 0 %}
+                            <button id="prev_rub" class="next action-button btn btn-secondary btn my-3">
+                                <svg class="bi" width="16" height="16" fill="white">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-left-fill') }}"></use>
+                                </svg> Précédent
+                            </button>
+                            {% else %}
+                            <button class="next disabled action-button btn btn-outline-secondary btn my-3">
+                                <svg class="bi" width="16" height="16" fill="gray">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-left-fill') }}"></use>
+                                </svg> Précédent
+                            </button>
+                            {% endif %}
+                            {% if step < (les_rubrique.count - 1) %}
+                            <button id="next_rub" class="next action-button btn btn-warning btn my-3">
+                                Suivant <svg class="bi" width="16" height="16" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right-fill') }}"></use>
+                                </svg> 
+                            </button>
+                            {% else %}
+                            <button class="next disabled action-button btn btn-outline-secondary btn my-3">
+                                Suivant <svg class="bi" width="16" height="16" fill="gray">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right-fill') }}"></use>
+                                </svg> 
+                            </button>
+                            {% endif %}
+                            <button id="btn_save" class="next action-button btn btn-outline-success btn my-3 ms-2">Enregistrer et sortir</button>
+                        </div>
+                    </div>  
+                </div>
+
+                </fieldset>
+                {{ form_end(dossierForm) }}
+            </div>
+
+            <div class="col-lg-4 mb-2 priority-5" id="paiement_demande">
+                <div align="right">
+                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
+                    <a href="{{ path(link_liste, {'id' : dossier.id }) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
+                </div>                                
+                <div class="card mb-2 pb-0">
+                    <h2 class="fs-title">Traitement du dossier
+                        <div class="float-end">
+                            <a data-toggle="modal" data-target="#modal" href="{{ path('app_dossier_histo', {'id': dossier.id}) }}" title="Historique du traitement">
+                                <svg class="bi pt" width="24" height="24" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+                            </a>
+                        </div>
+                    </h2>
+                    <div class="row">
+                        <hr class="mb-3" />
+                        <div class="mb-3 ">
+                            <label >Numéro Demande</label>
+                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.numero }}">
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label >Date Soumission</label>
+                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.dateCreation | date('d-m-Y') }}">
+                        </div>
+                        <div class="mb-3 col-lg-6">
+                            <label >Puissance</label>
+                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.puissance }} kW">
+                        </div>
+                        <hr class="mb-3" />
+                        <div class="mb-3 ">
+                            <label >Date création dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Référent chargé du dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.referent }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Contrôleur chargé du traitement</label>
+                            {% if dossier.controleur %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.controleur }}">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Visite du site pour inspection</label>
+                            {% if dossier.visite %}
+                            <div class="row">
+                                <div class="col-7">
+                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
+                                </div>
+                                <div class="col-5">
+                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y') }}">
+                                </div>
+                                <div class="col-12">
+                                    Modèle Rapport d'inspection
+                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.rapport.libelle }} - {{ dossier.visiteCourante.rapport.PointVerification.count }} points de vérification">
+                                </div>
+                            </div>
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Rapport de visite</label>
+                            {% if dossier.rapport %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite réalisée et Rapport élaboré">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non finalisé">
+                                {% set nb_nok = 0 %}
+                                {% for pt in les_detailverif %}
+                                    {% if pt.conclusion is null %}
+                                        {% set nb_nok = nb_nok+1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if nb_nok %}
+                                    <div align="right" class="text-danger fw-light fs-7">{{nb_nok}} points de vérification non renseignés</div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+{#                         
+                        <div class="mb-3 ">
+                            <label >Résultat de conformité</label>
+                            {% if dossier.attestation %}
+                                <input type="text" disabled readonly class="bg-success bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Résultat inspection disponile">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-success  form-control text-light form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div> #}
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {% set demande = dossier.demande %}
+    {% set installation = demande.installation %}
+
+<script>
+    $(document).ready(function() {
+        
+        for(i=0; i<{{ les_rubrique.count }}; i++) {
+            $("#zrub_"+i).hide();
+        }
+        $("#zrub_"+({{ step }})).show();
+
+        $("#next_rub").on('click', function() { $("#form_stay").val(1); $("#form_step").val(({{step}}+1)); });  
+        $("#prev_rub").on('click', function() { $("#form_stay").val(1); $("#form_step").val(({{step}}-1)); });  
+        $("#btn_save").on('click', function() { $("#form_stay").val(0); $("#form_step").val(0); });  
+        $("#btn_submit").on('click', function() { 
+            $("#form_stay").val(0); $("#form_step").val(0); 
+            ok_valid=1; 
+            $('.vconclusion').each(function(){
+                if($(this).val()=="") {
+                    ok_valid=0; 
+                }
+            });
+            if(ok_valid=="0") {
+                alert("Tous les points de vérification n'ont pas été renseignés !");
+                return false;
+            } else {
+                $("#form_valid").val(1);
+            }
+        });  
+
+        {% for pt in les_detailverif %}
+            $("#chk0_{{ pt.id }}").on('click', function(){ active_chk({{ pt.id }}, 0); });  
+            $("#chk1_{{ pt.id }}").on('click', function(){ active_chk({{ pt.id }}, 1); });  
+            $("#btn_unactive_{{ pt.id }}").on('click', function(){ unactive_chk({{ pt.id }}); });  
+            
+            val_inp = $("#form_conclusion_{{ pt.id }}"); 
+            comment_inp = $("#form_comment_{{ pt.id }}"); 
+            
+            $("#form_comment_{{ pt.id }}").hide();
+            $("#btn_unactive_{{ pt.id }}").hide();
+
+            {% if pt.conclusion == '1' %} 
+                comment_inp.hide();
+                $("#btn_unactive_{{ pt.id }}").show();
+
+                $("#chk0_{{ pt.id }}").attr("fill", "green");
+                $("#chk0_{{ pt.id }}").html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
+                comment_inp.hide(); val_inp.val("1");
+            {% endif %}
+            {% if pt.conclusion == '0' %} 
+                $("#form_comment_{{ pt.id }}").show();
+                $("#btn_unactive_{{ pt.id }}").show();
+
+                $("#chk1_{{ pt.id }}").attr("fill", "green");
+                $("#chk1_{{ pt.id }}").html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
+                comment_inp.show(); val_inp.val("0");
+            {% endif %}
+            
+        {% endfor %}
+
+        function active_chk(id, val) {
+            val_inp = $("#form_conclusion_"+id); 
+            comment_inp = $("#form_comment_"+id); 
+            el=$("#chk"+val+"_"+id);
+            
+            $("#chk0_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk0_"+id).attr("fill", "gray");
+
+            $("#chk1_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk1_"+id).attr("fill", "gray");
+
+
+            el.attr("fill", "green");
+            el.html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
+            if(val==0) { comment_inp.hide(); comment_inp.val(""); } else { comment_inp.show(); }
+            if(val==0) { val_inp.val(1); } else { val_inp.val(0); }
+            
+
+
+            $("#btn_unactive_"+id).show();
+        }
+
+        function unactive_chk(id) {
+            $("#chk0_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk0_"+id).attr("fill", "gray");
+
+            $("#chk1_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk1_"+id).attr("fill", "gray");
+
+            val_inp = $("#form_conclusion_"+id); 
+            val_inp.val("");
+
+            $("#btn_unactive_"+id).hide();
+
+            val_inp = $("#form_conclusion_"+id); 
+            comment_inp = $("#form_comment_"+id); 
+            val_inp.val(""); comment_inp.val(""); comment_inp.hide();
+        }
+
+        
+        $("#find_btn").click(function () { //user clicks button
+            if ("geolocation" in navigator){ //check geolocation available 
+                //try to get user current location using getCurrentPosition() method
+                navigator.geolocation.getCurrentPosition(function(position){ 
+                        $("#form_latitude").val(position.coords.latitude)
+                        $("#form_longitude").val(position.coords.longitude)
+                    });
+            }else{
+                console.log("Browser doesn't support geolocation!");
+            }
+            return false;
+        });
+
+    });
+</script>
+{% endblock %}

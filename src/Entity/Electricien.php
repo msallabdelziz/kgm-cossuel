@@ -51,7 +51,7 @@ class Electricien
     public function __construct()
     {
         $this->created_by = "";
-        $this->role = "ROLE_CLIENT";
+        $this->role = "ROLE_PUBLIC";
         $this->created_at = new \DateTimeImmutable();
         $this->installation = new ArrayCollection();
     }

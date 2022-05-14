@@ -6,12 +6,14 @@
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="fw-bold">Gestion des rapports</h4>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_rapport_add') }}" class="btn btn-primary btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
                         </svg>
                         Nouveau Rapport
                     </a>
+                    {% endif %}
                 </div>
                 <span class="divider">
                     <hr></span>
@@ -35,8 +37,8 @@
             <thead>
                 <tr>
                     <th scope="col">Nom</th> 
-                    <th class="text-center" scope="col">Rubriques</th> 
-                    <th scope="col"></th>
+                    <th width="150" class="text-center" scope="col">Rubriques</th> 
+                    <th width="100" scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -56,16 +58,20 @@
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
                                 </svg>
                             </a>
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_rapport_edit', {'id': reg.id }) }}" class="mx-1" title="Modifier">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="" class="mx-1" title="Supprimer">
                                 <svg class="bi" width="16" height="16" fill="red">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

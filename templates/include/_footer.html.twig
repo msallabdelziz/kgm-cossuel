@@ -6,9 +6,10 @@
 		<script src="{{ asset('assets/js/main.js') }}"></script>
 		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
 		<script>
-		$('body').on('click', '[data-bs-toggle="modal"]', function(){
+
+		{# $('body').on('click', '[data-bs-toggle="modal"]', function(){
         	$($(this).data("bs-target")+' .modal-body').load($(this).data("bs-remote"));
-    	});  
+    	});   #}
 
 		$(document).ready(function() {
 			$(window).keydown(function(event) {
@@ -26,6 +27,14 @@
 					}
 				});
 			}
+
+			// Fill modal with content from link href
+			$("#modal").on("show.bs.modal", function(e) {
+				var link = $(e.relatedTarget); 
+				alert($(e.relatedTarget).attr("href"));
+				return true;
+				$(this).find(".modal-body").load(link.attr("href"));
+			});	
 
 		});
 		</script>

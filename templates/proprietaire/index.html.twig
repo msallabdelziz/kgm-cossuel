@@ -90,16 +90,20 @@
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
                                 </svg>
                             </a>
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_proprietaire_edit', {'id': ag.id }) }}" class="mx-1" title="Modifier">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="" class="mx-1" title="Supprimer">
                                 <svg class="bi" width="16" height="16" fill="red">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

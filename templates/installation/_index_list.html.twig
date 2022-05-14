@@ -9,7 +9,7 @@
                             <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
                         </select>
                     </div>
-                    {% if modif == 1 %}
+                    {% if modif == 1 and (is_granted('ROLE_PUBLIC')) %}
                     <a href="{{ path('app_installation_add', { 'id': 0}) }}" class="btn btn-primary btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
@@ -158,11 +158,13 @@
                                 {% if ag.step > 1 %}
                                     {% set link_edit = 'app_installation_add' ~ ag.step %}
                                 {% endif %}
-                                <a href="{{ path(link_edit, {'id': ag.id }) }}" class="mx-1" title="Modifier">
-                                    <svg class="bi" width="16" height="16" fill="black">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
-                                    </svg>
-                                </a>
+                                {% if is_granted('ROLE_PUBLIC') %}
+                                    <a href="{{ path(link_edit, {'id': ag.id }) }}" class="mx-1" title="Modifier">
+                                        <svg class="bi" width="16" height="16" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                        </svg>
+                                    </a>
+                                {% endif %}
                             {% else %}
                                 <a href="#" class="mx-1" title="Modification non autorisée">
                                     <svg class="bi" width="16" height="16" fill="gray">

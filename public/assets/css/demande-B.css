@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body {
+  font-family: "poppins", sans-serif;
+
+  /* background: #ccc; */
+  background-color: #1c1b19;
+  padding: 30px;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.container {
+  width: 21cm;
+  max-height: 29.7cm;
+}
+
+.indentif {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.invoice {
+  background: #fff;
+  width: 100%;
+  padding: 50px;
+}
+
+.logo {
+  width: 2.5cm;
+}
+.attest-conform {
+  text-decoration-line: underline;
+}
+
+.document-type {
+  text-align: center;
+  color: #1c1b19;
+  font-weight: inherit;
+  border-bottom: 3px solid #3198f7;
+  border-top: 3px solid #3198f7;
+  padding: 7px;
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.text-demande {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.bg-orange {
+  background-color: #3198f7;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+.border {
+  border: 3px solid #3198f7;
+  margin-bottom: 10px;
+  border-color: #3198f7 !important;
+}
+.signature {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.date {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.conditions {
+  font-size: 0.7em;
+  color: #666;
+}
+
+.bottom-page {
+  font-size: 0.7em;
+  /* padding-top: 100px; */
+  border-top: 2px solid #3198f7;
+}
+
+.comptable {
+  text-decoration-line: underline;
+  text-align: center;
+}
+
+.code-qr {
+  height: 100%;
+  width: auto;
+  text-align: -webkit-right;
+}
+
+.text {
+  text-align: center;
+  width: 80%;
+  margin: auto;
+  font-size: 11px;
+}
+
+.row { margin-top:2px; padding:0px; overflow:hidden; }
+.clear { clear: both; }
+.col-12 { float: left; width: 750px; }
+.col-11 { float: left; width: 689px; }
+.col-10 { float: left; width: 626px; }
+.col-9 { float: left; width: 556px; }
+.col-8 { float: left; width: 493px; }
+.col-7 { float: left; width: 430px; }
+.col-6 { float: left; width: 376px; }
+.col-5 { float: left; width: 313px; }
+.col-4 { float: left; width: 248px; }
+.col-3 { float: left; width: 188px; }
+.col-2 { float: left; width: 125px; }
+.col-1 { float: left; width: 63px; }
+
+.d-flex div { float:left; margin-right:4px; margin-bottom:2px; }
