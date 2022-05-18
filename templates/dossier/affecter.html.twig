@@ -82,11 +82,8 @@
             </nav>
         </div>
 
-        <div class="row">
+        <div class="row pt-4">
             <div class="col-lg-8 mb-2">
-                <div align="right">
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                </div>
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
@@ -399,9 +396,6 @@
             </div>
 
             <div class="col-lg-4 mb-2" id="paiement_demande">
-                <div align="right">
-                    <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
-                </div>                                
                 <div class="card mb-2 pb-0">
                     <h2 class="fs-title">Traitement du dossier
                         <div class="float-end">

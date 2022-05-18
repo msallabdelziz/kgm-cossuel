@@ -88,13 +88,20 @@ class DossierRepository extends ServiceEntityRepository
             ->setParameter('val', '%'.$val_rech.'%');
         }
         if(is_array($val_filtre) && count($val_filtre)) {
+            $restr="";
             $ix=0;
             foreach ($val_filtre as $p => $v) {
                 if($p=="etat") {
-                    $restr="a.affecte = 0 and a.visite = 0 and a.rapport = 0";
-                    if($v=="Visite") { $restr="a.affecte = 1 and a.visite = 0 and a.rapport = 0"; }
-                    elseif($v=="Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 0"; }
-                    elseif($v=="Attestation") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1"; }
+                    $restr="0=1";
+                    if($v=="Validé, En Attente Affectation" || $v=="En Attente Affectation" || $v=="Affectation") { $restr="a.affecte = 0 and a.visite = 0 and a.rapport = 0 and a.attestation = 0"; }
+                    elseif($v=="Visite" || $v=="Affecté, En Attente Visite" || $v=="En Attente Visite") { $restr="a.affecte = 1 and a.visite = 0 and a.rapport = 0 and a.attestation = 0"; }
+                    elseif($v=="Rapport" || $v=="Visite Planifiée, En Attente de Rapport" || $v=="En Attente de Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 0 and a.attestation = 0"; }
+                    elseif($v=="Attestation" || $v=="Visite Réalisée, En Attente de Confirmation Rapport" || $v=="En Attente de Confirmation Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 0"; }
+                    elseif($v=="Cloture" || $v=="Clôture" || $v=="En Attente de Cloture" || $v=="Rapport confirmé, En Attente de Clôture" || $v=="En Attente de Clôture") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 1"; }
+                    elseif($v=="Soumis" || $v=="Soumis, En Attente Paiement" || $v=="En Attente Paiement") { $restr="c.etat='Soumis'"; }
+//                    elseif($v=="Demande Validée" || $v=="Validé") { $restr="c.etat='Demande validée'"; }
+                    elseif($v=="Paiement enregistré" || $v=="Payé, En Attente confirmation Paiement" || $v=="En Attente confirmation Paiement") { $restr="c.etat='Paiement enregistré'"; }
+                    elseif($v=="Paiement confirmé" || $v=="Payé" || $v=="En Attente Validation" || $v=="Payé, En Attente Validation") { $restr="c.etat='Paiement confirmé'"; }
                     $q->andWhere($restr);
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)

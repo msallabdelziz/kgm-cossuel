@@ -12,26 +12,35 @@ use App\Entity\Agence;
 use App\Entity\Localite;
 use App\Form\AgenceType;
 use App\Repository\LocaliteRepository;
+use App\Services\Tools;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Notifier\Message\SmsMessage;
+use Symfony\Component\Notifier\TexterInterface;
 
 #[Route('/agence', name: 'app_agence_')]
 class AgenceController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, AgenceRepository $agenceRepository): Response
+    public function index(Request $request, AgenceRepository $agenceRepository, LocaliteRepository $localiteRepository): Response
     {
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agence');
         $request->getSession()->set('sousmenu', '');
-        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        
+        $val_rech=""; 
+        
+        $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            $val_localite = $request->request->get("val_localite");
         }
+
         $ag = $agenceRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('agence/index.html.twig', [
             'controller_name' => 'AgenceController',
             'les_agence'=> $ag,
-            'val_rech'=> $val_rech
+            'val_rech'=> $val_rech,
         ]);
     }
 
@@ -55,7 +64,7 @@ class AgenceController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(Agence $id,Request $request, AgenceRepository $agenceRepository): Response
+    public function update(Agence $id,Request $request, AgenceRepository $agenceRepository, Tools $tools): Response
     {
         $agence = $agenceRepository->find($id);
         $form = $this->createForm(AgenceType::class, $agence);
@@ -63,6 +72,10 @@ class AgenceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $agenceRepository->add($agence);
+
+
+//            $tools->notifSMS('00221773799200', 'MaJ Agence réussie !');
+
             return $this->redirectToRoute("app_agence_show", ['id'=>$agence->getId()]);
         }
 

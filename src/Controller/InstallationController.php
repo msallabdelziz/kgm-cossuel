@@ -15,6 +15,7 @@ use App\Form\InstallationType;
 use App\Repository\DemandeRepository;
 use App\Repository\ElectricienRepository;
 use App\Repository\InstallationRepository;
+use App\Repository\LocaliteRepository;
 use App\Repository\PaiementRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\TypeConstructionRepository;
@@ -44,7 +45,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class InstallationController extends AbstractController
 {
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
-    public function index0(Request $request, InstallationRepository $installationRepository): Response
+    public function index0(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
@@ -59,9 +60,27 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_usage=""; 
+        $les_usage = array("domestique", "non_domestique");
+
+        $val_statut=""; 
+        $les_statut = array("Soumis");
+
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_usage = $request->request->get("val_usage");
+            if($val_usage) { $val_filtre["usages"] = $val_usage; }
+            
+            $val_statut = $request->request->get("val_statut");
+            if($val_statut) { $val_filtre["etat"] = $val_statut; }
         }
 
         return $this->render('installation/index0.html.twig', [
@@ -69,11 +88,20 @@ class InstallationController extends AbstractController
             'page_list' => "app_installation_index0",
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
+            'les_usage'=> $les_usage,
+            'val_usage'=> $val_usage,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, InstallationRepository $installationRepository): Response
+    public function index(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
@@ -89,8 +117,21 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_usage=""; 
+        $les_usage = array("domestique", "non_domestique");
+
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_usage = $request->request->get("val_usage");
+            if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
         return $this->render('installation/index.html.twig', [
@@ -100,11 +141,17 @@ class InstallationController extends AbstractController
             'affichage' => $mode_affichage,
             'etatDemande' => "en soumission",
             'val_rech' => $val_rech,
+
+            'les_usage'=> $les_usage,
+            'val_usage'=> $val_usage,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
-    public function index2(Request $request, InstallationRepository $installationRepository): Response
+    public function index2(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
@@ -120,8 +167,21 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_usage=""; 
+        $les_usage = array("domestique", "non_domestique");
+
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_usage = $request->request->get("val_usage");
+            if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
         return $this->render('installation/index.html.twig', [
@@ -131,11 +191,17 @@ class InstallationController extends AbstractController
             'page_list' => "app_installation_index2",
             'etatDemande' => "en attente de paiement",
             'val_rech' => $val_rech,
+
+            'les_usage'=> $les_usage,
+            'val_usage'=> $val_usage,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
-    public function index3(Request $request, InstallationRepository $installationRepository): Response
+    public function index3(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
@@ -151,8 +217,21 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_usage=""; 
+        $les_usage = array("domestique", "non_domestique");
+
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_usage = $request->request->get("val_usage");
+            if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
         return $this->render('installation/index.html.twig', [
@@ -162,6 +241,12 @@ class InstallationController extends AbstractController
             'affichage' => $mode_affichage,
             'etatDemande' => "en attente de validation",
             'val_rech' => $val_rech,
+
+            'les_usage'=> $les_usage,
+            'val_usage'=> $val_usage,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
@@ -800,55 +885,61 @@ class InstallationController extends AbstractController
     {
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
-        // $pdfOptions->set('defaultFont', 'Arial');
+        // $pdfOptions->set('defaultFont', 'Courier');
 
         // Instantiate Dompdf with our options
         $dompdf = new Dompdf($pdfOptions);
         
         // Retrieve the HTML generated in our twig file
-        $html = $this->renderView('installation/showpdf.html.twig', [
+        $html = $this->renderView('installation/showpdf0.html.twig', [
             'installation' => $installation,
             'title' => "Formulaire de demande COSSUEL"
         ]);
         
-        // $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
-        // $html .= '<link href="'.$baseurl.'/assets/css/style.css" rel="stylesheet" />';
-        // $html .= '<link href="'.$baseurl.'/assets/css/bootstrap.min.css" rel="stylesheet" />';
-        // $html .= '<style>'.file_get_contents('../public/assets/css/style.css').' </style>';
-        // $html .= '<style>'.file_get_contents('../public/assets/css/bootstrap.min.css').' </style>';
+        $html.="\n";
+        $html.= '<link rel="stylesheet" type="text/css" media="screen" href="'.$this->getParameter('css_directory').'/demande-A.css" />'; $html.="\n";
+        // $html.= '<link rel="stylesheet" type="text/css" media="screen" href="'.$this->getParameter('css_directory').'/bootstrap.css" />'; $html.="\n";
 
         // echo $html;
+
+        $filename = 'DemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
+
+        // echo realpath($this->getParameter('photo_directory').'/css');
+        // exit;
+
+        $dompdf->getOptions()->setChroot(realpath($this->getParameter('css_directory')));
+        //    $dompdf->setBasePath(realpath($this->getParameter('css_directory').'/'));
+
         // Load HTML to Dompdf
         $dompdf->loadHtml($html);
         
         // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
-       $dompdf->setPaper('A4', 'portrait');
+        $dompdf->setPaper('A4', 'letter');
 
-        // Render the HTML as PDF
+       // Render the HTML as PDF
         $dompdf->render();
 
-        // Output the generated PDF to Browser (inline view)
-        $dompdf->stream("demandeCOSSUEL.pdf", [
-            "Attachment" => false
-        ]);
-
-        return new Response($dompdf->output());
+        $output = $dompdf->output();
+        file_put_contents($fich, $output);
+    
+        return $this->file($fich, 'fich_temp_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
 
     }
 
     #[Route('/{id}/showpdf', name: 'app_installation_showpdf', methods: ['GET'])]
     public function showpdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
-        
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('installation/showpdf.html.twig', [
             'installation' => $installation,
             'title' => "Formulaire de demande COSSUEL"
         ]);
         
-        // echo $html;
+        echo $html; exit;
+
         $filename = 'DemandeCOSSUEL_'.$installation->getDemandeCourante()->getNumero();
-        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+        $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
 
         if(!file_exists($fich)) {
             $knpSnappyPdf
@@ -885,9 +976,9 @@ class InstallationController extends AbstractController
             'installation' => $installation,
             'title' => "Facture de demande COSSUEL"
         ]);
-        // echo $html;
+        echo $html; exit;
         $filename = 'FactureDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
-        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+        $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
 
         if(!file_exists($fich)) {
             $knpSnappyPdf
@@ -925,7 +1016,7 @@ class InstallationController extends AbstractController
         ]);
         // echo $html;
         $filename = 'PaiementDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
-        $fich = $this->getParameter('photo_directory').'/'.$filename.'.pdf';
+        $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
 
         if(!file_exists($fich)) {
             $knpSnappyPdf

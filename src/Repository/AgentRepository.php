@@ -61,6 +61,18 @@ class AgentRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+    public function findByProfil($profil)
+    {
+        return $this->createQueryBuilder('agt')
+        ->join('App\Entity\Profil', 'prof', 'WITH', 'agt.profil = prof.id')
+        ->andWhere('prof.code = :val2')
+        ->setParameter('val2', $profil)
+        ->orderBy('agt.id', 'ASC')
+//            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
     
     /**
      * @return Agent[] Returns an array of Agent objects

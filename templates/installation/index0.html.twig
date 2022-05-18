@@ -6,7 +6,7 @@
             <input type="hidden" id="affichage_demande" type="text" name="affichage_demande" value="">
     </form>
 
-    {% if app.session.get('affichage_demande') is not defined or app.session.get('affichage_demande') == "listing" %}
+    {% if app.session.get('affichage_demande') is not defined or not app.session.get('affichage_demande') or app.session.get('affichage_demande') == "listing" %}
         {% include "installation/_index0_list.html.twig" %}
     {% else %}
         {% include "installation/_index0_card.html.twig" %}
@@ -14,9 +14,21 @@
 
 {% endblock %}
 
+
 {% block javascripts %}
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+
+        {% for filtre in ["localite", "usage", "statut"] %}
+            $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
+            $('#val_{{filtre}}0').on('change', function() {
+                optSel=$('#val_{{filtre}}0').find("option:selected");
+                valSel=optSel.val();
+                $('#val_{{filtre}}').val(valSel);
+                $('#form_rech_list').submit();
+            });
+        {% endfor %}
+
         $('#val_affichage_demande').on('change', function() {
             optSel=$('#val_affichage_demande').find("option:selected");
             valSel=optSel.val();

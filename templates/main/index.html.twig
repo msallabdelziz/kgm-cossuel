@@ -13,8 +13,8 @@
 						<div class="un-stat d-flex">
 							<div class="">
 								<p class="mb-1">
-									<span class="fw-bold number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
-									<span class="text-light">Total des demandes</span>
+									<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+									<span class="text-light fw-light">Total des demandes</span>
 								</p>
 							</div>
 						</div>
@@ -26,8 +26,8 @@
 						<div class="un-stat d-flex">
 							<div class="">
 								<p class="mb-1">
-									<span class="fw-bold number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
-									<span class="">Demandes domestiques</span>
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+									<span class="fw-light">Demandes domestiques</span>
 								</p>
 							</div>
 						</div>
@@ -39,8 +39,8 @@
 						<div class="un-stat d-flex">
 							<div class="">
 								<p class="mb-1">
-									<span class="fw-bold number mb-0 fs-7 badge badge-warning">{{ les_stat["Non Domestiques"] }}</span>
-									<span class="text-light">Demandes non domestiques</span>
+									<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["Non Domestiques"] }}</span>
+									<span class="text-light fw-light">Demandes non domestiques</span>
 								</p>
 							</div>
 						</div>
@@ -48,41 +48,41 @@
 				</div>
 				<!-- end col -->
 				<div class="row m-1 mt-4 pt-2">
-					<h5 class="text-dark pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
 				</div>
 				<!-- end col -->
 				
-				{% set les_etat = ["Soumis"] %}
+				{% set les_etat = ["Soumis, en attente paiement"] %}
 				{% set les_col = ["danger"] %}
 				
 				{% if is_granted('ROLE_CAISSIER') %}
-					{% set les_etat = ["Paiement enregistré", "Paiement validé"] %}
+					{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
 					{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
 				{% endif %}
 
 				{% if is_granted('ROLE_DAF') %}
-					{% set les_etat = ["Paiement enregistré", "Paiement validé"] %}
+					{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
 					{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
 				{% endif %}
 
 				{% if is_granted('ROLE_RFO') %}
-					{% set les_etat = ["Demande validée"] %}
+					{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
 					{% set les_col = ["success bg-opacity-25", ] %}
 				{% endif %}
 
 				{% if is_granted('ROLE_CONTROLEUR') %}
-					{% set les_etat = ["Dossier affecté", "Dossier avec visite planifiée", "Dossier avec rapport en attente", "Dossier cloturé"] %}
+					{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
 					{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
 				{% endif %}
 
 				{% if is_granted('ROLE_REFERENT') %}
-					{% set les_etat = ["Paiement validé", "Demande validée", "Dossier créé", "Dossier affecté", "Dossier avec visite planifiée", "Dossier avec rapport en attente", "Dossier cloturé"] %}
-					{% set les_col = ["info", "dark bg-opacity-50", "light", "red", "primary bg-opacity-75", "green"] %}
+					{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+					{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
 				{% endif %}
 				
 				{% if is_granted('ROLE_ADMIN') %}
-					{% set les_etat = ["Soumis", "Paiement enregistré", "Paiement validé", "Demande validée", "Dossier créé", "Dossier affecté", "Dossier avec visite planifiée", "Dossier avec rapport en attente", "Dossier cloturé"] %}
-					{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "light", "red", "primary bg-opacity-75", "green"] %}
+					{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+					{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
 				{% endif %}
 
 				{% set ix = 0 %}
@@ -93,8 +93,8 @@
 							<div class="un-stat d-flex">
 								<div class="">
 									<p class="mb-1">
-										<span class="fw-bold number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
-										<span>{{etat}}</span>
+										<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+										<span class="fw-light">{{etat}}</span>
 									</p>
 									
 								</div>

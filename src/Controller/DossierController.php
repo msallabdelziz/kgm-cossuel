@@ -9,6 +9,7 @@ use App\Entity\Rapport;
 use App\Entity\Visite;
 use App\Repository\AgentRepository;
 use App\Repository\DossierRepository;
+use App\Repository\LocaliteRepository;
 use App\Repository\PaiementRepository;
 use App\Repository\VisiteRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,7 +32,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class DossierController extends AbstractController
 {
     #[Route('/all', name: 'app_dossier_index0')]
-    public function index0(Request $request, DossierRepository $dossierRepository): Response
+    public function index0(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -39,28 +40,56 @@ class DossierController extends AbstractController
         $request->getSession()->set('page_liste_dossier', 'app_dossier_index0');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
-        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+
         if($request->request->get('affichage_demande')) {
             $affichage_demande=$request->request->get('affichage_demande');
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
         
-        if($request->request->get("val_rech")) {
-            $val_rech = $request->request->get("val_rech");
-        }
-
         $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_controleur=""; 
+        $les_controleur = $agentRepository->findByProfil("controleur");
+
+        $val_statut=""; 
+        $les_statut = array("Payé, En Attente Confirmation Paiement", "Payé, En Attente Validation", "Validé, En Attente Affectation", "Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de Confirmation Rapport", "Rapport confirmé, En Attente de Clôture",);
+
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+            
+            $val_statut = $request->request->get("val_statut");
+            if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        }
 
         return $this->render('dossier/index0.html.twig', [
             'page_list' => "app_dossier_index0",
             'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/affectation', name: 'app_dossier_affectation')]
-    public function affectation_index(Request $request, DossierRepository $dossierRepository): Response
+    public function affectation_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -74,11 +103,23 @@ class DossierController extends AbstractController
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
         
-        if($request->request->get("val_rech")) {
-            $val_rech = $request->request->get("val_rech");
-        }
-
         $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_controleur=""; 
+        $les_controleur = $agentRepository->findByProfil("controleur");
+
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+        }
 
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Affectation",
@@ -86,11 +127,17 @@ class DossierController extends AbstractController
             'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/visite', name: 'app_dossier_visite')]
-    public function visite_index(Request $request, DossierRepository $dossierRepository): Response
+    public function visite_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -104,8 +151,20 @@ class DossierController extends AbstractController
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
 
-        if($request->request->get("val_rech")) {
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_controleur=""; 
+        $les_controleur = $agentRepository->findByProfil("controleur");
+
+        if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
         }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
@@ -116,11 +175,17 @@ class DossierController extends AbstractController
             'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/rapport', name: 'app_dossier_rapport')]
-    public function rapport_index(Request $request, DossierRepository $dossierRepository): Response
+    public function rapport_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -134,8 +199,20 @@ class DossierController extends AbstractController
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
 
-        if($request->request->get("val_rech")) {
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_controleur=""; 
+        $les_controleur = $agentRepository->findByProfil("controleur");
+
+        if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
         }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
@@ -146,11 +223,17 @@ class DossierController extends AbstractController
             'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 
     #[Route('/attestation', name: 'app_dossier_attestation')]
-    public function attestation_index(Request $request, DossierRepository $dossierRepository): Response
+    public function attestation_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -164,8 +247,21 @@ class DossierController extends AbstractController
             $request->getSession()->set('affichage_demande', $affichage_demande);
         } 
 
-        if($request->request->get("val_rech")) {
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_controleur=""; 
+        $les_controleur = $agentRepository->findByProfil("controleur");
+
+        if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+            
         }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
@@ -176,6 +272,12 @@ class DossierController extends AbstractController
             'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 

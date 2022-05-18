@@ -49,15 +49,14 @@ class MainController extends AbstractController
             "Domestiques"=>0, 
             "Non Domestiques"=>0, 
             "En saisie"=>0, 
-            "Soumis"=>0, 
-            "Paiement enregistré"=>0, 
-            "Paiement validé"=>0, 
-            "Demande validée"=>0,
-            "Dossier créé"=>0,
-            "Dossier affecté"=>0,
-            "Dossier avec visite planifiée"=>0,
-            "Dossier avec rapport en attente"=>0,
-            "Dossier cloturé"=>0,
+            "Soumis, en attente paiement"=>0, 
+            "Payé, en attente confirmation paiement"=>0, 
+            "Payé, en attente validation"=>0, 
+            "Dossier Validé, En Attente Affectation"=>0,
+            "Dossier Affecté, En Attente Visite"=>0,
+            "Visite Planifiée, En Attente de Rapport"=>0,
+            "Visite Réalisée, En Attente de validation Rapport"=>0,
+            "Rapport validé, en attente clôture"=>0,
         ];
 
         foreach ($les_demande as $demande) {
@@ -65,18 +64,26 @@ class MainController extends AbstractController
             $usage = $demande->getInstallation()->getUsages();
             if($usage=="domestique") { $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; }
             if($usage=="non_domestique") { $les_stat0["Non Domestiques"]=$les_stat0["Non Domestiques"]+1; }
-            $les_stat0[$etat] = $les_stat0[$etat]+1;
+
+            if($etat=="Soumis") { $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; }
+            if($etat=="Paiement enregistré") { $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; }
+            if($etat=="Paiement validé") { $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; }
+            
             $les_stat0["All"] = $les_stat0["All"]+1;
 
         }
 
         foreach ($les_dossier as $dossier) {
-            $etat = $dossier->getEtat();
-            if($etat=="Affectation") { $les_stat0["Dossier affecté"] = $les_stat0["Dossier affecté"]+1; }
-            if($etat=="Visite") { $les_stat0["Dossier avec visite planifiée"] = $les_stat0["Dossier avec visite planifiée"]+1; }
-            if($etat=="Rapport") { $les_stat0["Dossier avec rapport en attente"] = $les_stat0["Dossier avec rapport en attente"]+1; }
-            if($etat=="Attestation") { $les_stat0["Dossier cloturé"] = $les_stat0["Dossier cloturé"]+1; }
+            $affecte = $dossier->getAffecte(); $visite = $dossier->getVisite();
+            $rapport = $dossier->getRapport(); $attestation = $dossier->getAttestation();
+
+            if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier Validé, En Attente Affectation"] = $les_stat0["Dossier Validé, En Attente Affectation"]+1; }
+            if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier affecté"] = $les_stat0["Dossier Affecté, En Attente Visite"]+1; }
+            if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { $les_stat0["Visite Planifiée, En Attente de Rapport"] = $les_stat0["Visite Planifiée, En Attente de Rapport"]+1; }
+            if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { $les_stat0["Visite Réalisée, En Attente de validation Rapport"] = $les_stat0["Visite Réalisée, En Attente de validation Rapport"]+1; }
+            if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { $les_stat0["Rapport validé, en attente clôture"] = $les_stat0["Rapport validé, en attente Cloture"]+1; }
         }
+
 
         // usually you'll want to make sure the user is authenticated first
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');

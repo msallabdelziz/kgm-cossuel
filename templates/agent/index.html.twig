@@ -19,13 +19,19 @@
                     <hr></span>
             <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-3" style="height:0px; position:relative; top:4px;">
                 <div class="col-2 offset-5 fs-6 border-bottom">
-                    <select name="" id="" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Fonction ...</option>
+                    <select name="val_profil0" id="val_profil0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les fonctions ...</option>
+                        {% for obj in les_profil %}
+                            <option value="{{obj.id}}" {% if obj.id == val_profil %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-2 fs-6 border-bottom">
-                    <select name="" id="" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Agence ...</option>
+                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Agences ...</option>
+                        {% for obj in les_agence %}
+                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
@@ -95,7 +101,7 @@
                                 </svg>
                             </a>
                             {% endif %}
-                            {% if is_granted('ROLE_ADMIN') %}
+                            {% if is_granted('ROLE_ADMIN') and 0 %}
                             <a href="" class="mx-1" title="Supprimer">
                                 <svg class="bi" width="16" height="16" fill="red">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
@@ -112,3 +118,19 @@
     </section>
 {% endblock %}
 
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+
+        {% for filtre in ["agence", "profil"] %}
+            $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
+            $('#val_{{filtre}}0').on('change', function() {
+                optSel=$('#val_{{filtre}}0').find("option:selected");
+                valSel=optSel.val();
+                $('#val_{{filtre}}').val(valSel);
+                $('#form_rech_list').submit();
+            });
+        {% endfor %}
+    });
+</script>
+{% endblock %}

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Proprietaire;
 use App\Form\ProprietaireType;
+use App\Repository\LocaliteRepository;
 use App\Repository\ProprietaireRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,12 +14,32 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/proprietaire')]
 class ProprietaireController extends AbstractController
 {
-    #[Route('/', name: 'app_proprietaire_index', methods: ['GET'])]
-    public function index(Request $request, ProprietaireRepository $proprietaireRepository): Response
+    #[Route('/', name: 'app_proprietaire_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, ProprietaireRepository $proprietaireRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'proprietaire');
         $request->getSession()->set('sousmenu', '');
+
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+        }
+
+        $les_proprietaire = $proprietaireRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+
+        return $this->render('proprietaire/index.html.twig', [
+            'les_proprietaire' => $les_proprietaire,
+            'val_rech' => $val_rech,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
+        ]);
 
         return $this->render('proprietaire/index.html.twig', [
             'les_proprietaire' => $proprietaireRepository->findAll(),
