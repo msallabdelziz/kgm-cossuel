@@ -1832,11 +1832,15 @@ only screen and (min-width: 768px) and (max-width: 991px),
     background: #11110e;
 }
 
+#modal2 .modal-dialog {
+    max-width: 75%;
+}    
 
 @media screen and (max-width: 1225px) and (min-width: 1045px) {
     .priority-5{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 1045px) and (min-width: 835px) {
@@ -1846,6 +1850,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     .priority-4{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 835px) and (min-width: 300px) {
@@ -1858,6 +1863,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     .priority-3{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 300px) {

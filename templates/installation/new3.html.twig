@@ -41,6 +41,10 @@
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-6">
+                                        {{ form_row(installationForm.typeInstallation) }}
+                                        </div>
+                                        <hr class="my-3" />
+                                        <div class="col-lg-6">
                                         {{ form_row(installationForm.natureTravaux) }}
                                         </div>
                                         <div class="col-lg-2 natureTravaux1">
@@ -56,10 +60,6 @@
                                             {{ form_row(installationForm.existantAutre) }}
                                         </div>
                                         <hr class="my-3" />
-                                        <div class="col-lg-4">
-                                            {{ form_row(installationForm.puissance) }}
-                                        </div>
-                                        <hr class="mb-3" />
                                         <div class="col-lg-4">
                                             {{ form_row(installationForm.intervenantAutre) }}
                                         </div>

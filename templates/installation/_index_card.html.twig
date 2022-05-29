@@ -22,18 +22,18 @@
                     <hr></span>
             <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
                 <div class="col-2 offset-5 fs-6 border-bottom">
-                    <select name="val_localite0" id="val_localite0" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Toutes les Localités ...</option>
-                        {% for obj in les_localite %}
-                            <option value="{{obj.id}}" {% if obj.id == val_localite %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Agences ...</option>
+                        {% for obj in les_agence %}
+                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-2 fs-6 border-bottom">
                     <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Tous les Usages ...</option>
-                        {% for obj in les_usage %}
-                            <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{obj}}</option>
+                        {% for obj, lib_obj in les_usage %}
+                            <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{lib_obj}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -115,7 +115,7 @@
                                         <svg class="bi pt" width="22" height="22" fill="#036">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
                                         </svg>
-                                        {{ ag.electricien  | length < 30 ? ag.electricien : ag.electricien|slice(0, 27) ~ '...'}}
+                                        {{ ag.electricien.nomComplet  | length < 30 ? ag.electricien.nomComplet : ag.electricien.nomComplet|slice(0, 27) ~ '...'}}
 									</div>
                                     {% endif %}
                                     {% if ag.proprietaire %}
@@ -123,7 +123,7 @@
                                         <svg class="bi pt" width="22" height="22" fill="gray">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person-check') }}"></use>
                                         </svg>
-                                        {{ ag.proprietaire  | length < 30 ? ag.proprietaire : ag.proprietaire|slice(0, 27) ~ '...'}}
+                                        {{ ag.proprietaire.nomComplet  | length < 30 ? ag.proprietaire.nomComplet : ag.proprietaire.nomComplet|slice(0, 27) ~ '...'}}
 									</div>
                                     {% endif %}
                                     <div class="mb-2 border-0 text-muted" title="Localisation installation">
@@ -139,7 +139,7 @@
                                     <p class="ms-2 fs-7">
                                         {% if ag.typeconstruction is not null %}
                                             [<span class="text-dark fw-bold">{{ ag.typeconstruction.nom }}]</span>
-                                            {{ ag.adresse | length < 15 ? ag.adresse : ag.adresse|slice(0, 12) ~ '...' }}
+                                            {# {{ ag.adresse | length < 15 ? ag.adresse : ag.adresse|slice(0, 12) ~ '...' }} #}
                                         {% else %}
                                             <span class="text-danger">-</span>
                                         {% endif %}
@@ -170,7 +170,9 @@
                                                 {% set link_edit = 'app_installation_add' ~ ag.step %}
                                             {% endif %}
                                             {% if is_granted('ROLE_PUBLIC') %}
+                                                {% if tools.gdroit_de(app.user.id, 'installation', ag.id ) %}
                                                 <a href="{{ path(link_edit, {'id': ag.id}) }}" class="next action-button btn btn-success btn-sm">Finaliser la saisie</a>
+                                                {% endif %}
                                             {% endif %}
                                         {% else %}
                                             {% if is_granted('ROLE_CAISSIER') or is_granted("ROLE_COMPTABLE") %}

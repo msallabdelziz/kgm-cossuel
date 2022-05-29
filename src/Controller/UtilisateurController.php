@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Electricien;
+use App\Entity\Profil;
 use App\Entity\Proprietaire;
 use App\Entity\Utilisateur;
 use App\Form\UtilisateurType;
 use App\Repository\ElectricienRepository;
+use App\Repository\ProfilRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,19 +28,28 @@ use Symfony\Component\Validator\Constraints\Regex;
 class UtilisateurController extends AbstractController
 {
     #[Route('/', name: 'app_utilisateur_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, UtilisateurRepository $utilisateurRepository): Response
+    public function index(Request $request, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'utilisateur');
         $request->getSession()->set('sousmenu', '');
 
+        $val_profil=""; 
+        $les_profil = $profilRepository->findBy(array(), array("nom"=>"asc", ));
+
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            $val_profil = $request->request->get("val_profil");
+            $obj_profil=$profilRepository->find($val_profil);
+            if($val_profil) { $val_filtre["roles"] = strtoupper($obj_profil->getCode()); }
         }
         return $this->render('utilisateur/index.html.twig', [
             'les_utilisateur' => $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'val_rech' => $val_rech,
+
+            'les_profil'=> $les_profil,
+            'val_profil'=> $val_profil,
         ]);
     }
 
@@ -51,7 +62,6 @@ class UtilisateurController extends AbstractController
         ->add('type', ChoiceType::class, [
             'choices'  => [
                 'Electricien' => 'Electricien',
-                'Propriétaire Installation' => 'Proprietaire',
             ],
             'attr' => [
                 'class' => 'form-select'
@@ -100,7 +110,7 @@ class UtilisateurController extends AbstractController
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/')
+                new Regex('/^[a-zA-Z0-9\-\_]+$/'),
             ],
             'required' => true,
             'label' => 'Numéro Piece'

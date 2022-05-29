@@ -1,43 +1,43 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-body {
+#demande  {
   font-family: "poppins", sans-serif;
 
   /* background: #ccc; */
-  background-color: #1c1b19;
+  background-color: #fff;
   padding: 30px;
 }
 
-.logo {
+#demande .logo {
   width: 100%;
   height: auto;
   margin-bottom: 30px;
 }
 
-.container {
+#demande .container {
   width: 21cm;
   max-height: 29.7cm;
 }
 
-.indentif {
+#demande .indentif {
   font-weight: bold;
   font-size: 14px;
 }
 
-.invoice {
+#demande .invoice {
   background: #fff;
   width: 100%;
   padding: 50px;
 }
 
-.logo {
+#demande .logo {
   width: 2.5cm;
 }
-.attest-conform {
+#demande .attest-conform {
   text-decoration-line: underline;
 }
 
-.document-type {
+#demande .document-type {
   text-align: center;
   color: #1c1b19;
   font-weight: inherit;
@@ -49,12 +49,12 @@ body {
   margin-bottom: 20px;
 }
 
-.text-demande {
+#demande .text-demande {
   font-size: 20px;
   font-weight: 700;
 }
 
-.bg-orange {
+#demande .bg-orange {
   background-color: #3198f7;
   padding: 5px;
   border-radius: 4px;
@@ -63,44 +63,44 @@ body {
   text-align: center;
   margin-bottom: 15px;
 }
-.border {
+#demande .border {
   border: 3px solid #3198f7;
   margin-bottom: 10px;
   border-color: #3198f7 !important;
 }
-.signature {
+#demande .signature {
   font-weight: 600;
   text-decoration: underline;
 }
 
-.date {
+#demande .date {
   font-size: 14px;
   font-weight: bold;
 }
 
-.conditions {
+#demande .conditions {
   font-size: 0.7em;
   color: #666;
 }
 
-.bottom-page {
+#demande .bottom-page {
   font-size: 0.7em;
   /* padding-top: 100px; */
   border-top: 2px solid #3198f7;
 }
 
-.comptable {
+#demande .comptable {
   text-decoration-line: underline;
   text-align: center;
 }
 
-.code-qr {
+#demande .code-qr {
   height: 100%;
   width: auto;
   text-align: -webkit-right;
 }
 
-.text {
+#demande .text {
   text-align: center;
   width: 80%;
   margin: auto;

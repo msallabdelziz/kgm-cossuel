@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\createdAtTrait;
 use App\Repository\InstallationRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,19 +30,16 @@ class Installation
     private $alimente;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
-    private $compteurVoisin;
-
-    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $compteur;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $abonnement;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
-    private $bp;
+    private $adresse;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
-    private $adresse;
+    private $typeInstallation;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $nomSite;
@@ -95,9 +93,6 @@ class Installation
     private $priece;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
-    private $puissance;
-
-    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $activite;
 
     #[ORM\Column(type: 'string', length: 255, nullable:true)]
@@ -108,6 +103,9 @@ class Installation
 
     #[ORM\Column(type: 'integer')]
     private $step;
+
+    #[ORM\OneToMany(mappedBy: 'installation', targetEntity: PieceJointe::class)]
+    private $pieceJointes;
 
     #[ORM\ManyToOne(targetEntity: Proprietaire::class, inversedBy: 'installation')]
     private $proprietaire;
@@ -138,6 +136,7 @@ class Installation
         $this->etat = "Saisie 1/6";
         $this->created_at = new \DateTimeImmutable();
         $this->demande = new ArrayCollection();
+        $this->pieceJointes = new ArrayCollection();
     }
 
 
@@ -166,18 +165,6 @@ class Installation
     public function setUsages(string $usages): self
     {
         $this->usages = $usages;
-
-        return $this;
-    }
-
-    public function getCompteurVoisin(): ?string
-    {
-        return $this->compteurVoisin;
-    }
-
-    public function setCompteurVoisin(string $compteurVoisin): self
-    {
-        $this->compteurVoisin = $compteurVoisin;
 
         return $this;
     }
@@ -214,18 +201,6 @@ class Installation
     public function setAbonnement(string $abonnement): self
     {
         $this->abonnement = $abonnement;
-
-        return $this;
-    }
-
-    public function getBp(): ?string
-    {
-        return $this->bp;
-    }
-
-    public function setBp(string $bp): self
-    {
-        $this->bp = $bp;
 
         return $this;
     }
@@ -458,14 +433,14 @@ class Installation
         return $this;
     }
 
-    public function getPuissance(): ?string
+    public function getTypeInstallation(): ?string
     {
-        return $this->puissance;
+        return $this->typeInstallation;
     }
 
-    public function setPuissance(string $puissance): self
+    public function setTypeInstallation(?string $typeInstallation): self
     {
-        $this->puissance = $puissance;
+        $this->typeInstallation = $typeInstallation;
 
         return $this;
     }
@@ -596,6 +571,47 @@ class Installation
         }
     }
 
+    public function getPJElectricien(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "PJ Electricien") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getPJProprietaire(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "PJ Propriétaire") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getPJDossierTechnique(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "PJ Dossier Technique") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
 
     public function addDemande(Demande $demande): self
     {
@@ -619,5 +635,44 @@ class Installation
         return $this;
     }
 
+    /**
+     * @return Collection<int, PieceJointe>
+     */
+    public function getPieceJointes(): Collection
+    {
+        return $this->pieceJointes;
+    }
+
+    public function addPieceJointe(PieceJointe $pieceJointe): self
+    {
+        if (!$this->pieceJointes->contains($pieceJointe)) {
+            $this->pieceJointes[] = $pieceJointe;
+            $pieceJointe->setInstallation($this);
+        }
+
+        return $this;
+    }
+
+    public function removePieceJointe(PieceJointe $pieceJointe): self
+    {
+        if ($this->pieceJointes->removeElement($pieceJointe)) {
+            // set the owning side to null (unless already changed)
+            if ($pieceJointe->getInstallation() === $this) {
+                $pieceJointe->setInstallation(null);
+            }
+        }
+
+        return $this;
+    }
     
+    public function getAgence(): ?Agence
+    {
+        $res = null;
+        if($this->localite) {
+            $res = $this->localite->getAgence();
+        }
+        return $res;
+    }
+
+
 }

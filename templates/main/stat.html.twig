@@ -1,0 +1,203 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+
+	{% if app.user and app.user.isverified %}
+
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-0">
+
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PUBLIC') %}
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
+                <div class="col-2 offset-3 fs-6 border-bottom">
+                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Agences ...</option>
+                        {% for obj in les_agence %}
+                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Tous les Usages ...</option>
+                        {% for obj,lib_obj in les_usage %}
+                            <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{lib_obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="val_statut0" id="val_statut0" class="form-select form-select-sm border-success py-1">
+                        <option value="">Tous les statuts ...</option>
+                        {% for obj in les_statut %}
+                            <option value="{{obj}}" {% if obj == val_statut %} selected="selected"{% endif %}>{{obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                <div class="col-1" align="center">
+                    <svg class="bi" width="28" height="28" fill="#c32424">
+                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="clear"></div>
+
+			<div class="row mt-50">
+				<div class="card">
+					<div class="d-flex align-items-center justify-content-between">
+						<h4 class="fw-bold">Statistiques Toutes agences - Demandes soumises ({{ les_demande|length }})</h4>
+					</div>
+					<span class="divider">
+						<hr></span>
+            	{% if les_demande|length == 0 %}
+                <div class="row pt-20">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				{% else %}
+				<table class="table table-striped table-hover table-sm pt-0 mt-0">
+				<thead>
+					<tr>
+						<th scope="col">N° demande</th> 
+						<th class="priority-2" scope="col">Usage</th> 
+						<th class="priority-4">Agence</th>
+						<th class="priority-5">Localité</th>
+						<th class="priority-5">Type Construction</th>
+						<th class="priority-2">Statut demande</th>
+						{# <th scope="col">Agence</th> #}
+						{# <th class="text-center" scope="col">Départements</th>  #}
+					</tr>
+				</thead>
+				<tbody>
+					{% for dem in les_demande %}
+						{% set ag = dem.installation %}
+						{% set paiement = dem.paiement %}
+						{% set dossier = dem.dossier %}
+						{% if ag.step < 7 %}
+							{% set badge_etat = "danger" %}
+						{% endif %}
+						{% if ag.step <= 7 %}
+							{% set badge_etat = "warning" %}
+						{% endif %}
+						<tr>
+							<td scope="row" class="fw-bold">
+								{{ dem.numero }}
+							</td>
+							<td class="priority-2">
+								{% if ag.usages == "domestique" %}
+									<span class="text-warning fs-8 fw-bold">Domestique</span>
+								{% elseif ag.usages == "non_domestique" %}
+									<span class="text-primary fs-8 fw-bold">Professionnel</span>
+								{% elseif ag.usages == "erp_ert" %}
+									<span class="text-primary fs-8 fw-bold">ERP - ERT</span>
+								{% endif %}
+							</td>
+							<td class="priority-4">
+								{% if ag.localite is not null and ag.localite.agence is not null %}
+									{{ ag.localite.agence.nom }}
+								{% else %}
+									<span class="text-danger">-</span>
+								{% endif %}
+							</td>
+							<td class="priority-5">
+								{% if ag.localite is not null %}
+									{{ ag.localite.nom }}
+								{% else %}
+									<span class="text-danger">-</span>
+								{% endif %}
+							</td>
+							<td class="priority-5">
+								{% if ag.typeconstruction is not null %}
+									{{ ag.typeconstruction.nom }}
+								{% else %}
+									<span class="text-danger">-</span>
+								{% endif %}
+							</td>
+							<td class="priority-2">
+								{% set etat = ag.etat %} 
+								{% set label_etat = 'danger' %} 
+								{% set link = 'app_installation_showpop' %}
+								{% set id_ent = ag.id %}
+								{% if paiement %}
+									{% set etat = 'Paiement enregistré' %}
+									{% if paiement.paiementEffectue %}
+										{% set etat = 'Paiement validé' %}
+									{% endif %}
+									{% set label_etat = 'warning' %} 
+								{% endif %}
+								{% if dossier %}
+									{% set link = 'app_dossier_showpop' %}
+									{% set id_ent = dossier.id %}
+									{% set etat = 'En attente ' ~ dossier.etat %}
+									{% set label_etat = 'success' %} 
+								{% endif %}
+									<span class="fs-8 badge badge-{{label_etat}}">{{ etat }}</span>
+							</td>
+							<td align="right">
+
+							{# <a class="me-2" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('app_installation_showpdf', {'id': ag.id}) }}" title="Formulaire de demande">
+								<svg class="bi pt" width="16" height="16" fill="red"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#file-pdf") }}"></use></svg>
+							</a> #}
+							<a class="me-2" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path(link, {'id': id_ent}) }}" title="Détails de la demande">
+								<svg class="bi pt" width="16" height="16" fill="black"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#search") }}"></use></svg>
+							</a>
+							{% if dossier %}
+								<a class="" data-bs-toggle="modal" data-bs-target="#modal" href="{{ path('app_dossier_histo', {'id': dossier.id}) }}" title="Historique du traitement">
+									<svg class="bi pt" width="16" height="16" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+								</a>
+							{% else %}
+								<a class="" data-bs-toggle="modal" data-bs-target="#modal" href="{{ path('app_demande_histo', {'id': dem.id}) }}" title="Historique du traitement">
+									<svg class="bi pt" width="16" height="16" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#hourglass-split") }}"></use></svg>
+								</a>
+							{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+				</table>
+				{% endif %}
+					</div>
+
+			</div>
+			{% endif %}
+
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
+	{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+
+        {% for filtre in ["agence", "usage", "statut"] %}
+            $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
+            $('#val_{{filtre}}0').on('change', function() {
+                optSel=$('#val_{{filtre}}0').find("option:selected");
+                valSel=optSel.val();
+                $('#val_{{filtre}}').val(valSel);
+                $('#form_rech_list').submit();
+            });
+        {% endfor %}
+
+    });
+
+</script>
+{% endblock %}

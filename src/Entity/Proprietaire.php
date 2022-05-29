@@ -51,7 +51,7 @@ class Proprietaire
     public function __construct()
     {
         $this->created_by = "";
-        $this->role = "ROLE_PUBLIC";
+        $this->role = "ROLE_USER";
         $this->created_at = new \DateTimeImmutable();
         $this->installation = new ArrayCollection();
     }
@@ -207,6 +207,11 @@ class Proprietaire
         }
 
         return $this;
+    }
+
+    public function nomComplet()
+    {
+        return $this->getPrenom()." ".$this->getNom();
     }
 
     public function __toString()

@@ -12,6 +12,8 @@ use App\Repository\DossierRepository;
 use App\Repository\LocaliteRepository;
 use App\Repository\PaiementRepository;
 use App\Repository\VisiteRepository;
+use App\Services\Tools;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -282,32 +284,59 @@ class DossierController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_dossier_show', methods: ['GET'])]
-    public function show(Dossier $dossier, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
+    public function show(Dossier $dossier, ManagerRegistry $doctrine, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
         $dossier=$dossierRepository->find($dossier);
-        $paiement=$paiementRepository->find($dossier->getDemande()->getIdPaiement());
+        $paiement=$dossier->getDemande()->getPaiement();
         if($dossier->getAffecte() && $dossier->getVisite() && $dossier->getRapport() && ! $dossier->getAttestation()) {
             return $this->render('dossier/show2.html.twig', [
                 'dossier' => $dossier,
                 'paiement' => $paiement,
+
+                'tools' => $tools,
             ]);
         } else {
             return $this->render('dossier/show.html.twig', [
                 'dossier' => $dossier,
                 'paiement' => $paiement,
+
+                'tools' => $tools,
+            ]);
+        }
+    }
+
+    #[Route('/pop/{id}', name: 'app_dossier_showpop', methods: ['GET'])]
+    public function showpop(Dossier $dossier, ManagerRegistry $doctrine, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
+    {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $dossier=$dossierRepository->find($dossier);
+        $paiement=$dossier->getDemande()->getPaiement();
+        if($dossier->getAffecte() && $dossier->getVisite() && $dossier->getRapport() && ! $dossier->getAttestation()) {
+            return $this->render('dossier/show2pop.html.twig', [
+                'dossier' => $dossier,
+
+                'tools' => $tools,
+            ]);
+        } else {
+            return $this->render('dossier/showpop.html.twig', [
+                'dossier' => $dossier,
+
+                'tools' => $tools,
             ]);
         }
     }
 
     #[Route('/{id}/histo', name: 'app_dossier_histo', methods: ['GET'])]
-    public function showtime(Dossier $dossier, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
+    public function showtime(Dossier $dossier, EntityManagerInterface $em, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
         $dossier=$dossierRepository->find($dossier);
-        $paiement=$paiementRepository->find($dossier->getDemande()->getIdPaiement());
+        $paiement=$dossier->getDemande()->getPaiement();
+        $tools = new Tools($em);
 
         return $this->render('dossier/showtime.html.twig', [
             'dossier' => $dossier,
-            'paiement' => $paiement,
+            'tools' => $tools,
         ]);
     }
 
@@ -315,7 +344,7 @@ class DossierController extends AbstractController
     public function affecter(Request $request, Dossier $dossier, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         $dossier=$dossierRepository->find($dossier);
-        $paiement=$paiementRepository->find($dossier->getDemande()->getIdPaiement());
+        $paiement=$dossier->getDemande()->getPaiement();
 
         $form = $this->createFormBuilder($dossier)
         ->add('controleur', EntityType::class, [
@@ -373,7 +402,7 @@ class DossierController extends AbstractController
     public function visiter(Request $request, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         $dossier=$dossierRepository->find($dossier);
-        $paiement=$paiementRepository->find($dossier->getDemande()->getIdPaiement());
+        $paiement=$dossier->getDemande()->getPaiement();
 
         $form = $this->createFormBuilder($dossier)
         ->add('dateVisite', DateTimeType::class, [
@@ -426,6 +455,7 @@ class DossierController extends AbstractController
             $visite->setDossier($dossier);
             $visite->setRapport($rapport);
             $visite->setEtat("Planifié");
+            $visite->setCreatedby($this->getUser()->getId());
             $visite->setDatePlanifie($dateVisite);
             $visite->setPlanifie(1);
             $visiteRepository->add($visite);
@@ -636,7 +666,7 @@ class DossierController extends AbstractController
     public function attester(Request $request, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         $dossier=$dossierRepository->find($dossier);
-        $paiement=$paiementRepository->find($dossier->getDemande()->getIdPaiement());
+        $paiement=$dossier->getDemande()->getPaiement();
 
         $form = $this->createFormBuilder($dossier)
         ->add("valide", HiddenType::class, [
@@ -656,7 +686,7 @@ class DossierController extends AbstractController
             $visite = $visiteRepository->find($dossier->getVisiteCourante()->getId());
             $visite->setEtat("Rapport validé");
             $visiteRepository->add($visite);
-
+            
             $this->addFlash("success", "Le rapport d'inspection a été validé par le référent ! ");
             return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
         }

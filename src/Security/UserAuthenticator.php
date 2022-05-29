@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,7 +52,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         // Initialisation de certaines variables de session
         $request->getSession()->set('affichage_demande', "listing");
-
+        
         // For example:
         // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
         return new RedirectResponse($this->urlGenerator->generate('main'));

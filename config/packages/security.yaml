@@ -38,8 +38,8 @@ security:
     access_control:
         - { path: ^/main, roles: [IS_AUTHENTICATED_FULLY, ROLE_USER] }
         - { path: ^/region, roles: [ROLE_ADMIN] }
-        - { path: ^/departement, roles: [ROLE_ADMIN] }
-        - { path: ^/localite, roles: [ROLE_ADMIN] }
+        - { path: ^/departement, roles: [ROLE_ACCUEIL] }
+        - { path: ^/localite, roles: [ROLE_ACCUEIL] }
         - { path: ^/agence, roles: [ROLE_ADMIN] }
         - { path: ^/agent, roles: [ROLE_ADMIN] }
         - { path: ^/electricien, roles: [ROLE_ACCUEIL] }
@@ -63,6 +63,8 @@ security:
             ROLE_RFO: ROLE_USER
             ROLE_PUBLIC: ROLE_USER
             
+
+            # 'ROLE_ADMIN', 'ROLE_DAF', 'ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR', 'ROLE_USER'
 
 when@test:
     security:

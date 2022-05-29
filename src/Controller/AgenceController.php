@@ -74,7 +74,7 @@ class AgenceController extends AbstractController
             $agenceRepository->add($agence);
 
 
-//            $tools->notifSMS('00221773799200', 'MaJ Agence réussie !');
+           $tools->notifSMS('221773799200', 'MaJ Agence réussie !');
 
             return $this->redirectToRoute("app_agence_show", ['id'=>$agence->getId()]);
         }

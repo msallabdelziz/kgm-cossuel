@@ -28,6 +28,7 @@
 				<hr/></span>
 			{# Fin - Utilisateur Connecté #}
 
+
 		{% if is_granted('ROLE_USER') %}
 			<li class="nav-item {% if app.session.get('menu') == 'main' %}active{% endif %}">
 				<a href="{{ path('main') }}">
@@ -105,7 +106,7 @@
                     </a>
                     <ul id="ddmenu_2" class="dropdown-nav collapse {% if app.session.get('menu') == 'demande' %}show{% endif %}">
 		
-		{% if is_granted('ROLE_PUBLIC') %}
+		{% if is_granted('ROLE_USER') %}
                         <li>
                             <a href="{{ path('app_installation_index0') }}" class="{% if app.session.get('sousmenu') == 'demande_all' %}active{% endif %}"> 
 								<span class="icon">
@@ -116,7 +117,8 @@
 								<span class="text">Toutes les demandes</span>
 							</a>
                         </li>
-		{% endif %}		{% if is_granted('ROLE_PUBLIC') %}
+		{% endif %}		
+		{% if is_granted('ROLE_PUBLIC') %}
                         <li>
                             <a href="{{ path('app_installation_index') }}" class="{% if app.session.get('sousmenu') == 'demande_soumission' %}active{% endif %}"> 
 								<span class="icon">
@@ -234,7 +236,7 @@
 		{% endif %}
 		{% if is_granted('ROLE_USER') %}
 			<li class="nav-item {% if app.session.get('menu') == 'statistiques' %}active{% endif %}">
-				<a href="{{ path('main') }}">
+				<a href="{{ path('stat') }}">
 					<span class="icon">
 						<svg class="bi" width="24" height="24" fill="black">
 							<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#graph-up') }}"></use>

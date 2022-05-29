@@ -31,8 +31,12 @@
 			// Fill modal with content from link href
 			$("#modal").on("show.bs.modal", function(e) {
 				var link = $(e.relatedTarget); 
-				alert($(e.relatedTarget).attr("href"));
-				return true;
+				$(this).find(".modal-body").load(link.attr("href"));
+			});	
+
+			// Fill modal with content from link href
+			$("#modal2").on("show.bs.modal", function(e) {
+				var link = $(e.relatedTarget); 
 				$(this).find(".modal-body").load(link.attr("href"));
 			});	
 

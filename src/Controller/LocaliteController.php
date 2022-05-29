@@ -7,6 +7,7 @@ use App\Entity\Localite;
 use App\Form\LocaliteFormType;
 use App\Repository\DepartementRepository;
 use App\Repository\LocaliteRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,42 @@ class LocaliteController extends AbstractController
             'les_localite' => $localiteRepository->findBy([],['code'=>'asc']),
         ]);
     }
+
+    /**
+     * @Route("/load", name="load")
+     */
+    public function load(Request $request, DepartementRepository $departementRepository): Response
+    {
+        $departement = null;
+        if($request->request->get("departement")) {
+            $id_departement = $request->request->get("departement");
+            $departement = $departementRepository->find($id_departement);
+        }
+        $form = $this->createFormBuilder()
+        ->add('localite', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'data' => null,
+            'class' => Localite::class,
+            'query_builder' => function (LocaliteRepository $er) use ($departement) {
+                return $er->createQueryBuilder('l')
+                ->where('l.departement = :val') 
+                ->setParameter('val', $departement);
+            },
+            'choice_label' => 'nom',
+            'label' => 'Localité',
+            'required' => true
+        ])
+        ->getForm();
+        $form->handleRequest($request);
+
+        return $this->renderForm('localite/load.html.twig', [
+            'form' => $form,
+        ]);
+    }    
+
     /**
      * @Route("/{id}/add", name="add")
      */

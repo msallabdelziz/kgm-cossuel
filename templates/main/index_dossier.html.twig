@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+
+	{% if app.user and app.user.isverified %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-10">
+			<div class="row">
+				<div class="col-md-4 mt-2">
+					<div class="card bg-dark p-3 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1">
+									<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+									<span class="text-light fw-light">Total des demandes</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+				<div class="col-md-8 mt-2">
+					<div class="row">
+						<div class="col">
+							<div class="card bg-warning p-3 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+											<span class="fw-light">Demandes domestiques</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col">
+							<div class="card bg-primary bg-opacity-75 p-3 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
+											<span class="fw-light text-dark">Demandes professionnelles</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col">
+							<div class="card bg-primary p-3 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
+											<span class="fw-light text-light">Demandes ERP - ERT</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+				<div class="row m-1 mt-4 pt-2">
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+				</div>
+				<!-- end col -->
+				
+				{% if is_granted('ROLE_RFO') %}
+					{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
+					{% set les_col = ["success bg-opacity-25", ] %}
+				{% endif %}
+
+				{% if is_granted('ROLE_CONTROLEUR') %}
+					{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+					{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+				{% endif %}
+
+				{% if is_granted('ROLE_REFERENT') %}
+					{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+					{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green", "green"] %}
+				{% endif %}
+				
+				{% set ix = 0 %}
+				{% for etat in les_etat  %}
+					{% set col = les_col[ix] %}
+					<div class="col-md-4 mt-2">
+						<div class="card bg-{{col}} p-3 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1">
+										<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+										<span class="fw-light">{{etat}}</span>
+									</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+					{% set ix = ix+1 %}
+				{% endfor %}
+			</div>
+			<!-- end row -->
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
+	{% endif %}
+
+{% endblock %}

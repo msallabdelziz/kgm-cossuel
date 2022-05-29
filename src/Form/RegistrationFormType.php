@@ -31,7 +31,6 @@ class RegistrationFormType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'choices'  => [
                     'Electricien' => 'Electricien',
-                    'Propriétaire Installation' => 'Proprietaire',
                 ],
                 'attr' => [
                     'class' => 'form-select'

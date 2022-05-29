@@ -42,9 +42,6 @@ class Demande
     #[ORM\Column(type: 'integer')]
     private $numeroPassage;
 
-    #[ORM\OneToMany(mappedBy: 'demande', targetEntity: PieceJointe::class)]
-    private $pieceJointes;
-
     #[ORM\Column(type: 'integer', nullable:true)]
     private $demande_parente;
 
@@ -57,6 +54,14 @@ class Demande
     #[ORM\ManyToOne(targetEntity: Installation::class, inversedBy: 'demande')]
     private $installation;
 
+    #[ORM\OneToOne(targetEntity: Dossier::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private $dossier;
+
+    #[ORM\OneToOne(targetEntity: Paiement::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private $paiement;
+
     public function __construct()
     {
         $this->numeroPassage = 1;
@@ -66,7 +71,6 @@ class Demande
         $this->created_at = new \DateTimeImmutable();
         $this->dateCreation = new \DateTime();
         $this->etat = "Soumis";
-        $this->pieceJointes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,6 +98,30 @@ class Demande
     public function setCout(int $cout): self
     {
         $this->cout = $cout;
+
+        return $this;
+    }
+
+    public function getDossier(): ?Dossier
+    {
+        return $this->dossier;
+    }
+
+    public function setDossier(Dossier $dossier): self
+    {
+        $this->dossier = $dossier;
+
+        return $this;
+    }
+
+    public function getPaiement(): ?Paiement
+    {
+        return $this->paiement;
+    }
+
+    public function setPaiement(Paiement $paiement): self
+    {
+        $this->paiement = $paiement;
 
         return $this;
     }
@@ -169,37 +197,6 @@ class Demande
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, PieceJointe>
-     */
-    public function getPieceJointes(): Collection
-    {
-        return $this->pieceJointes;
-    }
-
-    public function addPieceJointe(PieceJointe $pieceJointe): self
-    {
-        if (!$this->pieceJointes->contains($pieceJointe)) {
-            $this->pieceJointes[] = $pieceJointe;
-            $pieceJointe->setDemande($this);
-        }
-
-        return $this;
-    }
-
-    public function removePieceJointe(PieceJointe $pieceJointe): self
-    {
-        if ($this->pieceJointes->removeElement($pieceJointe)) {
-            // set the owning side to null (unless already changed)
-            if ($pieceJointe->getDemande() === $this) {
-                $pieceJointe->setDemande(null);
-            }
-        }
-
-        return $this;
-    }
-
     
     public function getDemandeParente(): ?int
     {

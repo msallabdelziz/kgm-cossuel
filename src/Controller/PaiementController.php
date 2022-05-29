@@ -8,6 +8,8 @@ use App\Form\PaiementType;
 use App\Repository\DemandeRepository;
 use App\Repository\InstallationRepository;
 use App\Repository\PaiementRepository;
+use App\Services\Tools;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,9 +37,11 @@ class PaiementController extends AbstractController
             $demandeRepository->add($demande);
 
             $paiement->setDemande($demande);
+            $paiement->setCreatedby($this->getUser()->getId());
             $paiementRepository->add($paiement);
 
             $demande->setIdPaiement($paiement->getId());
+            $demande->setPaiement($paiement);
             $demandeRepository->add($demande);
 
             return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 
@@ -53,7 +57,7 @@ class PaiementController extends AbstractController
     public function add2(Request $request, Demande $demande, DemandeRepository $demandeRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
     {
         $demande=$demandeRepository->find($demande);
-        $paiement=$paiementRepository->find($demande->getIdPaiement());
+        $paiement=$demande->getPaiement();
 
         $form = $this->createFormBuilder($paiement)->getForm();
 
@@ -83,10 +87,24 @@ class PaiementController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_paiement_show', methods: ['GET'])]
-    public function show(Paiement $paiement): Response
+    public function show(Paiement $paiement, ManagerRegistry $doctrine): Response
     {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
         return $this->render('paiement/show.html.twig', [
             'paiement' => $paiement,
+
+            'tools' => $tools,
+        ]);
+    }
+
+    #[Route('/pop/{id}', name: 'app_paiement_showpop', methods: ['GET'])]
+    public function showpop(Paiement $paiement, ManagerRegistry $doctrine): Response
+    {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        return $this->render('paiement/showpop.html.twig', [
+            'paiement' => $paiement,
+
+            'tools' => $tools,
         ]);
     }
 

@@ -2,23 +2,36 @@
 
 namespace App\Controller;
 
+use App\Entity\Agence;
+use App\Entity\Agent;
 use App\Entity\Demande;
+use App\Entity\Departement;
 use App\Entity\Electricien;
 use App\Entity\Installation;
 use App\Entity\Localite;
 use App\Entity\NatureTravaux;
+use App\Entity\PieceJointe;
 use App\Entity\Proprietaire;
+use App\Entity\Region;
 use App\Entity\TypeConstruction;
+use App\Entity\Utilisateur;
 use App\Form\ElectricienType;
 use App\Form\ProprietaireType;
 use App\Form\InstallationType;
+use App\Repository\AgenceRepository;
 use App\Repository\DemandeRepository;
+use App\Repository\DepartementRepository;
 use App\Repository\ElectricienRepository;
 use App\Repository\InstallationRepository;
 use App\Repository\LocaliteRepository;
 use App\Repository\PaiementRepository;
+use App\Repository\PieceJointeRepository;
 use App\Repository\ProprietaireRepository;
+use App\Repository\RegionRepository;
 use App\Repository\TypeConstructionRepository;
+use App\Services\Tools;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
@@ -27,9 +40,14 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,15 +56,27 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
 {
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
-    public function index0(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
+    public function index0(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_all');
@@ -60,21 +90,30 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
-        $val_localite=""; 
-        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+        $val_agence=""; $restr_agence=0;
+        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+            $restr_agence=1;
+            $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
+            if(! in_array($role, array("ROLE_ADMIN", "ROLE_PUBLIC", "ROLE_ACCUEIL"))) {
+                $val_filtre["etat"] = "Soumis";
+            }
+        } else {
+            $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+        }
 
         $val_usage=""; 
-        $les_usage = array("domestique", "non_domestique");
+        $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
         $val_statut=""; 
         $les_statut = array("Soumis");
 
-        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
             
-            $val_localite = $request->request->get("val_localite");
-            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            $val_agence = $request->request->get("val_agence");
+            if($val_agence) { $val_filtre["agence"] = $val_agence; }
             
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
@@ -95,14 +134,26 @@ class InstallationController extends AbstractController
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
-            'les_localite'=> $les_localite,
-            'val_localite'=> $val_localite,
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+
+            'tools'=> $tools,
         ]);
     }
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
+    public function index(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_soumission');
@@ -116,19 +167,24 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
-        $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
-
-        $val_localite=""; 
-        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+        $val_agence=""; $restr_agence=0;
+        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+            $restr_agence=1;
+            $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
+        } else {
+            $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+        }
 
         $val_usage=""; 
-        $les_usage = array("domestique", "non_domestique");
+        $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
 
-            $val_localite = $request->request->get("val_localite");
-            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            $val_agence = $request->request->get("val_agence");
+            if($val_agence) { $val_filtre["agence"] = $val_agence; }
             
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
@@ -145,14 +201,26 @@ class InstallationController extends AbstractController
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
-            'les_localite'=> $les_localite,
-            'val_localite'=> $val_localite,
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+
+            'tools'=> $tools,
         ]);
     }
 
     #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
-    public function index2(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
+    public function index2(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_paiement');
@@ -166,19 +234,24 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
-        $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
-
-        $val_localite=""; 
-        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+        $val_agence=""; $restr_agence=0;
+        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+            $restr_agence=1;
+            $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
+        } else {
+            $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+        }
 
         $val_usage=""; 
-        $les_usage = array("domestique", "non_domestique");
+        $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
 
-            $val_localite = $request->request->get("val_localite");
-            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            $val_agence = $request->request->get("val_agence");
+            if($val_agence) { $val_filtre["agence"] = $val_agence; }
             
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
@@ -195,14 +268,26 @@ class InstallationController extends AbstractController
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
-            'les_localite'=> $les_localite,
-            'val_localite'=> $val_localite,
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+
+            'tools'=> $tools,
         ]);
     }
 
     #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
-    public function index3(Request $request, InstallationRepository $installationRepository, LocaliteRepository $localiteRepository): Response
+    public function index3(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_validation');
@@ -216,19 +301,24 @@ class InstallationController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
-        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
-
-        $val_localite=""; 
-        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+        $val_agence=""; $restr_agence=0;
+        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+            $restr_agence=1;
+            $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
+        } else {
+            $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+        }
 
         $val_usage=""; 
-        $les_usage = array("domestique", "non_domestique");
+        $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
 
-            $val_localite = $request->request->get("val_localite");
-            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+            $val_agence = $request->request->get("val_agence");
+            if($val_agence) { $val_filtre["agence"] = $val_agence; }
             
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
@@ -245,13 +335,15 @@ class InstallationController extends AbstractController
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
-            'les_localite'=> $les_localite,
-            'val_localite'=> $val_localite,
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+
+            'tools'=> $tools,
         ]);
     }
 
     #[Route('/{id}/add', name: 'app_installation_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, Installation $installation = null, InstallationRepository $installationRepository): Response
+    public function new(Request $request, Installation $installation = null, InstallationRepository $installationRepository, DepartementRepository $departRepo, RegionRepository $regionRepo, LocaliteRepository $localiteRepo): Response
     {
         if($installation==null) {
             $installation = new Installation();
@@ -264,12 +356,53 @@ class InstallationController extends AbstractController
     // $form = $this->createForm(InstallationType::class, $installation);
         $val_alimente=false; if($installation->getAlimente()) { $val_alimente=true; }
         $val_usages="domestique"; if($installation->getUsages()) { $val_usages=$installation->getUsages(); }
-        $form = $this->createFormBuilder($installation)
+        $val_gest="domestique"; if($installation->getGrstReseau()) { $val_gest=$installation->getGrstReseau(); }
+        $o_region=null; $o_departement=null; $o_localite=null;
+        if($installation->getLocalite()) { 
+            $o_localite=$installation->getLocalite(); 
+            $o_departement=$o_localite->getDepartement(); 
+            $o_region=$o_departement->getRegion(); 
+        }
+        $formBuilder = $this->createFormBuilder($installation);
+        $form=$formBuilder
+        ->add('region', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'class' => Region::class,
+            'choice_label' => 'nom',
+            'data' => $o_region,
+            'label' => 'Région',
+            'required' => false
+        ])
+        ->add('departement', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'class' => Departement::class,
+            'data' => $o_departement,
+            'query_builder' => function (DepartementRepository $er) use ($o_region) {
+                return $er->createQueryBuilder('l')
+                ->where('l.region = :val') 
+                ->setParameter('val', $o_region!=null?$o_region:null);
+            },
+            'choice_label' => 'nom',
+            'label' => 'Département',
+            'required' => false
+        ])
         ->add('localite', EntityType::class, [
             'attr' => [
                 'class' => 'form-select'
             ],
             'class' => Localite::class,
+            'data' => $o_localite,
+            'query_builder' => function (LocaliteRepository $er) use ($o_departement) {
+                return $er->createQueryBuilder('l')
+                ->where('l.departement = :val') 
+                ->setParameter('val', $o_departement!=null?$o_departement:null);
+            },
             'choice_label' => 'nom',
             'label' => 'Localité',
             'required' => false
@@ -286,26 +419,7 @@ class InstallationController extends AbstractController
                 'class' => 'form-control'
             ],
             'required' => false,
-            'label' => 'Habitation'
-        ])
-        ->add('bp', TextType::class, [
-            'attr' => [
-                'class' => 'form-control'
-            ],
-            'constraints' => [
-                new Callback(function($object, ExecutionContextInterface $context) {
-                    $v = $object;
-                    if($object) {
-                        if (!is_numeric($object) || strlen($object)>5) {
-                            $context
-                                ->buildViolation('Format incorrect ! Doit être numérique sur 5 chiffres au max !')
-                                ->addViolation();
-                        }
-                    }
-                }),
-            ],
-            'required' => false,
-            'label' => 'Boite Postale'
+            'label' => 'Complément Adresse'
         ])
         ->add('lattitude', TextType::class, [
             'attr' => [
@@ -323,7 +437,7 @@ class InstallationController extends AbstractController
                     }
                 }),
             ],
-            'required' => true,
+            'required' => false,
             'label' => 'Latitude'
         ])
         ->add('longitude', TextType::class, [
@@ -342,7 +456,7 @@ class InstallationController extends AbstractController
                     }
                 }),
             ],
-        'required' => true,
+            'required' => false,
             'label' => 'Longitude'
         ])
         ->add('usages', ChoiceType::class, [
@@ -350,7 +464,7 @@ class InstallationController extends AbstractController
                 'attr' => [
                     'class' => 'form-select'
                 ],
-                'choices' => array('Domestique' => 'domestique', 'Non Domestique' => 'non_domestique', 'ERP/ERT' => 'erp_ert'),
+                'choices' => array('Domestique' => 'domestique', 'Professionnel' => 'non_domestique', 'ERP/ERT' => 'erp_ert'),
                 'data' => $val_usages,
                 'label_attr' => [
                     'class' => 'form-check-label'
@@ -374,25 +488,6 @@ class InstallationController extends AbstractController
                     'class' => 'form-check-label'
                 ],
                 'label' => 'Installation déja alimentée ?'
-            ])
-            ->add('compteurVoisin', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control on_alimente0'
-                ],
-                'constraints' => [
-                    new Callback(function($object, ExecutionContextInterface $context) {
-                        $v = $object;
-                        if($object) {
-                            if (strlen($object) !=7 || !is_numeric($object)) {
-                                $context
-                                    ->buildViolation('Le numéro du compteur est incorrect ! 7 chiffres attendus !')
-                                    ->addViolation();
-                            }
-                        }
-                    }),
-                ],
-                'required' => false,
-                'label' => 'Numéro Compteur Voisin'
             ])
             ->add('compteur', TextType::class, [
                 'attr' => [
@@ -422,15 +517,82 @@ class InstallationController extends AbstractController
             ])
             ->add('grstReseau', ChoiceType::class, [
                 'attr' => [
-                    'class' => 'form-control on_alimente1'
+                    'class' => 'form-select on_alimente1'
                 ],
+                'choices' => array('SENELEC' => 'SENELEC', ),
+                'data' => $val_gest,
                 'required' => false,
                 'label' => 'Gestionnaire Réseau'
             ])
             ->getForm();
+        
+            $formModifier = function (FormInterface $form, Region $region = null) {
+    
+                $form
+                    ->add('departement', EntityType::class, [
+                        'attr' => [
+                            'class' => 'form-select'
+                        ],
+                        'mapped' => false,
+                        'class' => Departement::class,
+                        'query_builder' => function (DepartementRepository $er) use ($region) {
+                            return $er->createQueryBuilder('l')
+                            ->where('l.region = :val') 
+                            ->setParameter('val', $region);
+                        },
+                        'data' => null,
+                        'choice_label' => 'nom',
+                        'label' => 'Département',
+                        'required' => true
+                    ])
+                    ->add('localite', EntityType::class, [
+                        'attr' => [
+                            'class' => 'form-select'
+                        ],
+                        'mapped' => false,
+                        'class' => Localite::class,
+                        'data' => null,
+                        'query_builder' => function (LocaliteRepository $er) use ($region) {
+                            return $er->createQueryBuilder('l')
+                            ->join('App\Entity\Departement', 'd', 'WITH', 'd.id = l.departement')
+                            ->where('d.region = :val') 
+                            ->setParameter('val', $region);
+                        },
+                        'choice_label' => 'nom',
+                        'label' => 'Localité',
+                        'required' => true
+                    ])
+                ;
+            };
+
+        // $formBuilder->addEventListener(
+        //     FormEvents::PRE_SET_DATA,
+        //     function (FormEvent $event) use ($formModifier) {
+        //         $data = $event->getData();
+
+        //         $formModifier($event->getForm(), $data->getRegion());
+        //     }
+        // );
+        $formBuilder->get('region')->addEventListener(
+            FormEvents::POST_SUBMIT,
+            function (FormEvent $event) use ($formModifier) {
+                // It's important here to fetch $event->getForm()->getData(), as
+                // $event->getData() will get you the client data (that is, the ID)
+                $region = $event->getForm()->getData();
+
+                // since we've added the listener to the child, we'll have to pass on
+                // the parent to the callback functions!
+                $formModifier($event->getForm()->getParent(), $region);
+            }
+        );
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            echo $form->get('localite')->getData()."=VAL";
+            $localite=$form->get('localite')->getData();
+            $localite=$localiteRepo->find($localite);
+            $installation->setLocalite($localite);
             $step = 2;
             if($installation->getStep()<$step) { 
                 $installation->setCreatedby($this->getUser()->getId());
@@ -550,6 +712,7 @@ class InstallationController extends AbstractController
     public function new3(Request $request, Installation $installation, InstallationRepository $installationRepository): Response
     {
         $installation=$installationRepository->find($installation);
+        $val_typeinstall=$installation->getTypeInstallation();
         // $form = $this->createForm(InstallationType::class, $installation);
         $form = $this->createFormBuilder($installation)
             // Nature Travaux
@@ -606,25 +769,19 @@ class InstallationController extends AbstractController
                 'required' => false,
                 'label' => 'Existant_Autre'
             ])
-            // -------------------------------------------------------------------------------------------
-            ->add('puissance', ChoiceType::class, [
+            ->add('typeInstallation', ChoiceType::class, [
                 'required' => true,
                 'attr' => [
-                    'class' => 'm-2'
+                    'class' => 'form-select'
                 ],
-                'choices' => array('Non' => false, 'Oui' => true),
-                'choice_attr' => [
-                    'Oui' => ['class' => 'm-2 ms-3 me-1'],
-                    'Non' => ['class' => 'm-2 ms-3 me-1'],
-                ],
-                'expanded' => true,
-                'data' => true,
-                'placeholder' => Null,
+                'choices' => array('Installation en monophasé' => 'monophase', 'Installation en triphasé' => 'triphase'),
                 'label_attr' => [
                     'class' => 'form-check-label'
                 ],
-                'label' => 'Puissance limitée ?'
+                'required' => false,
+                'label' => 'Type Installation'
             ])
+            // -------------------------------------------------------------------------------------------
             // Autre Intervenant ?
             // -------------------------------------------------------------------------------------------
             ->add('intervenantAutre', ChoiceType::class, [
@@ -673,7 +830,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}/add4', name: 'app_installation_add4', methods: ['GET', 'POST'])]
-    public function new4(Request $request, Installation $installation, InstallationRepository $installationRepository, ElectricienRepository $electricienRepository): Response
+    public function new4(Request $request, Installation $installation, InstallationRepository $installationRepository, SluggerInterface $slugger, ElectricienRepository $electricienRepository, PieceJointeRepository $pjRepository): Response
     {
         $installation=$installationRepository->find($installation);
         if($installation->getElectricien()) { 
@@ -694,9 +851,55 @@ class InstallationController extends AbstractController
             }
         }
         $form = $this->createForm(ElectricienType::class, $electricien);
+        $form
+            ->add('pj', FileType::class,[
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label' => 'Nouvelle Pièce Jointe',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new ConstraintsFile([
+                        'maxSize' => '4M',
+                        'mimeTypes' => [
+                            'image/*',
+                            'application/pdf'
+                        ],
+                        
+                    ])
+                ],
+            ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $pj=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Electricien'));
+            if($pj==null) {
+                $pj=new PieceJointe();
+                $pj->setInstallation($installation);
+                $pj->setCreatedby($this->getUser()->getId());
+                $pj->setLibelle('PJ Electricien');
+            }
+            $photoFile = $form->get('pj')->getData();
+            if ($photoFile) {
+                $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile->guessExtension();
+
+                try {
+                    $photoFile->move(
+                        $this->getParameter('photo_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                }
+                
+                $pj->setFichier($newFilename);
+                $pjRepository->add($pj);
+            }
+            
             $step = 5;
             if($installation->getStep()<$step) { 
                 $installation->setStep($step); 
@@ -716,7 +919,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}/add5', name: 'app_installation_add5', methods: ['GET', 'POST'])]
-    public function new5(Request $request, Installation $installation, InstallationRepository $installationRepository, ProprietaireRepository $proprietaireRepository): Response
+    public function new5(Request $request, Installation $installation, InstallationRepository $installationRepository, SluggerInterface $slugger, ProprietaireRepository $proprietaireRepository, PieceJointeRepository $pjRepository): Response
     {
         $proprietaire = new Proprietaire();
         $installation=$installationRepository->find($installation);
@@ -738,9 +941,98 @@ class InstallationController extends AbstractController
             }
         }
         $form = $this->createForm(ProprietaireType::class, $proprietaire);
+        $form
+            ->add('pj1', FileType::class,[
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label' => 'Nouvelle Pièce Jointe',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new ConstraintsFile([
+                        'maxSize' => '4M',
+                        'mimeTypes' => [
+                            'image/*',
+                            'application/pdf'
+                        ],
+                        
+                    ])
+                ],
+            ])
+            ->add('pj2', FileType::class,[
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label' => 'Nouvelle Pièce Jointe',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new ConstraintsFile([
+                        'maxSize' => '4M',
+                        'mimeTypes' => [
+                            'image/*',
+                            'application/pdf'
+                        ],
+                        
+                    ])
+                ],
+            ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $pj1=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Propriétaire'));
+            $pj2=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Dossier Technique'));
+            if($pj1==null) {
+                $pj1=new PieceJointe();
+                $pj1->setInstallation($installation);
+                $pj1->setCreatedby($this->getUser()->getId());
+                $pj1->setLibelle('PJ Propriétaire');
+            }
+            if($pj2==null) {
+                $pj2=new PieceJointe();
+                $pj2->setInstallation($installation);
+                $pj2->setCreatedby($this->getUser()->getId());
+                $pj2->setLibelle('PJ Dossier Technique');
+            }
+            $photoFile1 = $form->get('pj1')->getData();
+            $photoFile2 = $form->get('pj2')->getData();
+            if ($photoFile1) {
+                $originalFilename = pathinfo($photoFile1->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile1->guessExtension();
+
+                try {
+                    $photoFile1->move(
+                        $this->getParameter('photo_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                }
+                
+                $pj1->setFichier($newFilename);
+                $pjRepository->add($pj1);
+            }
+            if ($photoFile2) {
+                $originalFilename = pathinfo($photoFile2->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile2->guessExtension();
+
+                try {
+                    $photoFile2->move(
+                        $this->getParameter('photo_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                }
+                
+                $pj2->setFichier($newFilename);
+                $pjRepository->add($pj2);
+            }
+            
             $step = 6;
             if($installation->getStep()<$step) { 
                 $installation->setStep($step); 
@@ -775,7 +1067,7 @@ class InstallationController extends AbstractController
                     'class' => 'form-control fs-5 py-2 fw-bold ',
                     'min' => 1,
                     'step' => 1,
-                    'max' => 34
+                    // 'max' => 34
                 ],
                 'required' => true,
                 'label' => 'Puissance demandée'
@@ -839,15 +1131,35 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
-    public function show(Installation $installation, PaiementRepository $paiementRepository): Response
+    public function show(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
     {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
         if($installation->getStep()<=7) {
             return $this->render('installation/show.html.twig', [
                 'installation' => $installation,
+
+                'tools'=> $tools,
             ]);
         } elseif($installation->getDemandeCourante()) {
-            $paiement = $paiementRepository->find($installation->getDemandeCourante()->getIdPaiement());
+            $paiement = $installation->getDemandeCourante()->getPaiement();
             return $this->render('paiement/show.html.twig', [
+                'paiement' => $paiement,
+
+                'tools'=> $tools,
+            ]);
+        }
+    }
+
+    #[Route('/pop/{id}', name: 'app_installation_showpop', methods: ['GET'])]
+    public function showpop(Installation $installation, PaiementRepository $paiementRepository): Response
+    {
+        if($installation->getStep()<=7) {
+            return $this->render('installation/showpop.html.twig', [
+                'installation' => $installation,
+            ]);
+        } elseif($installation->getDemandeCourante()) {
+            $paiement = $installation->getDemandeCourante()->getPaiement();
+            return $this->render('paiement/showpop.html.twig', [
                 'paiement' => $paiement,
             ]);
         }

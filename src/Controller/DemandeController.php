@@ -11,7 +11,11 @@ use App\Repository\DemandeRepository;
 use App\Repository\DossierRepository;
 use App\Repository\InstallationRepository;
 use App\Repository\PaiementRepository;
+use App\Services\Tools;
 use DateTime;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,28 +26,47 @@ use Symfony\Component\Routing\Annotation\Route;
 class DemandeController extends AbstractController
 {
     #[Route('/{id}', name: 'app_demande_show', methods: ['GET'])]
-    public function show(Demande $demande, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    public function show(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
         $demande=$demandeRepository->find($demande);
-        $paiement=$paiementRepository->find($demande->getIdPaiement());
+        $paiement=$demande->getPaiement();
         return $this->render('demande/show.html.twig', [
             'paiement' => $paiement,
+
+            'tools' => $tools,
+        ]);
+    }
+
+    #[Route('/pop/{id}', name: 'app_demande_showpop', methods: ['GET'])]
+    public function showpop(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $demande=$demandeRepository->find($demande);
+        $paiement=$demande->getPaiement();
+        return $this->render('demande/showpop.html.twig', [
+            'paiement' => $paiement,
+
+            'tools' => $tools,
         ]);
     }
 
     #[Route('/{id}/histo', name: 'app_demande_histo', methods: ['GET'])]
-    public function showtime(Demande $demande, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    public function showtime(Demande $demande, EntityManagerInterface $em, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
         $demande=$demandeRepository->find($demande);
-        $paiement=$paiementRepository->find($demande->getIdPaiement());
+        $paiement=$demande->getPaiement();
+        $tools = new Tools($em);
         if($paiement) {
             return $this->render('dossier/showtime.html.twig', [
                 'demande' => $demande,
                 'paiement' => $paiement,
+                'tools' => $tools,
             ]);
         } else {
             return $this->render('dossier/showtime.html.twig', [
                 'demande' => $demande,
+                'tools' => $tools,
             ]);
         }
     }
@@ -52,7 +75,7 @@ class DemandeController extends AbstractController
     public function valid(Request $request, Demande $demande, DemandeRepository $demandeRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
     {
         $demande=$demandeRepository->find($demande);
-        $paiement=$paiementRepository->find($demande->getIdPaiement());
+        $paiement=$demande->getPaiement();
 
         $localite=$demande->getInstallation()->getLocalite();
         $dossier = new Dossier;
@@ -100,8 +123,11 @@ class DemandeController extends AbstractController
                 $dossier->setReferent($agent);
             } 
             $dossier->setDateCreation(new DateTime());
+            $dossier->setCreatedby($this->getUser()->getId());
             $dossier->setNum($demande->getNumero());
             $dossierRepository->add($dossier);
+            $demande->setDossier($dossier);
+            $demandeRepository->add($demande);
 
             $this->addFlash("success", "La demande a été validée. Le dossier est créé et affecté au référent ".$dossier->getReferent()." !");
             return $this->redirectToRoute('app_demande_show', array('id' => $demande->getId())); 

@@ -8,10 +8,12 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -59,7 +61,7 @@ class ElectricienType extends AbstractType
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/'),
+                new Regex('/^[a-zA-Z0-9\-\_]+$/'),
                 new Callback(function($object, ExecutionContextInterface $context) {
                     $v = $object;
                     if($object) {
@@ -86,13 +88,13 @@ class ElectricienType extends AbstractType
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/'),
+                new Regex('/^[a-zA-Z0-9\-\_]+$/'),
                 new Callback(function($object, ExecutionContextInterface $context) {
                     $v = $object;
                     if($object) {
-                        if (strlen($object) >11) {
+                        if (strlen($object) >13) {
                             $context
-                                ->buildViolation('Format incorrect ! Chiffres attendus, 11 au max !')
+                                ->buildViolation('Format incorrect ! 13 caractères au max !')
                                 ->addViolation();
                         }
                     }
@@ -101,6 +103,7 @@ class ElectricienType extends AbstractType
         'required' => true,
             'label' => 'Numéro Piece'
         ])
+
         /* ->add('role')
             ->add('created_at')
             ->add('created_by')

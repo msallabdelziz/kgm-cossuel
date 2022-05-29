@@ -158,11 +158,11 @@
                                 <a href="{{ path('app_dossier_affecter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Affecter à un contrôleur</a>
                                 {% endif %}
                             {% elseif not doss.visite %}
-                                {% if is_granted('ROLE_CONTROLEUR') %}
+                                {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
                                 <a href="{{ path('app_dossier_visiter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Planifier une visite</a>
                                 {% endif %}
                             {% elseif not doss.rapport %}
-                                {% if is_granted('ROLE_CONTROLEUR') %}
+                                {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
                                 <a href="{{ path('app_dossier_rapporter', {'id': doss.id}) }}" class="next action-button btn btn-success btn-sm">Elaborer rapport de visite</a>
                                 {% endif %}
                             {% elseif not doss.attestation %}

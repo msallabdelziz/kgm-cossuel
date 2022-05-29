@@ -209,6 +209,11 @@ class Electricien
         return $this;
     }
 
+    public function nomComplet()
+    {
+        return $this->getPrenom()." ".$this->getNom();
+    }
+
     public function __toString()
     {
         return "[".$this->getTelephone()."] ".$this->getPrenom()." ".$this->getNom();
