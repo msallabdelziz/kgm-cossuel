@@ -13,6 +13,7 @@ use App\Entity\Utilisateur;
 use App\Services\Tools;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,6 +25,9 @@ class MainController extends AbstractController
      */
     public function index(Request $request, ManagerRegistry $doctrine): Response
     {
+        if($this->getUser() == null) {
+            return $this->redirectToRoute('app_login');
+        }
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
@@ -81,27 +85,28 @@ class MainController extends AbstractController
 
             $les_paiement = $em->getRepository(Paiement::class)->findBy2($restr_dem);
             foreach($les_paiement as $p) {
-                $stat_paiement["All"][0]++;
-                if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][0]++; }
-                if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][0]++; }
-                if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][0]++; }
+                $montant=$p->getDemande()->getCout();
+                $xx=0;
+                $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 if($p->getDemande()->getInstallation()->getUsages()=="domestique") {
-                    $stat_paiement["All"][0]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][0]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][0]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][0]++; }
+                    $xx=1;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
                 if($p->getDemande()->getInstallation()->getUsages()=="non_domestique") {
-                    $stat_paiement["All"][1]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][1]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][1]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][1]++; }
+                    $xx=2;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
                 if($p->getDemande()->getInstallation()->getUsages()=="erp_ert") {
-                    $stat_paiement["All"][2]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][2]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][2]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][2]++; }
+                    $xx=3;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
             }
 
@@ -115,6 +120,11 @@ class MainController extends AbstractController
                 "Payé, en attente validation"=>0, 
             ];
 
+            $mes_stat = [
+                "Paiement enregistré"=>array(), 
+                "Paiement validé"=>array(), 
+            ];
+
             foreach ($les_demande as $demande) {
                 $etat = $demande->getEtat();
                 $usage = $demande->getInstallation()->getUsages();
@@ -123,8 +133,28 @@ class MainController extends AbstractController
                 if($usage=="erp_ert") { $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; }
 
                 if($etat=="Soumis") { $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; }
-                if($etat=="Paiement enregistré") { $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; }
-                if($etat=="Paiement validé") { $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; }
+                if($etat=="Paiement enregistré") { 
+                    $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; 
+                    $id_auteur1=$demande->getPaiement()->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Paiement enregistré"]["user_".$id_auteur1])) {
+                            $mes_stat["Paiement enregistré"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Paiement enregistré"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($etat=="Paiement validé") { 
+                    $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; 
+                    $id_auteur2=$demande->getPaiement()->getUpdatedBy();
+                    if($id_auteur2) {
+                        if(!isset($mes_stat["Paiement validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Paiement validé"]["user_".$id_auteur2]=1;
+                        } else {
+                            $mes_stat["Paiement validé"]["user_".$id_auteur2]++;
+                        }
+                    }
+                }
                 
                 $les_stat0["All"] = $les_stat0["All"]+1;
 
@@ -152,6 +182,26 @@ class MainController extends AbstractController
                 "Rapport validé, en attente clôture"=>0,
             ];
 
+            $mes_stat = [
+                "Dossier validé"=>array(), 
+                "Dossier attribué"=>array(), 
+                "Dossier Affecté"=>array(), 
+                "Dossier affecté"=>array(), 
+                "Visite planifiée"=>array(), 
+                "Rapport élaboré"=>array(), 
+                "Rapport validé"=>array(), 
+            ];
+
+            $les_alerte = [
+                "Hors délais 5 jours"=>0, 
+                "Hors délais 15 jours"=>0, 
+            ];
+
+            $mes_alerte = [
+                "Hors délais 5 jours"=>array(), 
+                "Hors délais 15 jours"=>array(), 
+            ];
+
             foreach ($les_demande as $demande) {
                 $etat = $demande->getEtat();
                 $usage = $demande->getInstallation()->getUsages();
@@ -169,11 +219,180 @@ class MainController extends AbstractController
                 $affecte = $dossier->getAffecte(); $visite = $dossier->getVisite();
                 $rapport = $dossier->getRapport(); $attestation = $dossier->getAttestation();
 
-                if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier Validé, En Attente Affectation"] = $les_stat0["Dossier Validé, En Attente Affectation"]+1; }
-                if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier affecté"] = $les_stat0["Dossier Affecté, En Attente Visite"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { $les_stat0["Visite Planifiée, En Attente de Rapport"] = $les_stat0["Visite Planifiée, En Attente de Rapport"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { $les_stat0["Visite Réalisée, En Attente de validation Rapport"] = $les_stat0["Visite Réalisée, En Attente de validation Rapport"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { $les_stat0["Rapport validé, en attente clôture"] = $les_stat0["Rapport validé, en attente Cloture"]+1; }
+                $datePaiement=$dossier->getDemande()->getPaiement()->getDatePaiement()->format('d-m-Y');;
+                $dateNow=date("d-m-Y");
+                $alerte5=0; $alerte15=0;
+
+                if(!$attestation) {
+                    $delta=$tools->nbjours_entre($datePaiement, $dateNow);
+                    if($delta>5 && $delta<=15) { $alerte5=1; }
+                    if($delta>15) { $alerte15=1; }
+                    if($alerte5) { $les_alerte["Hors délais 5 jours"]++; }
+                    if($alerte5) { $les_alerte["Hors délais 15 jours"]++; }
+                }
+
+                if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Dossier Validé, En Attente Affectation"] = $les_stat0["Dossier Validé, En Attente Affectation"]+1; 
+                    $id_auteur1=$dossier->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier validé"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier validé"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getReferent()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier attribué"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier attribué"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier attribué"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Dossier affecté"] = $les_stat0["Dossier Affecté, En Attente Visite"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getReferent()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier Affecté"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier Affecté"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier Affecté"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier affecté"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier affecté"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier affecté"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Visite Planifiée, En Attente de Rapport"] = $les_stat0["Visite Planifiée, En Attente de Rapport"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Visite planifiée"]["user_".$id_auteur1])) {
+                            $mes_stat["Visite planifiée"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Visite planifiée"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { 
+                    $les_stat0["Visite Réalisée, En Attente de validation Rapport"] = $les_stat0["Visite Réalisée, En Attente de validation Rapport"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Rapport élaboré"]["user_".$id_auteur1])) {
+                            $mes_stat["Rapport élaboré"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Rapport élaboré"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { 
+                    $les_stat0["Rapport validé, en attente clôture"] = $les_stat0["Rapport validé, en attente Cloture"]+1;
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getReferent()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Rapport validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Rapport validé"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Rapport validé"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
             }
         }
 
@@ -202,27 +421,28 @@ class MainController extends AbstractController
 
             $les_paiement = $em->getRepository(Paiement::class)->findAll();
             foreach($les_paiement as $p) {
-                $stat_paiement["All"][0]++;
-                if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][0]++; }
-                if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][0]++; }
-                if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][0]++; }
+                $montant=$p->getDemande()->getCout();
+                $xx=0;
+                $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 if($p->getDemande()->getInstallation()->getUsages()=="domestique") {
-                    $stat_paiement["All"][0]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][0]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][0]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][0]++; }
+                    $xx=1;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
                 if($p->getDemande()->getInstallation()->getUsages()=="non_domestique") {
-                    $stat_paiement["All"][1]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][1]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][1]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][1]++; }
+                    $xx=2;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
                 if($p->getDemande()->getInstallation()->getUsages()=="erp_ert") {
-                    $stat_paiement["All"][2]++;
-                    if($p->getMode()=="Espèce") { $stat_paiement["Espèce"][2]++; }
-                    if($p->getMode()=="Chèque") { $stat_paiement["Chèque"][2]++; }
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][2]++; }
+                    $xx=3;
+                    $stat_paiement["All"][$xx]++; $montant_paiement["All"][$xx]+=$montant;
+                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx]++; $montant_paiement["Autre"][$xx]+=$montant; }
+                    else { $stat_paiement[$p->getMode()][$xx]++; $montant_paiement[$p->getMode()][$xx]+=$montant; }
                 }
             }
 
@@ -242,17 +462,102 @@ class MainController extends AbstractController
                 "Rapport validé, en attente clôture"=>0,
             ];
 
+            $mes_stat = [
+                "Demande Soumise"=>array(), 
+                "Demande Domestique"=>array(), 
+                "Demande Professionnelle"=>array(), 
+                "Demande ERP - ERT"=>array(), 
+
+                "Paiement enregistré"=>array(), 
+                "Paiement validé"=>array(), 
+
+                "Dossier Affecté"=>array(), 
+                "Visite Planifiée"=>array(), 
+                "Rapport élaboré"=>array(), 
+                "Rapport validé"=>array(), 
+            ];
+
+            $les_alerte = [
+                "Hors délais 5 jours"=>0, 
+                "Hors délais 15 jours"=>0, 
+            ];
+
+            $mes_alerte = [
+                "Hors délais 5 jours"=>array(), 
+                "Hors délais 15 jours"=>array(), 
+            ];
+
             foreach ($les_demande as $demande) {
                 $etat = $demande->getEtat();
                 $usage = $demande->getInstallation()->getUsages();
-                if($usage=="domestique") { $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; }
-                if($usage=="non_domestique") { $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; }
-                if($usage=="erp_ert") { $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; }
+                if($usage=="domestique") { 
+                    $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Domestique"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="non_domestique") { 
+                    $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Professionnelle"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="erp_ert") { 
+                    $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande ERP - ERT"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
 
-                if($etat=="Soumis") { $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; }
-                if($etat=="Paiement enregistré") { $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; }
-                if($etat=="Paiement validé") { $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; }
-                
+                if($etat=="Soumis") { 
+                    $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Soumise"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($etat=="Paiement enregistré") { 
+                    $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; 
+                    $id_auteur1=$demande->getPaiement()->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Paiement enregistré"]["user_".$id_auteur1])) {
+                            $mes_stat["Paiement enregistré"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Paiement enregistré"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($etat=="Paiement validé") { 
+                    $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; 
+                    $id_auteur2=$demande->getPaiement()->getUpdatedBy();
+                    if($id_auteur2) {
+                        if(!isset($mes_stat["Paiement validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Paiement validé"]["user_".$id_auteur2]=1;
+                        } else {
+                            $mes_stat["Paiement validé"]["user_".$id_auteur2]++;
+                        }
+                    }
+                }
+                 
                 $les_stat0["All"] = $les_stat0["All"]+1;
 
             }
@@ -261,11 +566,156 @@ class MainController extends AbstractController
                 $affecte = $dossier->getAffecte(); $visite = $dossier->getVisite();
                 $rapport = $dossier->getRapport(); $attestation = $dossier->getAttestation();
 
-                if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier Validé, En Attente Affectation"] = $les_stat0["Dossier Validé, En Attente Affectation"]+1; }
-                if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { $les_stat0["Dossier affecté"] = $les_stat0["Dossier Affecté, En Attente Visite"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { $les_stat0["Visite Planifiée, En Attente de Rapport"] = $les_stat0["Visite Planifiée, En Attente de Rapport"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { $les_stat0["Visite Réalisée, En Attente de validation Rapport"] = $les_stat0["Visite Réalisée, En Attente de validation Rapport"]+1; }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { $les_stat0["Rapport validé, en attente clôture"] = $les_stat0["Rapport validé, en attente Cloture"]+1; }
+                $datePaiement=$dossier->getDemande()->getPaiement()->getDatePaiement()->format('d-m-Y');;
+                $dateNow=date("d-m-Y");
+                $alerte5=0; $alerte15=0;
+
+                if(!$attestation) {
+                    $delta=$tools->nbjours_entre($datePaiement, $dateNow);
+                    if($delta>5 && $delta<=15) { $alerte5=1; }
+                    if($delta>15) { $alerte15=1; }
+                    if($alerte5) { $les_alerte["Hors délais 5 jours"]++; }
+                    if($alerte5) { $les_alerte["Hors délais 15 jours"]++; }
+                }
+
+                if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Dossier Validé, En Attente Affectation"] = $les_stat0["Dossier Validé, En Attente Affectation"]+1; 
+                    $id_auteur1=$dossier->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier validé"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier validé"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getReferent()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier attribué"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier attribué"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier attribué"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Dossier affecté"] = $les_stat0["Dossier Affecté, En Attente Visite"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Dossier affecté"]["user_".$id_auteur1])) {
+                            $mes_stat["Dossier affecté"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Dossier affecté"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { 
+                    $les_stat0["Visite Planifiée, En Attente de Rapport"] = $les_stat0["Visite Planifiée, En Attente de Rapport"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId());if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Visite planifiée"]["user_".$id_auteur1])) {
+                            $mes_stat["Visite planifiée"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Visite planifiée"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { 
+                    $les_stat0["Visite Réalisée, En Attente de validation Rapport"] = $les_stat0["Visite Réalisée, En Attente de validation Rapport"]+1; 
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getControleur()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Rapport élaboré"]["user_".$id_auteur1])) {
+                            $mes_stat["Rapport élaboré"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Rapport élaboré"]["user_".$id_auteur1]++;
+                        }
+
+                        // Hors délais 5 j
+                        if($alerte5) {
+                            if(!isset($mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 5 jours"]["user_".$id_auteur1]++;
+                        }
+                        // Hors délais 15 j
+                        if($alerte15) {
+                            if(!isset($mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1])) {
+                                $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]=0;
+                            }
+                            $mes_alerte["Hors délais 15 jours"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { 
+                    $les_stat0["Rapport validé, en attente clôture"] = $les_stat0["Rapport validé, en attente Cloture"]+1;
+                    $id_auteur1=$tools->getAgentUtilisateur($dossier->getReferent()->getId()); if($id_auteur1) { $id_auteur1=$id_auteur1->getId(); }
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Rapport validé"]["user_".$id_auteur1])) {
+                            $mes_stat["Rapport validé"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Rapport validé"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
             }
         }
 
@@ -287,14 +737,62 @@ class MainController extends AbstractController
                 "Soumis, en attente paiement"=>0, 
             ];
 
+            $mes_stat = [
+                "Demande Soumise"=>array(), 
+                "Demande Domestique"=>array(), 
+                "Demande Professionnelle"=>array(), 
+                "ERP - ERT"=>array(), 
+
+            ];
+
             foreach ($les_demande as $demande) {
                 $etat = $demande->getEtat();
                 $usage = $demande->getInstallation()->getUsages();
-                if($usage=="domestique") { $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; }
-                if($usage=="non_domestique") { $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; }
-                if($usage=="erp_ert") { $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; }
+                if($usage=="domestique") { 
+                    $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Domestique"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="non_domestique") { 
+                    $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Professionnelle"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="erp_ert") { 
+                    $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande ERP - ERT"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
 
-                if($etat=="Soumis") { $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; }
+                if($etat=="Soumis") { 
+                    $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Soumise"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
                 
                 $les_stat0["All"] = $les_stat0["All"]+1;
 
@@ -325,16 +823,64 @@ class MainController extends AbstractController
                 "Rapport validé, en attente clôture"=>0,
             ];
 
+            $mes_stat = [
+                "Demande Soumise"=>array(), 
+                "Demande Domestique"=>array(), 
+                "Demande Professionnelle"=>array(), 
+                "ERP - ERT"=>array(), 
+
+            ];
+
             foreach ($les_demande as $demande) {
                 $etat = $demande->getEtat();
                 $usage = $demande->getInstallation()->getUsages();
-                if($usage=="domestique") { $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; }
-                if($usage=="non_domestique") { $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; }
-                if($usage=="erp_ert") { $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; }
+                if($usage=="domestique") { 
+                    $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Domestique"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Domestique"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="non_domestique") { 
+                    $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Professionnelle"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Professionnelle"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                if($usage=="erp_ert") { 
+                    $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande ERP - ERT"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande ERP - ERT"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
 
-                if($etat=="Soumis") { $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; }
-                if($etat=="Paiement enregistré") { $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; }
-                if($etat=="Paiement validé") { $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; }
+                if($etat=="Soumis") { 
+                    $les_stat0["Soumis, en attente paiement"] = $les_stat0["Soumis, en attente paiement"]+1; 
+                    $id_auteur1=$demande->getCreatedBy();
+                    if($id_auteur1) {
+                        if(!isset($mes_stat["Demande Soumise"]["user_".$id_auteur1])) {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]=1;
+                        } else {
+                            $mes_stat["Demande Soumise"]["user_".$id_auteur1]++;
+                        }
+                    }
+                }
+                // if($etat=="Paiement enregistré") { $les_stat0["Payé, en attente confirmation paiement"] = $les_stat0["Payé, en attente confirmation paiement"]+1; }
+                // if($etat=="Paiement validé") { $les_stat0["Payé, en attente validation"] = $les_stat0["Payé, en attente validation"]+1; }
                 
                 $les_stat0["All"] = $les_stat0["All"]+1;
 
@@ -357,6 +903,7 @@ class MainController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         if(in_array($role, array("ROLE_CAISSIER", "ROLE_COMPTABLE", "ROLE_DAF"))) {
             return $this->render('main/index_paiement.html.twig', [
+                'mes_stat' => $mes_stat,
                 'les_stat' => $les_stat0,
                 'stat_paiement' => $stat_paiement,
                 'montant_paiement' => $montant_paiement,
@@ -364,31 +911,96 @@ class MainController extends AbstractController
         }
         elseif(in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT", "ROLE_RFO"))) {
             return $this->render('main/index_dossier.html.twig', [
+                'mes_stat' => $mes_stat,
                 'les_stat' => $les_stat0,
+
+                'mes_alerte' => $mes_alerte,
+                'les_alerte' => $les_alerte,
             ]);
         }
         elseif(in_array($role, array("ROLE_ADMIN"))) {
             return $this->render('main/index.html.twig', [
+                'mes_stat' => $mes_stat,
                 'les_stat' => $les_stat0,
                 'stat_paiement' => $stat_paiement,
                 'montant_paiement' => $montant_paiement,
                 'les_install' => $les_install,
                 'last_client' => $last_client,
+
+                'mes_alerte' => $mes_alerte,
+                'les_alerte' => $les_alerte,
             ]);
         }
         elseif(in_array($role, array("ROLE_PUBLIC"))) {
             return $this->render('main/index_public.html.twig', [
+                'mes_stat' => $mes_stat,
                 'les_stat' => $les_stat0,
                 'les_install' => $les_install,
             ]);
         }
         elseif(in_array($role, array("ROLE_ACCUEIL"))) {
             return $this->render('main/index_accueil.html.twig', [
+                'mes_stat' => $mes_stat,
                 'les_install' => $les_install,
                 'les_stat' => $les_stat0,
             ]);
         }
     }
+
+    #[Route('/demandepop/{restr}', name: 'main_demandepop', methods: ['GET', 'POST'])]
+    public function demandepop(String $restr, Request $request, ManagerRegistry $doctrine): Response
+    {
+        $val_filtre = array(); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'statistiques');
+        $request->getSession()->set('sousmenu', '');
+
+        if($role=="ROLE_PUBLIC") { $val_filtre["a.created_by"]=$userConn->getId(); }
+        if($agent && $agence) { $val_filtre["l.agence"]=$agence->getId(); }
+
+        $val_filtre["i.etat"]="Soumis";
+
+        $les_restr = [
+            "All"=>array(), 
+            "Domestiques"=>array('i.usages'=>'domestique'), 
+            "Professionnelles"=>array('i.usages'=>'non_domestique'), 
+            "ERP - ERT"=>array('i.usages'=>'erp_ert'), 
+            "Soumis, en attente paiement"=>array('a.etat'=>'Soumis'), 
+            "Payé, en attente confirmation paiement"=>array('a.etat'=>'Paiement enregistré'), 
+            "Payé, en attente validation"=>array('a.etat'=>'Paiement validé'), 
+            
+            "Dossier Validé, En Attente Affectation"=>array('d.affecte'=>'0', 'd.visite'=>'0', 'd.rapport'=>'0', 'd.attestation'=>'0', ),
+            "Dossier Affecté, En Attente Visite"=>array('d.affecte'=>'1', 'd.visite'=>'0', 'd.rapport'=>'0', 'd.attestation'=>'0', ),
+            "Visite Planifiée, En Attente de Rapport"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'0', 'd.attestation'=>'0', ),
+            "Visite Réalisée, En Attente de validation Rapport"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'1', 'd.attestation'=>'0', ),
+            "Rapport validé, en attente clôture"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'1', 'd.attestation'=>'1', ),
+        ];
+        
+        if(isset($les_restr[$restr])) {
+            $val_filtre=array_merge($val_filtre, $les_restr[$restr]);
+        } else {
+            $val_filtre=array_merge($val_filtre, array("0"=>"1"));
+        }
+
+        $les_demande = $em->getRepository(Demande::class)->findByRestr2($val_filtre, $orderBy, $page);
+        // usually you'll want to make sure the user is authenticated first
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        return $this->render('main/demandepop.html.twig', [
+            'les_demande' => $les_demande,
+            'titre'=> $restr,
+
+            'tools'=> $tools,
+        ]);
+    }    
 
     #[Route('/statistiques', name: 'stat', methods: ['GET', 'POST'])]
     public function stat_demande(Request $request, ManagerRegistry $doctrine): Response

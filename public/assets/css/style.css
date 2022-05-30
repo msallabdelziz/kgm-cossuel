@@ -966,6 +966,30 @@ h4 {
     background-color: #FFC329;
 }
 
+.bg-vertf {
+    background-color: #1c6210;
+}
+
+.bg-bleuf {
+    background-color: #102d62;
+}
+
+.bg-rougef {
+    background-color: #900e0e;
+}
+
+.bg-vertf2 {
+    background-color: #687863;
+}
+
+.bg-bleuf2 {
+    background-color: #50668d;
+}
+
+.bg-rougef2 {
+    background-color: #835454;
+}
+
 span.divider hr {
     margin: 7px 0;
     background-color: #c9d2d7;

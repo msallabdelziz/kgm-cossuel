@@ -74,6 +74,7 @@ class PaiementController extends AbstractController
 
             $paiement->setPaiementEffectue(true);
             $paiement->setDatePaiement(new \DateTime());
+            $paiement->setUpdatedBy($this->getUser()->getId());
             $paiementRepository->add($paiement);
 
             return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 

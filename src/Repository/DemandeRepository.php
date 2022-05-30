@@ -104,6 +104,33 @@ class DemandeRepository extends ServiceEntityRepository
         return $q->getQuery()->getResult();
     }
     
+    public function findByRestr2($val_filtre, $orderBy="", $page=0)
+    {
+        $q = $this->createQueryBuilder('a')
+        ->leftjoin('App\Entity\Installation', 'i', 'WITH', 'i.id = a.installation')
+        ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = i.localite')
+        ->leftjoin('App\Entity\Dossier', 'd', 'WITH', 'd.demande = a.id')
+        ;
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                $q->andWhere($p.' = :val'.$ix)
+                ->setParameter('val'.$ix, "$v");
+                $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+    
     public function findBy2($val_filtre, $orderBy="", $page=0)
     {
 

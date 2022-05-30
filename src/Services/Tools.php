@@ -121,6 +121,12 @@ class Tools
         return $xx;
     }
 
+    public function getAgentUtilisateur(string $id): ?Utilisateur {
+        $res = null;
+        $res= $this->em->getRepository(Utilisateur::class)->findOneBy(array("type"=>"agent", "id_type"=>$id));
+        return $res;
+    }
+
     public function getUtilisateur(string $id): ?Utilisateur {
         $res = null;
         $res= $this->em->getRepository(Utilisateur::class)->find($id);
