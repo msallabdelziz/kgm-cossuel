@@ -58,7 +58,7 @@ class ElectricienRepository extends ServiceEntityRepository
 
     public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
     {
-        $les_col=array("prenom", "nom", "adresse", "telephone", "email", "num_piece");
+        $les_col=array("prenom", "nom", "adresse", "telephone", "email", "numPiece");
         $str='1 = 0';
         foreach($les_col as $col) {
             $str.=' or a.'.$col.' like :val';

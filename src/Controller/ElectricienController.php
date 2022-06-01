@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Electricien;
 use App\Form\ElectricienType;
 use App\Repository\ElectricienRepository;
+use App\Repository\LocaliteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,15 +14,31 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/electricien')]
 class ElectricienController extends AbstractController
 {
-    #[Route('/', name: 'app_electricien_index', methods: ['GET'])]
-    public function index(Request $request, ElectricienRepository $electricienRepository): Response
+    #[Route('/', name: 'app_electricien_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, ElectricienRepository $electricienRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'electricien');
         $request->getSession()->set('sousmenu', '');
 
+        $val_localite=""; 
+        $les_localite = $localiteRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+            $val_localite = $request->request->get("val_localite");
+            if($val_localite) { $val_filtre["localite"] = $val_localite; }
+        }
+
+        $les_electricien = $electricienRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+
         return $this->render('electricien/index.html.twig', [
-            'les_electricien' => $electricienRepository->findAll(),
+            'les_electricien' => $les_electricien,
+            'val_rech' => $val_rech,
+
+            'les_localite'=> $les_localite,
+            'val_localite'=> $val_localite,
         ]);
     }
 

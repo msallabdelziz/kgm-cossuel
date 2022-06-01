@@ -2,7 +2,7 @@
 <header class="header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-lg-5 col-md-5 col-6">
+			<div class="col-lg-4 col-md-4 col-4">
 				<div class="header-left d-flex align-items-center">
 					<div class="menu-toggle-btn mr-20">
 						<button id="menu-toggle" class="main-btn primary-btn btn-hover">
@@ -11,7 +11,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-7 col-md-7 col-6">
+			<div class="col-lg-3 col-md-3 col-3 rounded m-0 p-0 float-end" style="" align="center">
+				{% if app.session.get('agence') and app.session.get("menu")!="statistiques" %}
+					<label class="badge bg-warning border shadow text-dark fs-5">AGENCE</label><label class="badge bg-dark border shadow text-warning fs-5">{{app.session.get('agence').nom}}</label>
+				{% endif %}
+			</div>
+			<div class="col-lg-5 col-md-5 col-5">
 				<div class="header-right">
 {#                     
 					<!-- notification start -->
@@ -111,6 +116,63 @@
 					</div>
 					<!-- message end --> 
                     #}
+
+					
+						{# ---========= Alertes Notifications Dossiers Hors délais ==========---------- #}
+						<div class="profile-box ml-15">
+							<button class="dropdown-toggle bg-transparent border-0" type="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
+								<div class="profile-info">
+									<div class="info">
+										<div class="image ms-2 border-0">
+											<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+												<path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+											</svg>
+										</div>
+									</div>
+								</div>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+							<li>
+								<div class="card bg-red p-2 card-stat">
+									<div class="un-stat d-flex">
+										<div class="">
+											<p class="mb-1 pt">
+												<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] is defined  %}
+													{{ mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+												</span>
+												<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+											</p>
+										</div>
+									</div>
+								</div>
+							</li>
+
+							<li>
+								<div class="card bg-rougef p-2 card-stat">
+									<div class="un-stat d-flex">
+										<div class="">
+											<p class="mb-1 pt">
+												<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] is defined  %}
+													{{ mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+												</span>
+												<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+											</p>
+										</div>
+									</div>
+								</div>
+							</li>
+						</div>
+
+						
+						 
 					<!-- profile start -->
 					<div class="profile-box ml-15">
 						<button class="dropdown-toggle bg-transparent border-0" type="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
@@ -127,9 +189,9 @@
 						</button>
 						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
 							<li>
-								<a href="{{ path('app_utilisateur_user') }}" 
+								<a href="#0">
 									<i class="lni lni-user"></i>
-									 Mon Profil
+									Mon Profil
 								</a>
 							</li>
 

@@ -15,30 +15,21 @@ class DetailVerification
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    private $numero;
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $conclusion;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $objetVerification;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $commentaire;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $natureConclusion;
+    #[ORM\ManyToOne(targetEntity: PointVerification::class)]
+    private $pointVerification;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $libelleConclusion;
-
-    #[ORM\ManyToOne(targetEntity: Rubrique::class, inversedBy: 'detailVerifications')]
-    private $rubrique;
-
-    #[ORM\OneToMany(mappedBy: 'detailVerification', targetEntity: PointNomConforme::class)]
-    private $pointNomConformes;
-
-    #[ORM\ManyToOne(targetEntity: Verification::class, inversedBy: 'detailVerification')]
-    private $verification;
+    #[ORM\ManyToOne(targetEntity: Visite::class)]
+    private $visite;
 
     public function __construct()
     {
-        $this->pointNomConformes = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -46,104 +37,51 @@ class DetailVerification
         return $this->id;
     }
 
-    public function getNumero(): ?int
+    public function getCommentaire(): ?string
     {
-        return $this->numero;
+        return $this->commentaire;
     }
 
-    public function setNumero(int $numero): self
+    public function setCommentaire(?string $commentaire): self
     {
-        $this->numero = $numero;
+        $this->commentaire = $commentaire;
 
         return $this;
     }
 
-    public function getObjetVerification(): ?string
+    public function getConclusion(): ?bool
     {
-        return $this->objetVerification;
+        return $this->conclusion;
     }
 
-    public function setObjetVerification(string $objetVerification): self
+    public function setConclusion(?bool $conclusion): self
     {
-        $this->objetVerification = $objetVerification;
+        $this->conclusion = $conclusion;
 
         return $this;
     }
 
-    public function getNatureConclusion(): ?string
+    public function getVisite(): ?Visite
     {
-        return $this->natureConclusion;
+        return $this->visite;
     }
 
-    public function setNatureConclusion(string $natureConclusion): self
+    public function setVisite(?Visite $visite): self
     {
-        $this->natureConclusion = $natureConclusion;
+        $this->visite = $visite;
 
         return $this;
     }
 
-    public function getLibelleConclusion(): ?string
+
+    public function getPointVerification(): ?PointVerification
     {
-        return $this->libelleConclusion;
+        return $this->pointVerification;
     }
 
-    public function setLibelleConclusion(string $libelleConclusion): self
+    public function setPointVerification(?PointVerification $pointVerification): self
     {
-        $this->libelleConclusion = $libelleConclusion;
-
-        return $this;
-    }
-
-    public function getRubrique(): ?Rubrique
-    {
-        return $this->rubrique;
-    }
-
-    public function setRubrique(?Rubrique $rubrique): self
-    {
-        $this->rubrique = $rubrique;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, PointNomConforme>
-     */
-    public function getPointNomConformes(): Collection
-    {
-        return $this->pointNomConformes;
-    }
-
-    public function addPointNomConforme(PointNomConforme $pointNomConforme): self
-    {
-        if (!$this->pointNomConformes->contains($pointNomConforme)) {
-            $this->pointNomConformes[] = $pointNomConforme;
-            $pointNomConforme->setDetailVerification($this);
-        }
-
-        return $this;
-    }
-
-    public function removePointNomConforme(PointNomConforme $pointNomConforme): self
-    {
-        if ($this->pointNomConformes->removeElement($pointNomConforme)) {
-            // set the owning side to null (unless already changed)
-            if ($pointNomConforme->getDetailVerification() === $this) {
-                $pointNomConforme->setDetailVerification(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getVerification(): ?Verification
-    {
-        return $this->verification;
-    }
-
-    public function setVerification(?Verification $verification): self
-    {
-        $this->verification = $verification;
+        $this->pointVerification = $pointVerification;
 
         return $this;
     }
@@ -151,6 +89,6 @@ class DetailVerification
 
     public function __toString()
     {
-        return "[".$this->getNumero()."]";
+        return "[Vérification".$this->getId()."]";
     }
 }

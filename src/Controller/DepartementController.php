@@ -2,16 +2,18 @@
 
 namespace App\Controller;
 
-use App\Entity\Region;
 use App\Entity\Departement;
+use App\Entity\Localite;
+use App\Entity\Region;
 use App\Form\DepartementFormType;
-use App\Repository\RegionRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\LocaliteRepository;
+use App\Repository\RegionRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/departement", name="app_departement_")
@@ -32,6 +34,59 @@ class DepartementController extends AbstractController
             'val_rech' => $val_rech,
         ]);
     }
+
+    /**
+     * @Route("/load", name="load")
+     */
+    public function load(Request $request, RegionRepository $regionRepository): Response
+    {
+        $region = null;
+        if($request->request->get("region")) {
+            $id_region = $request->request->get("region");
+            $region = $regionRepository->find($id_region);
+        }
+        $form = $this->createFormBuilder()
+        ->add('departement', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'class' => Departement::class,
+            'query_builder' => function (DepartementRepository $er) use ($region) {
+                return $er->createQueryBuilder('l')
+                ->where('l.region = :val') 
+                ->setParameter('val', $region);
+            },
+            'data' => null,
+            'choice_label' => 'nom',
+            'label' => 'Département',
+            'required' => true
+        ])
+        ->add('localite', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'class' => Localite::class,
+            'data' => null,
+            'query_builder' => function (LocaliteRepository $er) use ($region) {
+                return $er->createQueryBuilder('l')
+                ->join('App\Entity\Departement', 'd', 'WITH', 'd.id = l.departement')
+                ->where('d.region = :val') 
+                ->setParameter('val', $region);
+            },
+            'choice_label' => 'nom',
+            'label' => 'Localité',
+            'required' => true
+        ])
+        ->getForm();
+        $form->handleRequest($request);
+
+        return $this->renderForm('departement/load.html.twig', [
+            'form' => $form,
+        ]);
+    }    
+
     /**
      * @Route("/{id}/add", name="add")
      */
@@ -76,6 +131,7 @@ class DepartementController extends AbstractController
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
         ]);
     }
+
     /**
      * @Route("/{id}", name="show")
      */
@@ -85,27 +141,6 @@ class DepartementController extends AbstractController
             'les_departement' => $departementRepository->findBy([],['code'=>'asc']),
             'departement' => $departement,
         ]);
-    }
-    
-    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
-    public function delete(EntityManagerInterface $manager, Departement $departement): Response
-    {
-        if (!$departement) {
-            $this->addFlash(
-                "success",
-                "Region en question n'a pas èté trouvé"
-            );
-            return $this->redirectToRoute('app_departement_index', [], Response::HTTP_SEE_OTHER);
-        }
+    }    
 
-        $manager->remove($departement);
-        $manager->flush();
-
-        $this->addFlash(
-            "success",
-            "Departement a été supprimer avec succès"
-            
-        ); 
-        return $this->redirectToRoute('app_departement_index');  
-    }
 }

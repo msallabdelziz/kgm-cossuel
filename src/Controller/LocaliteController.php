@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Localite;
 use App\Entity\Departement;
+use App\Entity\Localite;
 use App\Form\LocaliteFormType;
-use App\Repository\LocaliteRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
+use App\Repository\LocaliteRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/localite", name="app_localite_")
@@ -27,6 +27,42 @@ class LocaliteController extends AbstractController
             'les_localite' => $localiteRepository->findBy([],['code'=>'asc']),
         ]);
     }
+
+    /**
+     * @Route("/load", name="load")
+     */
+    public function load(Request $request, DepartementRepository $departementRepository): Response
+    {
+        $departement = null;
+        if($request->request->get("departement")) {
+            $id_departement = $request->request->get("departement");
+            $departement = $departementRepository->find($id_departement);
+        }
+        $form = $this->createFormBuilder()
+        ->add('localite', EntityType::class, [
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'mapped' => false,
+            'data' => null,
+            'class' => Localite::class,
+            'query_builder' => function (LocaliteRepository $er) use ($departement) {
+                return $er->createQueryBuilder('l')
+                ->where('l.departement = :val') 
+                ->setParameter('val', $departement);
+            },
+            'choice_label' => 'nom',
+            'label' => 'Localité',
+            'required' => true
+        ])
+        ->getForm();
+        $form->handleRequest($request);
+
+        return $this->renderForm('localite/load.html.twig', [
+            'form' => $form,
+        ]);
+    }    
+
     /**
      * @Route("/{id}/add", name="add")
      */
@@ -80,27 +116,5 @@ class LocaliteController extends AbstractController
             'les_localite' => $localiteRepository->findBy([],['code'=>'asc']),
             'localite' => $localite,
         ]);
-    }
-    
-    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
-    public function delete(EntityManagerInterface $manager, Localite $localite): Response
-    {
-        if (!$localite) {
-            $this->addFlash(
-                "success",
-                "Region en question n'a pas èté trouvé"
-            );
-            return $this->redirectToRoute('app_localite_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        $manager->remove($localite);
-        $manager->flush();
-
-        $this->addFlash(
-            "success",
-            "Localité a été supprimer avec succès"
-        ); 
-        return $this->redirectToRoute('app_localite_index');  
-    }
-
+    }    
 }

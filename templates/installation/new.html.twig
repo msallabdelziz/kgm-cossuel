@@ -55,21 +55,22 @@
                                         <div class="col-lg-4 alimente1">
                                             {{ form_row(installationForm.grstReseau) }}<br>
                                         </div>
-                                        <div class="col-lg-4 alimente0">
-                                            {{ form_row(installationForm.compteurVoisin) }}<br>
-                                        </div>
                                         <hr class="mb-3" />
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.region) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.departement) }}<br>
+                                        </div>
                                         <div class="col-lg-4">
                                             {{ form_row(installationForm.localite) }}<br>
                                         </div>
-                                        <div class="col-lg-8">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-12">
                                         {{ form_row(installationForm.adresse) }}<br>
                                         </div>
-                                        <div class="col-lg-4">
+                                        <div class="col-lg-8">
                                             {{ form_row(installationForm.habitation) }}<br>
-                                        </div>
-                                        <div class="col-lg-4">
-                                            {{ form_row(installationForm.bp) }}<br>
                                         </div>
                                         <div class="col-lg-2">
                                             {{ form_row(installationForm.lattitude) }}<br>
@@ -101,36 +102,90 @@
 <script>
     $(document).ready(function () {
         $('.alimente0').show(); $('.alimente1').hide();
-        $('#form_compteurVoisin').prop('required',true);
         $('#form_abonnement').prop('required',false);
         $('#form_compteur').prop('required',false);
         $('#form_localite').prop('required',true);
         $('#form_adresse').prop('required',true);
-        $('#form_habitation').prop('required',true);
         optSel=$('input[type=radio][name="form[alimente]"]:checked');
         valSel=optSel.val();
         if (valSel==1) {
             $('.alimente1').show(); $('.alimente0').hide();
-            $('#form_compteurVoisin').prop('required',false);
             $('#form_abonnement').prop('required',true);
             $('#form_compteur').prop('required',true);
         }
 
         $('input[type=radio][name="form[alimente]"]').change(function() {
             $('.alimente0').show(); $('.alimente1').hide();
-            $('#form_compteurVoisin').prop('required',true);
             $('#form_abonnement').prop('required',false);
             $('#form_compteur').prop('required',false);
             optSel=$('input[type=radio][name="form[alimente]"]:checked');
             valSel=optSel.val();
             if (valSel == 1) {
                 $('.alimente1').show(); $('.alimente0').hide();
-                $('#form_compteurVoisin').prop('required',false);
                 $('#form_abonnement').prop('required',true);
                 $('#form_compteur').prop('required',true);
             }
         });
-    });
+
+        on_region_change();
+        on_departement_change();
+});
+
+    function on_departement_change() {
+        var $departement = $('#form_departement');
+        // When departement gets selected ...
+        $departement.change(function() {
+            // Simulate form data, but only include the selected departement value.
+            var data = {};
+            data['departement'] = $departement.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_localite_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
+    function on_region_change() {
+        var $region = $('#form_region');
+
+        // When region gets selected ...
+        $region.change(function() {
+            // Simulate form data, but only include the selected region value.
+            var data = {};
+            data['region'] = $region.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_departement_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current departement field ...
+                $('#form_departement').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_departement')
+                );
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                on_departement_change();
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
 </script>
 
 {% endblock %}

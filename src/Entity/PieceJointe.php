@@ -22,8 +22,8 @@ class PieceJointe
     #[ORM\Column(type: 'string', length: 255)]
     private $fichier;
 
-    #[ORM\ManyToOne(targetEntity: Demande::class, inversedBy: 'pieceJointes')]
-    private $demande;
+    #[ORM\ManyToOne(targetEntity: Installation::class, inversedBy: 'pieceJointes')]
+    private $installation;
 
     public function __construct()
     {
@@ -60,15 +60,14 @@ class PieceJointe
         return $this;
     }
 
-    public function getDemande(): ?Demande
+    public function getInstallation(): ?Installation
     {
-        return $this->demande;
+        return $this->installation;
     }
 
-    public function setDemande(?Demande $demande): self
+    public function setInstallation(?Installation $installation): self
     {
-        $this->demande = $demande;
-
+        $this->installation = $installation;
         return $this;
     }
 

@@ -8,10 +8,12 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -65,7 +67,7 @@ class ProprietaireType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone !')
+                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone ! Au max 15 !')
                                 ->addViolation();
                         }
                     }
@@ -92,8 +94,8 @@ class ProprietaireType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de caractères saisis !')
-                                ->addViolation();
+                            ->buildViolation('Format incorrect ! 13 caractères au max !')
+                            ->addViolation();
                         }
                     }
                 }),
@@ -101,6 +103,7 @@ class ProprietaireType extends AbstractType
             'required' => true,
             'label' => 'Numéro Piece'
         ])
+
         /* ->add('role')
             ->add('created_at')
             ->add('created_by')

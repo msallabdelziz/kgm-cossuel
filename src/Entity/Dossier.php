@@ -25,7 +25,7 @@ class Dossier
     private $dateCreation;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $heureCreation;
+    private $dateAffecte;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateCloture;
@@ -95,18 +95,6 @@ class Dossier
         return $this;
     }
 
-    public function getHeureCreation(): ?\DateTimeInterface
-    {
-        return $this->heureCreation;
-    }
-
-    public function setHeureCreation(\DateTimeInterface $heureCreation): self
-    {
-        $this->heureCreation = $heureCreation;
-
-        return $this;
-    }
-
     public function getDateCloture(): ?\DateTimeInterface
     {
         return $this->dateCloture;
@@ -115,6 +103,18 @@ class Dossier
     public function setDateCloture(\DateTimeInterface $dateCloture): self
     {
         $this->dateCloture = $dateCloture;
+
+        return $this;
+    }
+
+    public function getDateAffecte(): ?\DateTimeInterface
+    {
+        return $this->dateAffecte;
+    }
+
+    public function setDateAffecte(\DateTimeInterface $dateAffecte): self
+    {
+        $this->dateAffecte = $dateAffecte;
 
         return $this;
     }
@@ -243,6 +243,16 @@ class Dossier
         $this->referent = $referent;
 
         return $this;
+    }
+
+    public function getVisiteCourante(): ?Visite
+    {
+        $les_visite = $this->visites;
+        if($les_visite->count()) {
+            return $les_visite->last();
+        } else {
+            return null;
+        }
     }
 
 

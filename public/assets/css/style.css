@@ -966,6 +966,30 @@ h4 {
     background-color: #FFC329;
 }
 
+.bg-vertf {
+    background-color: #1c6210;
+}
+
+.bg-bleuf {
+    background-color: #102d62;
+}
+
+.bg-rougef {
+    background-color: #900e0e;
+}
+
+.bg-vertf2 {
+    background-color: #687863;
+}
+
+.bg-bleuf2 {
+    background-color: #50668d;
+}
+
+.bg-rougef2 {
+    background-color: #835454;
+}
+
 span.divider hr {
     margin: 7px 0;
     background-color: #c9d2d7;
@@ -1832,11 +1856,15 @@ only screen and (min-width: 768px) and (max-width: 991px),
     background: #11110e;
 }
 
+#modal2 .modal-dialog {
+    max-width: 75%;
+}    
 
 @media screen and (max-width: 1225px) and (min-width: 1045px) {
     .priority-5{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 1045px) and (min-width: 835px) {
@@ -1846,6 +1874,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     .priority-4{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 835px) and (min-width: 300px) {
@@ -1858,6 +1887,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     .priority-3{
         display:none;
     }
+
 }
 
 @media screen and (max-width: 300px) {
@@ -1875,3 +1905,4 @@ only screen and (min-width: 768px) and (max-width: 991px),
     }
 
 }
+

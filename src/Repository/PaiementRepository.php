@@ -45,6 +45,40 @@ class PaiementRepository extends ServiceEntityRepository
         }
     }
 
+    public function findBy2($val_filtre, $orderBy="", $page=0)
+    {
+
+        $q = $this->createQueryBuilder('a');
+        $q->select('a')
+        ->join('App\Entity\Demande', 'd', 'WITH', 'a.demande = d.id')
+        ->join('App\Entity\Installation', 'i', 'WITH', 'd.installation = i.id')
+        ->join('App\Entity\Localite', 'l', 'WITH', 'i.localite = l.id');
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $restr="";
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                if($p=="agence") {
+                    $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } else {
+                    $q->andWhere('a.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                }
+                $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+        
     // /**
     //  * @return Paiement[] Returns an array of Paiement objects
     //  */

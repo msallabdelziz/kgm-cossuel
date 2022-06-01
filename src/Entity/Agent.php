@@ -410,6 +410,23 @@ class Agent
         return $this;
     }
 
+    public function getAgenceCourante(): ?Agence
+    {
+        $les_aff = $this->affectation;
+        if($les_aff->count()) {
+            $aff=$les_aff->last();
+            return $aff->getAgence();
+        } else {
+            return null;
+        }
+    }
+
+
+    public function nomComplet()
+    {
+        return $this->getPrenom()." ".$this->getNom();
+    }
+
     public function __toString()
     {
         return "[".$this->getMatricule()."] ".$this->getPrenom()." ".$this->getNom();

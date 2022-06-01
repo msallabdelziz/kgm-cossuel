@@ -20,6 +20,7 @@ class PaiementType extends AbstractType
                 'Espèce' => 'Espèce',
                 'Chèque' => 'Chèque',
                 'Paiement électronique' => 'Paiement électronique',
+                'Bon Engagement' => 'Bon Engagement',
                 'Autre' => 'Autre',
             ],
             'attr' => [

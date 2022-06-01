@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     photo_directory: '%kernel.project_dir%/public/upload/photo'
+    pdf_directory: '%kernel.project_dir%/public/pdf'
+    css_directory: '%kernel.project_dir%/public/assets/css'
 
 services:
     # default configuration for services in *this* file
@@ -24,3 +26,7 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Services\Tools:
+        arguments: 
+            $siteEmail: 'yatamala.net@gmail.com'
+            $siteName: 'Notification COSSUEL'

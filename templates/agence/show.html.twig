@@ -82,19 +82,23 @@
                     <div class="col pt-2" align="right">
                             <a href="{{ path('app_agence_index') }}" class="mx-2" title="Retour">
                                 <svg class="bi" width="16" height="16" fill="black">
-                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-counterclockwise') }}"></use>
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-return-left') }}"></use>
                                 </svg>
                             </a>
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_agence_edit', {'id': agence.id }) }}" class="mx-2" title="Modifier">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="" class="mx-2" title="Supprimer">
                                 <svg class="bi" width="16" height="16" fill="red">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
                                 </svg>
                             </a>
+                            {% endif %}
                     </div>
                 </div>
 

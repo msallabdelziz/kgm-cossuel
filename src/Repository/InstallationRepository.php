@@ -67,7 +67,9 @@ class InstallationRepository extends ServiceEntityRepository
     public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
     {
         $les_col0=array("numero");
-        $les_col1=array("compteur", "compteurVoisin", "abonnement", "adresse", "bp", "nomSite", "usages", "activite", "habitation");
+        $les_col1=array("compteur", "abonnement", "adresse", "nomSite", "usages", "activite", "habitation");
+        $les_col2=array("nom", "prenom", "telephone", "email", "numPiece");
+        $les_col3=array("nom", "prenom", "telephone", "email", "numPiece");
         $str='1 = 0';
         foreach($les_col1 as $col) {
             $str.=' or a.'.$col.' like :val';
@@ -75,9 +77,19 @@ class InstallationRepository extends ServiceEntityRepository
         foreach($les_col0 as $col) {
             $str.=' or b.'.$col.' like :val';
         }
+        foreach($les_col2 as $col) {
+            $str.=' or e.'.$col.' like :val';
+        }
+        foreach($les_col3 as $col) {
+            $str.=' or p.'.$col.' like :val';
+        }
 
         $q = $this->createQueryBuilder('a')
-        ->leftjoin('App\Entity\Demande', 'b', 'WITH', 'a.id = b.installation');
+        ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = a.localite')
+        ->leftjoin('App\Entity\Demande', 'b', 'WITH', 'a.id = b.installation')
+        ->leftjoin('App\Entity\Electricien', 'e', 'WITH', 'e.id = a.electricien')
+        ->leftjoin('App\Entity\Proprietaire', 'p', 'WITH', 'p.id = a.proprietaire')
+        ;
         if($val_rech) {
             $q->andWhere($str)
             ->setParameter('val', '%'.$val_rech.'%');
@@ -92,6 +104,9 @@ class InstallationRepository extends ServiceEntityRepository
                     elseif($v=="Payé") $restr='a.step = 9';
                     elseif($v=="Validé") $restr='a.step = 10';
                     $q->andWhere($restr);
+                } elseif($p=="agence") {
+                    $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
@@ -107,6 +122,34 @@ class InstallationRepository extends ServiceEntityRepository
             ->setFirstResult($page-1)
             ->setMaxResults(20);
         }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+    
+    public function findByUA($agence=null, $utilisateur=null)
+    {
+        $q = $this->createQueryBuilder('a')
+        ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = b.localite')
+        // ->leftjoin('App\Entity\Demande', 'b', 'WITH', 'a.id = b.installation')
+        // ->leftjoin('App\Entity\Electricien', 'e', 'WITH', 'e.id = a.electricien')
+        // ->leftjoin('App\Entity\Proprietaire', 'p', 'WITH', 'p.id = a.proprietaire')
+        ;
+        if($agence) {
+            $q->andWhere('l.agence = :val')
+            ->setParameter('val', $agence->getId());
+        }
+
+        if($utilisateur) {
+            $q->andWhere('a.createdBy = :val')
+            ->setParameter('val', $utilisateur->getId());
+        }
+
+        $q->orderBy('a.createdAt', 'DESC');
+        // if($page) {
+        //     $q
+        //     ->setFirstResult($page-1)
+        //     ->setMaxResults(20);
+        // }
         // echo $sql=$q->getQuery()->getSQL();
         return $q->getQuery()->getResult();
     }

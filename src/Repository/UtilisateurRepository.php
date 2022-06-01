@@ -47,7 +47,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
     {
-        $les_col=array("login", "prenom", "nom", "adresse", "telephone", "email");
+        $les_col=array("login", "prenom", "nom", "adresse", "telephone", "email", "roles");
         $str='1 = 0';
         foreach($les_col as $col) {
             $str.=' or a.'.$col.' like :val';
@@ -60,8 +60,13 @@ class UtilisateurRepository extends ServiceEntityRepository
         if(is_array($val_filtre) && count($val_filtre)) {
             $ix=0;
             foreach ($val_filtre as $p => $v) {
-                $q->andWhere('a.'.$p.' = :val'.$ix)
-                ->setParameter('val'.$ix, "$v");
+                if($p=="roles") {
+                    $q->andWhere('a.roles like :val'.$ix)
+                    ->setParameter('val'.$ix, "%$v%");
+                } else {
+                    $q->andWhere('a.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                }
                 $ix++;
             }
         }

@@ -17,7 +17,9 @@ use App\Form\AgentType;
 use App\Repository\AffectationsAgentsRepository;
 use App\Repository\AgenceRepository;
 use App\Repository\AgentRepository;
+use App\Repository\ProfilRepository;
 use App\Repository\UtilisateurRepository;
+use App\Services\Tools;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -25,22 +27,37 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AgentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, AgentRepository $agentRepository): Response
+    public function index(Request $request, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agent');
         $request->getSession()->set('sousmenu', '');
 
+        $val_agence=""; 
+        $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+
+        $val_profil=""; 
+        $les_profil = $profilRepository->findBy(array(), array("nom"=>"asc", ));
+
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            $val_agence = $request->request->get("val_agence");
+            $val_profil = $request->request->get("val_profil");
+            if($val_agence) { $val_filtre["id_agence"] = $val_agence; }
+            if($val_profil) { $val_filtre["profil"] = $val_profil; }
         }
         $ag = $agentRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
 
         return $this->render('agent/index.html.twig', [
-            'controller_name' => 'AgentController',
             'les_agent' => $ag,
             'val_rech' => $val_rech,
+
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+
+            'les_profil'=> $les_profil,
+            'val_profil'=> $val_profil,
         ]);
     }
 
@@ -112,7 +129,7 @@ class AgentController extends AbstractController
 
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(AgentRepository $agentRepository, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
+    public function update(AgentRepository $agentRepository, Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
         $agent = $agentRepository->find($id);
 
@@ -147,6 +164,8 @@ class AgentController extends AbstractController
                 $utilisateur->setRoles([$profil]);
                 $utilisateurRepository->add($utilisateur);
             }
+
+            // $tools->notifMail("mlthioune@gmail.com", "Mise à jour agent effectuée !", "Notification COSSUEL");
 
             $this->addFlash('success', 'Les informations ont été enregistrées avec succès !.');
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
@@ -253,7 +272,7 @@ class AgentController extends AbstractController
                 $profil = "ROLE_".strtoupper($agent->getProfil()->getCode());
             }
             $utilisateur->setRoles([$profil]);
-            $this->addFlash('success', 'OK SENT.');
+            $this->addFlash('success', 'Compte utilisateur créé pour l\'agent '.$agent);
             $entityManager->persist($utilisateur);
             $entityManager->flush();
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);

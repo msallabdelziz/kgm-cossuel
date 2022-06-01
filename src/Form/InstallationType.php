@@ -81,13 +81,6 @@ class InstallationType extends AbstractType
                 ],
                 'label' => 'Installation déja alimentée ?'
             ])
-                ->add('compteurVoisin', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control on_alimente0'
-                ],
-                'required' => false,
-                'label' => 'Numéro Compteur Voisin'
-            ])
             ->add('compteur', TextType::class, [
                 'attr' => [
                     'class' => 'form-control on_alimente1'
@@ -154,14 +147,7 @@ class InstallationType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'required' => false,
-                'label' => 'Habitation'
-            ])
-            ->add('bp', TextType::class, [
-                'attr' => [
-                    'class' => 'form-control'
-                ],
-                'required' => false,
-                'label' => 'Boite Postale'
+                'label' => 'Complément Adresse'
             ])
             ->add('lattitude', TextType::class, [
                 'attr' => [
@@ -284,13 +270,6 @@ class InstallationType extends AbstractType
                 // -------------------------------------------------------------------------------------------
 
 
-            ->add('puissance', ChoiceType::class, [
-                'attr' => [
-                    'class' => 'form-control'
-                ],
-                'required' => false,
-                'label' => 'Puissance limitée'
-            ])
             ->add('titreProp', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'

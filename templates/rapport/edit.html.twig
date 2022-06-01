@@ -12,14 +12,13 @@
         </header>
         <div class="row">
         {% if (les_rapport|length) %}
-            <div class="col-lg-5 mb-2 bg-body shadow bg-light card0 me-4 p-3 priority-4">
+            <div class="col-lg-5 mb-2 shadow bg-light card0 me-4 p-3 priority-4">
                 <table class="table table-striped table-hover table-sm pt-0 mt-0">
                 <caption align="top" class="fs-5 mt-0 pt-0">
                     Liste des rapports ({{ les_rapport|length }})
                 </caption>
                 <thead>
                     <tr>
-                        <th width="20%" scope="col">Code</th> 
                         <th scope="col">Nom</th> 
                         <th scope="col" width="1%" align="center">Rubriques</th> 
                     </tr>
@@ -28,8 +27,7 @@
                     {% for reg in les_rapport %}
                         {% set cur='' %}
                         <tr class="{{ cur }}">
-                            <td scope="row"><a href="{{ path('app_rapport_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.code }}</a></td>
-                            <td><a href="{{ path('app_rapport_show', {'id': reg.id }) }}" class="text-dark text-decoration-none">{{ reg.libelle }}</a></td>
+                            <td scope="row"><a href="{{ path('app_rapport_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.libelle }}</a></td>
                             <td align="center">
                             {% if reg.rubriques.count >0 %}
                                 <a href="{{ path('app_rapport_show', {'id': reg.id }) }}" class="badge bg-success text-decoration-none text-light rounded-pill fw-normal">{{ reg.rubriques.count }}</a>
@@ -51,7 +49,6 @@
                 </nav>
                 <div class="container">
                     {{ form_start(rapportForm) }}
-                        {{ form_row(rapportForm.code) }}
                         {{ form_row(rapportForm.libelle) }}
                         <div align="center">
                             <a type="button" class="btn btn-secondary" href="{{ path('app_rapport_show', { 'id': rapport.id}) }}">Annuler</a>

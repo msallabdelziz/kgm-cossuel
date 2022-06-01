@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Electricien;
+use App\Entity\Profil;
 use App\Entity\Proprietaire;
 use App\Entity\Utilisateur;
 use App\Form\UtilisateurType;
 use App\Repository\ElectricienRepository;
+use App\Repository\ProfilRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +19,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -27,26 +28,29 @@ use Symfony\Component\Validator\Constraints\Regex;
 class UtilisateurController extends AbstractController
 {
     #[Route('/', name: 'app_utilisateur_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, UtilisateurRepository $utilisateurRepository): Response
+    public function index(Request $request, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'utilisateur');
         $request->getSession()->set('sousmenu', '');
 
+        $val_profil=""; 
+        $les_profil = $profilRepository->findBy(array(), array("nom"=>"asc", ));
+
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
+            $val_profil = $request->request->get("val_profil");
+            $obj_profil=$profilRepository->find($val_profil);
+            if($val_profil) { $val_filtre["roles"] = strtoupper($obj_profil->getCode()); }
         }
         return $this->render('utilisateur/index.html.twig', [
             'les_utilisateur' => $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
             'val_rech' => $val_rech,
-        ]);
-    }
 
-    #[Route('/user', name: 'app_utilisateur_user')]
-    public function connected()
-    {
-        return $this->render('utilisateur/user.html.twig' );
+            'les_profil'=> $les_profil,
+            'val_profil'=> $val_profil,
+        ]);
     }
 
     #[Route('/add', name: 'app_utilisateur_add', methods: ['GET', 'POST'])]
@@ -58,7 +62,6 @@ class UtilisateurController extends AbstractController
         ->add('type', ChoiceType::class, [
             'choices'  => [
                 'Electricien' => 'Electricien',
-                'Propriétaire Installation' => 'Proprietaire',
             ],
             'attr' => [
                 'class' => 'form-select'
@@ -107,7 +110,7 @@ class UtilisateurController extends AbstractController
                 'class' => 'form-control'
             ],
             'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/')
+                new Regex('/^[a-zA-Z0-9\-\_]+$/'),
             ],
             'required' => true,
             'label' => 'Numéro Piece'
@@ -239,29 +242,5 @@ class UtilisateurController extends AbstractController
         }
 
         return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-
-    #[Route('/editPassword', name: 'app_utilisateur_password')]
-    public function editPass(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        if($request->isMethod('POST')){
-            $em = $this->getDoctrine()->getManager();
-
-            $user = $this->getUser();
-
-            // On vérifie si les 2 mots de passe sont identiques
-            if($request->request->get('password1') == $request->request->get('password2')){
-                $user->setPassword($passwordEncoder->encodePassword($user, $request->request->get('password')));
-                $em->flush();
-                $this->addFlash('message', 'Mot de passe mis à jour avec succès');
-
-                return $this->redirectToRoute('utilisateur');
-            }else{
-                $this->addFlash('error', 'Les deux mots de passe ne sont pas identiques');
-            }
-        }
-
-        return $this->render('utilisateur/editPassword.html.twig');
     }
 }

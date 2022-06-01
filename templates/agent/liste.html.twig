@@ -7,7 +7,9 @@
             <a href="/agence" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des agents</span>
             </a>
+            {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_agence_add') }}" class="btn btn-sm fs-7 btn-primary ms-auto">Ajouter Agent</a>
+            {% endif %}
         </header>
         <div class="row">
             <div class="bg-body shadow bg-light">
@@ -33,7 +35,9 @@
                         <td>{{ ag.profil }}</td>
                         <td>{{ ag.nom }}</td>
                         <td class="text-end">
+                            {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('app_affecter_index', {'id': ag.id }) }}" class="btn btn-sm py-0 fs-7 btn-secondary">Affecter</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
