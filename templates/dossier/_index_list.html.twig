@@ -1,0 +1,151 @@
+    <section class="container">
+        <div class="row">
+            <div class="card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="fw-bold">Dossiers {{ etatDossier }}</h4>
+                        <select name="val_affichage_demande" id="val_affichage_demande" class="bg-warning bg-opacity-50 form-select-sm">
+                            <option {% if affichage == 'listing' %} selected="selected" {% endif %} value="listing">Affichage en Listing</option>
+                            <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
+                        </select>
+                    </div>
+                </div>
+                <span class="divider">
+                    <hr></span>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
+                <div class="col-2 offset-5 fs-6 border-bottom">
+                    <select name="val_localite0" id="val_localite0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Localités ...</option>
+                        {% for obj in les_localite %}
+                            <option value="{{obj.id}}" {% if obj.id == val_localite %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="val_controleur0" id="val_controleur0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Tous les controleurs ...</option>
+                        {% for obj in les_controleur %}
+                            <option value="{{obj.id}}" {% if obj.id == val_controleur %} selected="selected"{% endif %}>{{obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                <div class="col-1" align="center">
+                    <svg class="bi" width="28" height="28" fill="#c32424">
+                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="clear"></div>
+            {% if les_dossier|length == 0 %}
+                <br />
+                <div class="row pt-20">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+            <table class="table table-striped table-hover table-sm pt-0 mt-0">
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Dossiers ({{ les_dossier|length }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">N° Dossier</th> 
+                    <th scope="col">Usage</th> 
+                    <th class="priority-3">Localité</th>
+                    <th class="priority-5">Adresse</th>
+                    <th class="priority-4">Type Construction</th>
+                    <th class="priority-5">Electricien</th>
+                    <th>Statut demande</th>
+                    {# <th scope="col">Agence</th> #}
+                    {# <th class="text-center" scope="col">Départements</th>  #}
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doss in les_dossier %}
+                    {% set demande = doss.demande %}
+                    {% set installation = demande.installation %}
+                    {% set electricien = installation.electricien %}
+                    {% set proprietaire = installation.proprietaire %}
+
+                    {% set badge_etat = "danger" %}
+                    {% if doss.etat == 1 %}
+                        {% set badge_etat = "warning" %}
+                    {% elseif doss.etat == 2 %}
+                        {% set badge_etat = "success" %}
+                    {% endif %}
+                    {% set badge_usage = "warning" %}
+                    {% set text_usage = "text-dark" %}
+                    {% if installation.usages != "domestique" %}
+                        {% set badge_usage = "primary text-light" %}
+                        {% set text_usage = "text-light" %}
+                    {% endif %}
+                    <tr>
+                        <td scope="row">
+                            <a href="{{ path('app_dossier_show', {'id': doss.id }) }}" class="text-dark text-decoration-none fw-bold">
+                                {{ demande.numero }}
+                            </a>
+                        </td>
+                        <td><a href="{{ path('app_dossier_show', {'id': doss.id }) }}" class="text-dark text-decoration-none">{{ installation.usages }}</a></td>
+                        <td class="priority-3">
+                            {% if installation.localite is not null %}
+                                {{ installation.localite.nom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="priority-5">{{ installation.adresse }}</td>
+                        <td class="priority-4">
+                            {% if installation.typeconstruction is not null %}
+                                {{ installation.typeconstruction.nom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="priority-4">
+                            {% if electricien is not null %}
+                                {{ electricien.nom ~ " " ~ electricien.prenom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a  href="{{ path('app_dossier_show', {'id': doss.id }) }}">
+                                <span class="badge badge-{{ badge_etat }} fs-8">Attente {{ doss.etat }}</span>
+                            </a>
+                        </td>
+                        {# <td>{{ ag.agence }}</td> #}
+                        {# <td class="text-center">
+                            {% if reg.departement.count >0 %}
+                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                            {% else %}
+                                <code class="text-danger text-opacity-50">Aucun département</code>
+                            {% endif %}
+                        </td> #}
+                        <td class="text-end">
+                                <a href="{{ path('app_dossier_show', {'id': doss.id }) }}" class="mx-1" title="Afficher les détails">
+                                    <svg class="bi" width="16" height="16" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
+                                    </svg>
+                                </a>
+                            {# <a href="" class="mx-1" title="Supprimer">
+                                <svg class="bi" width="16" height="16" fill="red">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
+                                </svg>
+                            </a> #}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </section>

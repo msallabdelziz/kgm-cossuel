@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+#demande  {
+  font-family: "poppins", sans-serif;
+
+  /* background: #ccc; */
+  background-color: #1c1b19;
+  padding: 30px;
+}
+
+#demande .container {
+  width: 21cm;
+  max-height: 29.7cm;
+}
+
+#demande .invoice {
+  background: #fff;
+  width: 100%;
+  padding: 50px;
+}
+
+#demande .logo {
+  width: 2.5cm;
+}
+#demande .attest-conform {
+  text-decoration-line: underline;
+}
+
+#demande .document-type {
+  text-align: center;
+  color: #1c1b19;
+  font-weight: bold;
+  border-bottom: 4px solid #3198f7;
+  border-top: 4px solid #3198f7;
+  padding: 7px;
+  font-size: 21px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+#demande .cadre {
+  border: 2px solid black;
+  text-align: center;
+  font-weight: bold;
+}
+
+#demande .ligne-separate {
+  border-right: 4px solid black;
+}
+
+#demande .date {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#demande .conditions {
+  font-size: 0.7em;
+  color: #666;
+}
+
+#demande .bottom-page {
+  font-size: 0.7em;
+  padding-top: 100px;
+  /* width: 50%;
+  margin: auto; */
+}
+#demande a {
+  color: #444 !important;
+  text-decoration: dashed;
+}
+#demande .comptable {
+  text-decoration-line: underline;
+  text-align: center;
+}
+
+#demande .code-qr {
+  height: 80px;
+  width: 80px;
+}
