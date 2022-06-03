@@ -53,6 +53,14 @@ class UtilisateurController extends AbstractController
         ]);
     }
 
+    //Profil User
+    #[Route('/user', name: 'app_utilisateur_user')]
+     public function connected()
+     {
+         return $this->render('utilisateur/user.html.twig' );
+     } 
+
+
     #[Route('/add', name: 'app_utilisateur_add', methods: ['GET', 'POST'])]
     public function new(Request $request, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher, ElectricienRepository $electricienRepository, ProprietaireRepository $proprietaireRepository): Response
     {
@@ -242,5 +250,29 @@ class UtilisateurController extends AbstractController
         }
 
         return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    //Modification Mdp User
+    #[Route('/editPassword', name: 'app_utilisateur_password')]
+    public function editPass(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        if($request->isMethod('POST')){
+            $em = $this->getDoctrine()->getManager();
+
+            $user = $this->getUser();
+
+            // On vérifie si les 2 mots de passe sont identiques
+            if($request->request->get('password1') == $request->request->get('password2')){
+                $user->setPassword($passwordEncoder->encodePassword($user, $request->request->get('password')));
+                $em->flush();
+                $this->addFlash('message', 'Mot de passe mis à jour avec succès');
+
+                return $this->redirectToRoute('utilisateur');
+            }else{
+                $this->addFlash('error', 'Les deux mots de passe ne sont pas identiques');
+            }
+        }
+
+        return $this->render('utilisateur/editPassword.html.twig');
     }
 }
