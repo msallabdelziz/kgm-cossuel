@@ -154,6 +154,8 @@
                 {% endfor %}
             </tbody>
             </table>
+            {% do les_dossier.setPageRange(1)%}
+            {{ knp_pagination_render(les_dossier, 'pagination.html.twig')}}
             {% endif %}
         </div>
     </section>

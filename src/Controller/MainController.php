@@ -877,7 +877,6 @@ class MainController extends AbstractController
                 }
                 
                 $les_stat0["All"] = $les_stat0["All"]+1;
-                $les_stat2["All"] = $les_stat2["All"]+1;
 
             }
 

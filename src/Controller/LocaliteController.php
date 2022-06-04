@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/localite", name="app_localite_")
@@ -21,10 +22,15 @@ class LocaliteController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(LocaliteRepository $localiteRepository): Response
+    public function index(Request $request, LocaliteRepository $localiteRepository, PaginatorInterface $pag): Response
     {
+        $loc= $localiteRepository->findBy([],['code'=>'asc']);
         return $this->render('localite/index.html.twig', [
-            'les_localite' => $localiteRepository->findBy([],['code'=>'asc']),
+            'les_localite' => $pag->paginate(
+                $loc,
+                $request->query->getInt('page', 1),
+                20
+            ),
         ]);
     }
 
@@ -66,7 +72,7 @@ class LocaliteController extends AbstractController
     /**
      * @Route("/{id}/add", name="add")
      */
-    public function add(Request $request, Departement $departement, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
+    public function add(Request $request, PaginatorInterface $pag, Departement $departement, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
     {
         $localite = new Localite();
         $form = $this->createForm(LocaliteFormType::class, $localite);

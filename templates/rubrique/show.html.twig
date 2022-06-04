@@ -62,6 +62,8 @@
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucune rubrique !</span></td></tr>
                         {% endif %}
                         </table>
+                        {% do les_rubrique.setPageRange(1)%}
+                        {{ knp_pagination_render(les_rubrique, 'pagination.html.twig')}}
                     </div>
                 </div>
             </div>
@@ -150,6 +152,7 @@
                         {% else %}
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun enregistrement !</span></td></tr>
                         {% endif %}
+                        
                         </table>
                     </div>
                 </div>

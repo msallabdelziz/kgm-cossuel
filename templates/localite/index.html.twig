@@ -5,19 +5,12 @@
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="fw-bold">Gestion des régions</h4>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_region_add') }}" class="btn btn-primary btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
-                            </svg>
-                            Nouvelle Région
-                        </a>
-                    {% endif %}
+                    <h4 class="fw-bold">Gestion des localités</h4>
+                   
                 </div>
                 <span class="divider">
                     <hr></span>
-            {% if les_region|length == 0 %}
+            {% if les_localite|length == 0 %}
                 <div class="row pt-20">
                     <div class="col-3"></div>
                     <div class="col-6">
@@ -33,35 +26,28 @@
                 </div>
             {% else %}
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Liste des régions ({{ les_region|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Localités ({{ les_localite|length }})</caption>
             <thead>
                 <tr>
                     <th scope="col">Code</th> 
                     <th scope="col">Nom</th> 
-                    <th class="text-center" scope="col">Départements</th> 
+                    <!--<th class="text-center" scope="col">Départements</th> -->
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for reg in les_region %}
+                {% for reg in les_localite %}
                     <tr>
-                        <td scope="row"><a href="{{ path('app_region_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.code }}</a></td>
+                        <td scope="row"><a href="{{ path('app_localite_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.code }}</a></td>
                         <td>{{ reg.nom }}</td>
-                        <td class="text-center">
-                            {% if reg.departement.count >0 %}
-                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
-                            {% else %}
-                                <code class="text-danger text-opacity-50">Aucun département</code>
-                            {% endif %}
-                        </td>
                         <td class="text-end">
-                            <a href="{{ path('app_region_show', {'id': reg.id }) }}" class="mx-1" title="Afficher les détails">
+                            <a href="{{ path('app_localite_show', {'id': reg.id }) }}" class="mx-1" title="Afficher les détails">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
                                 </svg>
                             </a>
                             {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('app_region_edit', {'id': reg.id }) }}" class="mx-1" title="Modifier">
+                            <a href="{{ path('app_localite_edit', {'id': reg.id }) }}" class="mx-1" title="Modifier">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                 </svg>
@@ -79,6 +65,8 @@
                 {% endfor %}
             </tbody>
             </table>
+            {% do les_localite.setPageRange(1)%}
+            {{ knp_pagination_render(les_localite, 'pagination.html.twig')}}
             {% endif %}
         </div>
     </section>

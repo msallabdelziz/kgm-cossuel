@@ -47,6 +47,8 @@
                     {% endfor %}
                 </tbody>
                 </table>
+                {% do les_rapport.setPageRange(1)%}
+                {{ knp_pagination_render(les_rapport, 'pagination.html.twig')}}
             </div>
             <div class="col-lg-6 mb-2 shadow border border-light card p-3">
                 <nav class="navbar bg-warning text-black border border-dark my-2 p-1">

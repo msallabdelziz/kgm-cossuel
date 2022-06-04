@@ -28,7 +28,7 @@ use Knp\Component\Pager\PaginatorInterface;
 class AgentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
+    public function index(Request $request,PaginatorInterface $pag, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agent');
@@ -51,7 +51,11 @@ class AgentController extends AbstractController
         $ag = $agentRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
 
         return $this->render('agent/index.html.twig', [
-            'les_agent' => $ag,
+            'agents' =>  $ag= $pag->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'val_rech' => $val_rech,
 
             'les_agence'=> $les_agence,
@@ -64,7 +68,7 @@ class AgentController extends AbstractController
 
 
     #[Route('/add', name: 'add')]
-    public function create(Request $request, ManagerRegistry $doctrine, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
+    public function create(Request $request,PaginatorInterface $pag, ManagerRegistry $doctrine, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
     {
         $entityManager = $doctrine->getManager();
         $agent = new Agent();
@@ -120,9 +124,14 @@ class AgentController extends AbstractController
 
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
+        $ag= $agentRepository->findBy([], ['matricule' => 'asc']);
         return $this->renderForm('agent/add.html.twig', [
             'agent' => $agent,
-            'les_agent' => $agentRepository->findBy([], ['matricule' => 'asc']),
+            'les_agent' =>$ag= $pag->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agentForm' => $form,
         ]);
     }
@@ -130,7 +139,7 @@ class AgentController extends AbstractController
 
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(AgentRepository $agentRepository, Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
+    public function update(AgentRepository $agentRepository, PaginatorInterface $pag,Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
         $agent = $agentRepository->find($id);
 
@@ -172,16 +181,20 @@ class AgentController extends AbstractController
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
 
-
+        $ag=$agentRepository->findBy([], ['matricule' => 'asc']);
         return $this->renderForm('agent/edit.html.twig', [
-            'les_agent' => $agentRepository->findBy([], ['matricule' => 'asc']),
+            'les_agent' => $ag= $pag->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agent' => $agent,
             'agentForm' => $form,
         ]);
     }
 
     #[Route('/affecter/{id}', name: 'affect')]
-    public function affecter(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
+    public function affecter(ManagerRegistry $doctrine,PaginatorInterface $pag, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
     {
         $les_agent = $agentRepository->findAll();
         $agent = $agentRepository->find($agent);
@@ -213,14 +226,18 @@ class AgentController extends AbstractController
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
         return $this->renderForm('agent/affect.html.twig', [
-            'les_agent' => $les_agent,
+            'les_agent' => $ag= $pag->paginate(
+                $les_agent,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agent' => $agent,
             'formAgaff' => $form,
         ]);
     }
 
     #[Route('/show/{id}', name: 'show')]
-    public function show(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
+    public function show(Request $request,ManagerRegistry $doctrine, PaginatorInterface $pag, Agent $agent, AgentRepository $agentRepository): Response
     {
         // $agent = $doctrine->getRepository(Agent::class)->find($agent);
         $les_agent = $agentRepository->findAll();
@@ -232,14 +249,18 @@ class AgentController extends AbstractController
         // Si agent utilisateur
         $utilisateur = $doctrine->getRepository(Utilisateur::class)->findOneBy(array("type"=>'agent', "id_type"=>$agent->getId()));
         return $this->render('agent/show.html.twig', [
-            'les_agent' => $les_agent,
+            'les_agent' => $ag= $pag->paginate(
+                $les_agent,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agent' => $agent,
             'utilisateur' => $utilisateur,
         ]);
     }
 
     #[Route('/createuser/{id}', name: 'createuser')]
-    public function createuser(Request $request, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
+    public function createuser(Request $request,PaginatorInterface $pag, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
     {
         $entityManager = $doctrine->getManager();
         $les_agent = $entityManager->getRepository(Agent::class)->findAll();
@@ -279,7 +300,11 @@ class AgentController extends AbstractController
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
         }
         return $this->renderForm('agent/createuser.html.twig', [
-            'les_agent' => $les_agent,
+            'les_agent' => $ag= $pag->paginate(
+                $les_agent,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agent' => $agent,
             'formUtil' => $form,
         ]);

@@ -78,6 +78,8 @@
                 {% endfor %}
             </tbody>
             </table>
+            {% do les_rapport.setPageRange(1)%}
+            {{ knp_pagination_render(les_rapport, 'pagination.html.twig')}}
             {% endif %}
         </div>
     </section>

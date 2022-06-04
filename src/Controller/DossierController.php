@@ -29,12 +29,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/dossier')]
 class DossierController extends AbstractController
 {
     #[Route('/all', name: 'app_dossier_index0')]
-    public function index0(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
+    public function index0(Request $request, PaginatorInterface $pag, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -72,10 +73,14 @@ class DossierController extends AbstractController
             $val_statut = $request->request->get("val_statut");
             if($val_statut) { $val_filtre["etat"] = $val_statut; }
         }
-
+        $dos=$dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('dossier/index0.html.twig', [
             'page_list' => "app_dossier_index0",
-            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_dossier' =>  $ag= $pag->paginate(
+                $dos,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
 
@@ -91,7 +96,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/affectation', name: 'app_dossier_affectation')]
-    public function affectation_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
+    public function affectation_index(Request $request, PaginatorInterface $pag, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -122,11 +127,15 @@ class DossierController extends AbstractController
             $val_controleur = $request->request->get("val_controleur");
             if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
         }
-
+        $dos = $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Affectation",
             'page_list' => "app_dossier_affectation",
-            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_dossier' => $ag= $pag->paginate(
+                $dos,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
 
@@ -139,7 +148,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/visite', name: 'app_dossier_visite')]
-    public function visite_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
+    public function visite_index(Request $request, PaginatorInterface $pag, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -170,11 +179,15 @@ class DossierController extends AbstractController
         }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
-
+        $dos = $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Visite",
             'page_list' => "app_dossier_visite",
-            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_dossier' =>$ag= $pag->paginate(
+                $dos,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
 
@@ -187,7 +200,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/rapport', name: 'app_dossier_rapport')]
-    public function rapport_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
+    public function rapport_index(Request $request, PaginatorInterface $pag, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -219,10 +232,15 @@ class DossierController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $dos= $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Rapport",
             'page_list' => "app_dossier_rapport",
-            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_dossier' =>$ag= $pag->paginate(
+                $dos,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
 
@@ -235,7 +253,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/attestation', name: 'app_dossier_attestation')]
-    public function attestation_index(Request $request, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
+    public function attestation_index(Request $request, PaginatorInterface $pag, DossierRepository $dossierRepository, AgentRepository $agentRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'dossier');
@@ -267,11 +285,15 @@ class DossierController extends AbstractController
         }
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
-
+        $dos= $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('dossier/index.html.twig', [
             'etatDossier' => "Attestation",
             'page_list' => "app_dossier_attestation",
-            'les_dossier' => $dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_dossier' => $pag->paginate(
+                $dos,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
 

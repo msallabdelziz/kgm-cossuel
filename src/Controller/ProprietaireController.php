@@ -10,12 +10,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/proprietaire')]
 class ProprietaireController extends AbstractController
 {
     #[Route('/', name: 'app_proprietaire_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, ProprietaireRepository $proprietaireRepository, LocaliteRepository $localiteRepository): Response
+    public function index(Request $request, PaginatorInterface $pag, ProprietaireRepository $proprietaireRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'proprietaire');
@@ -34,7 +35,11 @@ class ProprietaireController extends AbstractController
         $les_proprietaire = $proprietaireRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
 
         return $this->render('proprietaire/index.html.twig', [
-            'les_proprietaire' => $les_proprietaire,
+            'les_proprietaire' => $pag->paginate(
+                $les_proprietaire,
+                $request->query->getInt('page', 1),
+                20
+            ), 
             'val_rech' => $val_rech,
 
             'les_localite'=> $les_localite,
@@ -47,7 +52,7 @@ class ProprietaireController extends AbstractController
     }
 
     #[Route('/add', name: 'app_proprietaire_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProprietaireRepository $proprietaireRepository): Response
+    public function new(Request $request, PaginatorInterface $pag, ProprietaireRepository $proprietaireRepository): Response
     {
         $proprietaire = new Proprietaire();
         $form = $this->createForm(ProprietaireType::class, $proprietaire);
@@ -58,23 +63,33 @@ class ProprietaireController extends AbstractController
             return $this->redirectToRoute("app_proprietaire_show", ['id'=>$proprietaire->getId()]);
         }
 
+        $prop=$proprietaireRepository->findAll();
         return $this->renderForm('proprietaire/new.html.twig', [
-            'les_proprietaire' => $proprietaireRepository->findAll(),
+            'les_proprietaire' =>$pag->paginate(
+                $prop,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'proprietaireForm' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_proprietaire_show', methods: ['GET'])]
-    public function show(Proprietaire $proprietaire, ProprietaireRepository $proprietaireRepository): Response
+    public function show(Request $request, Proprietaire $proprietaire, PaginatorInterface $pag, ProprietaireRepository $proprietaireRepository): Response
     {
+        $prop=$proprietaireRepository->findAll();
         return $this->render('proprietaire/show.html.twig', [
-            'les_proprietaire' => $proprietaireRepository->findAll(),
+            'les_proprietaire' => $pag->paginate(
+                $prop,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'proprietaire' => $proprietaire,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_proprietaire_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Proprietaire $proprietaire, ProprietaireRepository $proprietaireRepository): Response
+    public function edit(Request $request, PaginatorInterface $pag, Proprietaire $proprietaire, ProprietaireRepository $proprietaireRepository): Response
     {
         $form = $this->createForm(ProprietaireType::class, $proprietaire);
         $form->handleRequest($request);
@@ -83,9 +98,13 @@ class ProprietaireController extends AbstractController
             $proprietaireRepository->add($proprietaire);
             return $this->redirectToRoute("app_proprietaire_show", ['id'=>$proprietaire->getId()]);
         }
-
+        $prop= $proprietaireRepository->findAll();
         return $this->renderForm('proprietaire/edit.html.twig', [
-            'les_proprietaire' => $proprietaireRepository->findAll(),
+            'les_proprietaire' => $pag->paginate(
+                $prop,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'proprietaire' => $proprietaire,
             'proprietaireForm' => $form,
         ]);

@@ -16,12 +16,13 @@ use App\Services\Tools;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Notifier\Message\SmsMessage;
 use Symfony\Component\Notifier\TexterInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/agence', name: 'app_agence_')]
 class AgenceController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, AgenceRepository $agenceRepository, LocaliteRepository $localiteRepository): Response
+    public function index(Request $request, AgenceRepository $agenceRepository, LocaliteRepository $localiteRepository,PaginatorInterface $pag): Response
     {
         
         // Définition en session du module en cours
@@ -39,13 +40,17 @@ class AgenceController extends AbstractController
         $ag = $agenceRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('agence/index.html.twig', [
             'controller_name' => 'AgenceController',
-            'les_agence'=> $ag,
+            'les_agence'=> $ag= $pag->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'val_rech'=> $val_rech,
         ]);
     }
 
     #[Route('/add', name: 'add')]
-    public function create(Request $request, AgenceRepository $agenceRepository): Response
+    public function create(Request $request, AgenceRepository $agenceRepository,PaginatorInterface $pag): Response
     {
         $ag = new Agence();
         $form = $this->createForm(AgenceType::class, $ag);
@@ -55,16 +60,17 @@ class AgenceController extends AbstractController
             $agenceRepository->add($ag);
             return $this->redirectToRoute('app_agence_index', [], Response::HTTP_SEE_OTHER);
         }
+        $agence =$agenceRepository->findBy([],['code'=>'asc']);
         return $this->renderForm('agence/add.html.twig', [
             'agence' => $ag,
-            'les_agence' => $agenceRepository->findBy([],['code'=>'asc']),
+            'les_agence' => $agence,
             'agenceForm' => $form,
         ]);
 
     }
 
     #[Route('/update/{id}', name: 'edit')]
-    public function update(Agence $id,Request $request, AgenceRepository $agenceRepository, Tools $tools): Response
+    public function update(Agence $id,Request $request, AgenceRepository $agenceRepository, Tools $tools,PaginatorInterface $pag): Response
     {
         $agence = $agenceRepository->find($id);
         $form = $this->createForm(AgenceType::class, $agence);
@@ -78,9 +84,13 @@ class AgenceController extends AbstractController
 
             return $this->redirectToRoute("app_agence_show", ['id'=>$agence->getId()]);
         }
-
+        $agenc =$agenceRepository->findBy([],['code'=>'asc']);
         return $this->renderForm('agence/edit.html.twig', [
-            'les_agence' => $agenceRepository->findBy([],['code'=>'asc']),
+            'les_agence' => $agenc= $pag->paginate(
+                $agenc,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agence' => $agence,
             'agenceForm' => $form,
         ]);
@@ -88,7 +98,7 @@ class AgenceController extends AbstractController
     }
 
     #[Route('/localite/{id}', name: 'localite')]
-    public function addlocalite(Agence $id, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
+    public function addlocalite(Agence $id, PaginatorInterface $pag, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
     {
         $em = $doctrine->getManager();
         $agence = $agenceRepository->find($id);
@@ -132,9 +142,13 @@ class AgenceController extends AbstractController
 
             return $this->redirectToRoute("app_agence_show", ['id'=>$agence->getId()]);
         }
-
+        $agenc =$agenceRepository->findBy([],['code'=>'asc']);
         return $this->renderForm('agence/localite.html.twig', [
-            'les_agence' => $agenceRepository->findBy([],['code'=>'asc']),
+            'les_agence' => $agenc= $pag->paginate(
+                $agenc,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agence' => $agence,
             'agenceForm' => $form,
         ]);
@@ -154,7 +168,7 @@ class AgenceController extends AbstractController
     }
 
     #[Route('/show/{id}', name: 'show')]
-    public function show(ManagerRegistry $doctrine, Agence $agence, AgenceRepository $agenceRepository): Response
+    public function show(Request $request,ManagerRegistry $doctrine, PaginatorInterface $pag,Agence $agence, AgenceRepository $agenceRepository): Response
     {
         $agence = $doctrine->getRepository(Agence::class)->find($agence->getId());
 
@@ -163,9 +177,13 @@ class AgenceController extends AbstractController
                 'N\'EXISTE PAS'
             );
         }
-
+        $agenc =$agenceRepository->findBy([],['code'=>'asc']);
         return $this->render('agence/show.html.twig', [
-            'les_agence' => $agenceRepository->findBy([],['code'=>'asc']),
+            'les_agence' => $agenc= $pag->paginate(
+                $agenc,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'agence' => $agence,
         ]);
     }

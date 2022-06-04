@@ -60,12 +60,13 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
 {
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
-    public function index0(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index0(Request $request,PaginatorInterface $pag, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
@@ -121,9 +122,13 @@ class InstallationController extends AbstractController
             $val_statut = $request->request->get("val_statut");
             if($val_statut) { $val_filtre["etat"] = $val_statut; }
         }
-
+        $ins =$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('installation/index0.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' => $ag= $pag->paginate(
+                $ins,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'page_list' => "app_installation_index0",
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
@@ -142,7 +147,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index(Request $request,PaginatorInterface $pag, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
@@ -189,9 +194,13 @@ class InstallationController extends AbstractController
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
-
+        $ins=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' =>$ag= $pag->paginate(
+                $ins,
+                $request->query->getInt('page', 1),
+                20
+            ) ,
             'modif' => 1,
             'page_list' => "app_installation_index",
             'affichage' => $mode_affichage,
@@ -209,7 +218,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
-    public function index2(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index2(Request $request,PaginatorInterface $pag, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
@@ -256,9 +265,13 @@ class InstallationController extends AbstractController
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
-
+        $ins =$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' =>$ag= $pag->paginate(
+                $ins,
+                $request->query->getInt('page', 1),
+                20
+            ) ,
             'modif' => 0,
             'affichage' => $mode_affichage,
             'page_list' => "app_installation_index2",
@@ -276,7 +289,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
-    public function index3(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index3(Request $request,PaginatorInterface $pag, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);

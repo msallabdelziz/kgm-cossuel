@@ -41,6 +41,8 @@
                     {% endfor %}
                 </tbody>
                 </table>
+                {% do les_region.setPageRange(1)%}
+                {{ knp_pagination_render(les_region, 'pagination.html.twig')}}
             </div>
         {% endif %}
             <div class="col-lg-6 mb-2 shadow border border-light card p-3">

@@ -57,8 +57,10 @@
                     {% endfor %}
                 </tbody>
                 </table>
+                {% do les_electricien.setPageRange(1)%}
+                {{ knp_pagination_render(les_electricien, 'pagination.html.twig')}}
+            {% endif %}
             </div>
-        {% endif %}
             <div class="{{ offset }} col-lg-6 mb-2 shadow border border-light card p-3">
 
                 <div class="container">

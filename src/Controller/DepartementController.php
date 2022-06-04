@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/departement", name="app_departement_")
@@ -23,14 +24,19 @@ class DepartementController extends AbstractController
     /**
      * @Route("/", name="index")
      */
-    public function index(Request $request, DepartementRepository $departementRepository): Response
+    public function index(Request $request, DepartementRepository $departementRepository,PaginatorInterface $pag): Response
     {
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
         }
+        $dep= $departementRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('departement/index.html.twig', [
-            'les_departement' => $departementRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_departement' => $ag= $pag->paginate(
+                $dep,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'val_rech' => $val_rech,
         ]);
     }
@@ -135,10 +141,15 @@ class DepartementController extends AbstractController
     /**
      * @Route("/{id}", name="show")
      */
-    public function show(Departement $departement, DepartementRepository $departementRepository): Response
+    public function show(Request $request, Departement $departement,PaginatorInterface $pag, DepartementRepository $departementRepository): Response
     {
+        $dep=$departementRepository->findBy([],['code'=>'asc']);
         return $this->render('departement/show.html.twig', [
-            'les_departement' => $departementRepository->findBy([],['code'=>'asc']),
+            'les_departement' => $ag= $pag->paginate(
+                $dep,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'departement' => $departement,
         ]);
     }    

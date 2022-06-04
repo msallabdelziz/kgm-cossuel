@@ -51,11 +51,14 @@
                                     </td> #}
                                 </tr>
                             {% endfor %}
+                            
                         </tbody>
                         {% else %}
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun agent !</span></td></tr>
                         {% endif %}
                         </table>
+                        {% do les_agent.setPageRange(1)%}
+                            {{ knp_pagination_render(les_agent, 'pagination.html.twig')}}
                     </div>
                 </div>
             </div>

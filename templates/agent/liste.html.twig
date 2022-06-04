@@ -43,6 +43,8 @@
                 {% endfor %}
               </tbody>
             </table>
+            {% do agents.setPageRange(1)%}
+            {{ knp_pagination_render(agents, 'pagination.html.twig')}}
             </div>
         </div>
     </section>

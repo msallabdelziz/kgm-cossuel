@@ -10,12 +10,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/electricien')]
 class ElectricienController extends AbstractController
 {
     #[Route('/', name: 'app_electricien_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, ElectricienRepository $electricienRepository, LocaliteRepository $localiteRepository): Response
+    public function index(Request $request, PaginatorInterface $pag, ElectricienRepository $electricienRepository, LocaliteRepository $localiteRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'electricien');
@@ -34,7 +35,11 @@ class ElectricienController extends AbstractController
         $les_electricien = $electricienRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
 
         return $this->render('electricien/index.html.twig', [
-            'les_electricien' => $les_electricien,
+            'les_electricien' =>$pag->paginate(
+                $les_electricien,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'val_rech' => $val_rech,
 
             'les_localite'=> $les_localite,
@@ -43,7 +48,7 @@ class ElectricienController extends AbstractController
     }
 
     #[Route('/add', name: 'app_electricien_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, ElectricienRepository $electricienRepository): Response
+    public function new(Request $request, PaginatorInterface $pag, ElectricienRepository $electricienRepository): Response
     {
         $electricien = new Electricien();
         $form = $this->createForm(ElectricienType::class, $electricien);
@@ -53,24 +58,33 @@ class ElectricienController extends AbstractController
             $electricienRepository->add($electricien);
             return $this->redirectToRoute("app_electricien_show", ['id'=>$electricien->getId()]);
         }
-
+        $les_electricien=$electricienRepository->findAll();
         return $this->renderForm('electricien/new.html.twig', [
-            'les_electricien' => $electricienRepository->findAll(),
+            'les_electricien' => $pag->paginate(
+                $les_electricien,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'electricienForm' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_electricien_show', methods: ['GET'])]
-    public function show(Electricien $electricien, ElectricienRepository $electricienRepository): Response
+    public function show(Request $request,Electricien $electricien, PaginatorInterface $pag, ElectricienRepository $electricienRepository): Response
     {
+        $les_electricien=$electricienRepository->findAll();
         return $this->render('electricien/show.html.twig', [
-            'les_electricien' => $electricienRepository->findAll(),
+            'les_electricien' =>  $pag->paginate(
+                $les_electricien,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'electricien' => $electricien,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_electricien_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Electricien $electricien, ElectricienRepository $electricienRepository): Response
+    public function edit(Request $request, PaginatorInterface $pag, Electricien $electricien, ElectricienRepository $electricienRepository): Response
     {
         $form = $this->createForm(ElectricienType::class, $electricien);
         $form->handleRequest($request);
@@ -79,9 +93,13 @@ class ElectricienController extends AbstractController
             $electricienRepository->add($electricien);
             return $this->redirectToRoute("app_electricien_show", ['id'=>$electricien->getId()]);
         }
-
+        $les_electricien=$electricienRepository->findAll();
         return $this->renderForm('electricien/edit.html.twig', [
-            'les_electricien' => $electricienRepository->findAll(),
+            'les_electricien' =>  $pag->paginate(
+                $les_electricien,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'electricien' => $electricien,
             'electricienForm' => $form,
         ]);

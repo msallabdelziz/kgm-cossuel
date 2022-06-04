@@ -23,12 +23,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/utilisateur')]
 class UtilisateurController extends AbstractController
 {
     #[Route('/', name: 'app_utilisateur_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
+    public function index(Request $request,PaginatorInterface $pag, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
     {
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'utilisateur');
@@ -44,8 +45,13 @@ class UtilisateurController extends AbstractController
             $obj_profil=$profilRepository->find($val_profil);
             if($val_profil) { $val_filtre["roles"] = strtoupper($obj_profil->getCode()); }
         }
+        $utilisateur = $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         return $this->render('utilisateur/index.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_utilisateur' =>$pag->paginate(
+                $utilisateur,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'val_rech' => $val_rech,
 
             'les_profil'=> $les_profil,
@@ -54,7 +60,7 @@ class UtilisateurController extends AbstractController
     }
 
     #[Route('/add', name: 'app_utilisateur_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher, ElectricienRepository $electricienRepository, ProprietaireRepository $proprietaireRepository): Response
+    public function new(Request $request,PaginatorInterface $pag, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher, ElectricienRepository $electricienRepository, ProprietaireRepository $proprietaireRepository): Response
     {
         $utilisateur = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
@@ -200,24 +206,33 @@ class UtilisateurController extends AbstractController
             $utilisateurRepository->add($utilisateur);
             return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
         }
-
+        $utilisateur=$utilisateurRepository->findAll();
         return $this->renderForm('utilisateur/new.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findAll(),
+            'les_utilisateur' => $pag->paginate(
+                $utilisateur,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'utilisateurForm' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_utilisateur_show', methods: ['GET'])]
-    public function show(Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
+    public function show(Request $request, PaginatorInterface $pag,Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
     {
+        $utilisateur=$utilisateurRepository->findAll();
         return $this->render('utilisateur/show.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findAll(),
+            'les_utilisateur' => $pag->paginate(
+                $utilisateur,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'utilisateur' => $utilisateur,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
+    public function edit(PaginatorInterface $pag,Request $request, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
     {
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form->handleRequest($request);
@@ -226,9 +241,13 @@ class UtilisateurController extends AbstractController
             $utilisateurRepository->add($utilisateur);
             return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
         }
-
+        $utilisateur=$utilisateurRepository->findAll();
         return $this->renderForm('utilisateur/edit.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findAll(),
+            'les_utilisateur' => $pag->paginate(
+                $utilisateur,
+                $request->query->getInt('page', 1),
+                20
+            ),
             'utilisateur' => $utilisateur,
             'utilisateurForm' => $form,
         ]);

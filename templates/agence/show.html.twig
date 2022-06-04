@@ -41,6 +41,8 @@
                                     <td><a href="{{ path('app_agence_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
                                 </tr>
                             {% endfor %}
+                            {% do les_agence.setPageRange(1)%}
+                            {{ knp_pagination_render(les_agence, 'pagination.html.twig')}}
                         </tbody>
                         {% else %}
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun agence !</span></td></tr>

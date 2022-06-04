@@ -18,6 +18,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Agent;
 use App\Entity\Agence;
 use App\Entity\AffectationsAgents;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/affectations', name: 'app_affecter_')]
 class AffectationsAgentsController extends AbstractController
@@ -36,18 +37,22 @@ class AffectationsAgentsController extends AbstractController
     }
 
     #[Route('/liste', name: 'liste')]
-    public function liste(Request $request, ManagerRegistry $doctrine): Response
+    public function liste(Request $request, ManagerRegistry $doctrine,PaginatorInterface $page): Response
     {
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(Agent::class)->findAll();
         return $this->render('agent/liste.html.twig', [
             'controller_name' => 'AgentController',
-            'agents'=> $ag
+            'agents'=> $ag= $page->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
         ]);
     }
 
     #[Route('/add{id}', name: 'add')]
-    public function create(Request $request, ManagerRegistry $doctrine, int $id): Response
+    public function create(Request $request, ManagerRegistry $doctrine, int $id,PaginatorInterface $page): Response
     {
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(AffectationsAgents::class)->findAll();
@@ -67,7 +72,11 @@ class AffectationsAgentsController extends AbstractController
                 }
         return $this->render('agent/index.html.twig', [
             'controller_name' => 'AgentController',
-            'agents'=> $ag
+            'agents'=> $ag= $page->paginate(
+                $ag,
+                $request->query->getInt('page', 1),
+                20
+            ),
         ]);
     }
 }

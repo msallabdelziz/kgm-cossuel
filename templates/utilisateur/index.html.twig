@@ -104,6 +104,8 @@
                 {% endfor %}
             </tbody>
             </table>
+            {% do les_utilisateur.setPageRange(1)%}
+                {{ knp_pagination_render(les_utilisateur, 'pagination.html.twig')}}
             {% endif %}
         </div>
     </section>

@@ -42,6 +42,8 @@
                                 </tr>
                             {% endfor %}
                         </tbody>
+                        {% do les_agence.setPageRange(1)%}
+                        {{ knp_pagination_render(les_agence, 'pagination.html.twig')}}
                         {% else %}
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun agence !</span></td></tr>
                         {% endif %}

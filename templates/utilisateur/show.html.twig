@@ -58,6 +58,8 @@
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun utilisateur !</span></td></tr>
                         {% endif %}
                         </table>
+                        {% do les_utilisateur.setPageRange(1)%}
+                        {{ knp_pagination_render(les_utilisateur, 'pagination.html.twig')}}
                     </div>
                 </div>
             </div>

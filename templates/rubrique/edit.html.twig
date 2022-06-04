@@ -62,6 +62,8 @@
                             <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucune rubrique !</span></td></tr>
                         {% endif %}
                         </table>
+                        {% do les_region.setPageRange(1)%}
+                        {{ knp_pagination_render(les_region, 'pagination.html.twig')}}
                     </div>
                 </div>
             </div>
