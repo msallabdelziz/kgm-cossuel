@@ -6,286 +6,654 @@
 	{% if app.user and app.user.isverified %}
 
 		{#---================ Collapse ==========----- #}
-		<p>
+		{# <p>
+						
+									<a class="row m-1 mt-4 pt-2 " data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+										<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
+									</a>
+						
+								</p>
+						
+								<div class="collapse" id="collapseExample">
+									<div class="row">
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Demandes soumises</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Demandes Domestiques</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Demandes Professionnelles</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Demande ERP - ERT"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande ERP - ERT"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Demandes ERP - ERT</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Paiements enregistrés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Paiements validés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Dossier validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier validé"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Dossiers validés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Dossier attribué"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier attribué"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Dossiers attribués</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Rapport Affecté"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier Affecté"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Dossiers affectés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Visite planifiée"]["user_"~app.user.id] is defined  %} {{ mes_stat["Visite planifiée"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Visites planifiées</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Rapport élaboré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport élaboré"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Rapports élaborés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-3 mt-2">
+											<div class="card bg-bleuf2 p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt">
+															<span class="number mb-0 fs-7 badge badge-warning">
+																{% if  mes_stat["Rapport validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport validé"]["user_"~app.user.id] }}
+																{% else %}
+																	0
+																{% endif %}
+															</span>
+															<span class="text-light fw-light">Rapports validés</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+						
+									</div>
+								</div>
+						
+						
+								
+						
+								<p>
+									<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapseExample">
+						
+										<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
+						
+						
+									</a>
+								</p>
+								<div class="collapse" id="collapse1">
+									<div class="row">
+										<div class="col-md-4 mt-2">
+											<div class="card bg-dark p-2 card-stat">
+												<div class="un-stat d-flex">
+													<div class="">
+														<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
+															<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+															<span class="text-light fw-light">Total des demandes</span>
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- end col -->
+										<div class="col-md-8 mt-2">
+											<div class="row">
+												<div class="col">
+													<div class="card bg-warning p-2 card-stat">
+														<div class="un-stat d-flex">
+															<div class="">
+																<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
+																	<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+																	<span class="fw-light">Demandes domestiques</span>
+																</p>
+															</div>
+														</div>
+													</div>
+												</div>
+						
+												<div class="col">
+													<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+														<div class="un-stat d-flex">
+															<div class="">
+																<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
+																	<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
+																	<span class="fw-light text-dark">Demandes professionnelles</span>
+																</p>
+															</div>
+														</div>
+													</div>
+												</div>
+						
+												<div class="col">
+													<div class="card bg-primary p-2 card-stat">
+														<div class="un-stat d-flex">
+															<div class="">
+																<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
+																	<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
+																	<span class="fw-light text-light">Demandes ERP - ERT</span>
+																</p>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+						
+								
+						
+						
+								<!-- end row -->
+						
+								<p>
+									<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapseExample">
+						
+										<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+						
+									</a>
+								</p>
+								<div class="collapse" id="collapse3">
+									<div class="row">
+										{% set les_etat = ["Soumis, en attente paiement"] %}
+										{% set les_col = ["danger"] %}
+						
+										{% if is_granted('ROLE_CAISSIER') %}
+											{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+											{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+										{% endif %}
+						
+										{% if is_granted('ROLE_DAF') %}
+											{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+											{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+										{% endif %}
+						
+										{% if is_granted('ROLE_RFO') %}
+											{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
+											{% set les_col = ["success bg-opacity-25", ] %}
+										{% endif %}
+						
+										{% if is_granted('ROLE_CONTROLEUR') %}
+											{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+											{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+										{% endif %}
+						
+										{% if is_granted('ROLE_REFERENT') %}
+											{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+											{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+										{% endif %}
+						
+										{% if is_granted('ROLE_ADMIN') %}
+											{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+											{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+										{% endif %}
+						
+										{% set ix = 0 %}
+										{% for etat in les_etat  %}
+											{% set col = les_col[ix] %}
+											<div class="col-md-4 mt-2">
+												<div class="card bg-{{col}} p-2 card-stat">
+													<div class="un-stat d-flex">
+														<div class="">
+															<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
+																<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+																<span class="fw-light">{{etat}}</span>
+															</p>
+						
+														</div>
+													</div>
+												</div>
+											</div>
+											{% set ix = ix+1 %}
+										{% endfor %}
+									</div>
+								</div> #}
 
-			<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
-			</a>
 
-		</p>
+		{# --------------------------------test----------------
+				<div class="row mt-50"> <div class="col-md-8">
+							<div class="card">
+				------------- #}
 
-		<div class="collapse" id="collapseExample">
-			<div class="row">
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Demandes soumises</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Demandes Domestiques</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Demandes Professionnelles</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Demande ERP - ERT"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande ERP - ERT"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Demandes ERP - ERT</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Paiements enregistrés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Paiements validés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Dossier validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier validé"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Dossiers validés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Dossier attribué"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier attribué"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Dossiers attribués</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Rapport Affecté"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier Affecté"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Dossiers affectés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Visite planifiée"]["user_"~app.user.id] is defined  %} {{ mes_stat["Visite planifiée"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Visites planifiées</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Rapport élaboré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport élaboré"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Rapports élaborés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-3 mt-2">
-					<div class="card bg-bleuf2 p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt">
-									<span class="number mb-0 fs-7 badge badge-warning">
-										{% if  mes_stat["Rapport validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport validé"]["user_"~app.user.id] }}
-										{% else %}
-											0
-										{% endif %}
-									</span>
-									<span class="text-light fw-light">Rapports validés</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-		</div>
+			<div class="accordion card" id="accordionExample"> <div class="accordion-item">
 
 
-		{# -------------------------- #}
+				<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+					<p>
 
-		<p>
-			<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapseExample">
+						<a class="row m-1 mt-4 pt-2 " data-bs-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="#collapseOne">
+							<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
+						</a>
 
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
-
-
-			</a>
-		</p>
-		<div class="collapse" id="collapse1">
-			<div class="row">
-				<div class="col-md-4 mt-2">
-					<div class="card bg-dark p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
-									<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
-									<span class="text-light fw-light">Total des demandes</span>
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!-- end col -->
-				<div class="col-md-8 mt-2">
+					</p>
+				</button>
+				<div id="collapseOne" class="accordion-collapse collapse show card" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
 					<div class="row">
-						<div class="col">
-							<div class="card bg-warning p-2 card-stat">
+						<div class=" col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
 								<div class="un-stat d-flex">
 									<div class="">
-										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
-											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
-											<span class="fw-light">Demandes domestiques</span>
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Demandes soumises</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Demandes Domestiques</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Demandes Professionnelles</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Demande ERP - ERT"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande ERP - ERT"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Demandes ERP - ERT</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Paiements enregistrés</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Paiements validés</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Dossier validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier validé"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Dossiers validés</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Dossier attribué"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier attribué"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Dossiers attribués</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Rapport Affecté"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier Affecté"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Dossiers affectés</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Visite planifiée"]["user_"~app.user.id] is defined  %} {{ mes_stat["Visite planifiée"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Visites planifiées</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Rapport élaboré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport élaboré"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Rapports élaborés</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3 mt-2">
+							<div class="card bg-bleuf2 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt">
+											<span class="number mb-0 fs-7 badge badge-warning">
+												{% if  mes_stat["Rapport validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport validé"]["user_"~app.user.id] }}
+												{% else %}
+													0
+												{% endif %}
+											</span>
+											<span class="text-light fw-light">Rapports validés</span>
 										</p>
 									</div>
 								</div>
 							</div>
 						</div>
 
-						<div class="col">
-							<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+					</div>
+				</div>
+			</div>
+			<div class="accordion-item ">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+					<p>
+						<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="false" aria-controls="collapseExample">
+
+							<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
+
+						</a>
+					</p>
+				</button>
+				<div id="collapseTwo" class="accordion-collapse collapse card" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+					<div class="row">
+						<div class="col-md-4 mt-2">
+							<div class="card bg-dark p-2 card-stat">
 								<div class="un-stat d-flex">
 									<div class="">
-										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
-											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
-											<span class="fw-light text-dark">Demandes professionnelles</span>
+										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
+											<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+											<span class="text-light fw-light">Total des demandes</span>
 										</p>
 									</div>
 								</div>
 							</div>
 						</div>
+						<!-- end col -->
+						<div class="col-md-8 mt-2">
+							<div class="row">
+								<div class="col">
+									<div class="card bg-warning p-2 card-stat">
+										<div class="un-stat d-flex">
+											<div class="">
+												<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
+													<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+													<span class="fw-light">Demandes domestiques</span>
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
 
-						<div class="col">
-							<div class="card bg-primary p-2 card-stat">
-								<div class="un-stat d-flex">
-									<div class="">
-										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
-											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
-											<span class="fw-light text-light">Demandes ERP - ERT</span>
-										</p>
+								<div class="col">
+									<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+										<div class="un-stat d-flex">
+											<div class="">
+												<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
+													<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
+													<span class="fw-light text-dark">Demandes professionnelles</span>
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col">
+									<div class="card bg-primary p-2 card-stat">
+										<div class="un-stat d-flex">
+											<div class="">
+												<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
+													<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
+													<span class="fw-light text-light">Demandes ERP - ERT</span>
+												</p>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -293,492 +661,487 @@
 					</div>
 				</div>
 			</div>
+			<div class="accordion-item">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+					<p>
+						<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapseThree" role="button" aria-expanded="false" aria-controls="collapseExample">
+
+							<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+
+						</a>
+					</p>
+				</button>
+				<div id="collapseThree" class="accordion-collapse collapse card" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+					<div class="row">
+						{% set les_etat = ["Soumis, en attente paiement"] %}
+						{% set les_col = ["danger"] %}
+
+						{% if is_granted('ROLE_CAISSIER') %}
+							{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+							{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_DAF') %}
+							{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+							{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_RFO') %}
+							{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
+							{% set les_col = ["success bg-opacity-25", ] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_CONTROLEUR') %}
+							{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+							{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_REFERENT') %}
+							{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+							{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_ADMIN') %}
+							{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+							{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+						{% endif %}
+
+						{% set ix = 0 %}
+						{% for etat in les_etat  %}
+							{% set col = les_col[ix] %}
+							<div class="col-md-4 mt-2">
+								<div class="card bg-{{col}} p-2 card-stat">
+									<div class="un-stat d-flex">
+										<div class="">
+											<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
+												<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+												<span class="fw-light">{{etat}}</span>
+											</p>
+
+										</div>
+									</div>
+								</div>
+							</div>
+							{% set ix = ix+1 %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
 		</div>
 
-		{# -------------------------- #}
-		
 
-		
-	
-	<!-- end row -->
-
-	<p>
-		<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapseExample">
-
-			<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
-
-		</a>
-	</p>
-	<div class="collapse" id="collapse3">
-		<div class="row">
-			{% set les_etat = ["Soumis, en attente paiement"] %}
-		{% set les_col = ["danger"] %}
-
-		{% if is_granted('ROLE_CAISSIER') %}
-			{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
-			{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
-		{% endif %}
-
-		{% if is_granted('ROLE_DAF') %}
-			{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
-			{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
-		{% endif %}
-
-		{% if is_granted('ROLE_RFO') %}
-			{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
-			{% set les_col = ["success bg-opacity-25", ] %}
-		{% endif %}
-
-		{% if is_granted('ROLE_CONTROLEUR') %}
-			{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-			{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
-		{% endif %}
-
-		{% if is_granted('ROLE_REFERENT') %}
-			{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-			{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
-		{% endif %}
-
-		{% if is_granted('ROLE_ADMIN') %}
-			{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-			{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
-		{% endif %}
-
-		{% set ix = 0 %}
-		{% for etat in les_etat  %}
-			{% set col = les_col[ix] %}
-			<div class="col-md-4 mt-2">
-				<div class="card bg-{{col}} p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
-								<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
-								<span class="fw-light">{{etat}}</span>
-							</p>
-
-						</div>
-					</div>
-				</div>
-			</div>
-			{% set ix = ix+1 %}
-		{% endfor %}
-		</div>
-	</div>
-
-
-	<!-- ========== title-wrapper start ========== -->
-	{# <div class="title-wrapper pt-10">
-		<div class="row m-1 pt-2">
-			<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
-		</div>
-		<div class="row">
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Demandes soumises</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Demandes Domestiques</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Demandes Professionnelles</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Demande ERP - ERT"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande ERP - ERT"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Demandes ERP - ERT</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Paiements enregistrés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Paiements validés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Dossier validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier validé"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Dossiers validés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Dossier attribué"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier attribué"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Dossiers attribués</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Rapport Affecté"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier Affecté"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Dossiers affectés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Visite planifiée"]["user_"~app.user.id] is defined  %} {{ mes_stat["Visite planifiée"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Visites planifiées</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Rapport élaboré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport élaboré"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Rapports élaborés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-3 mt-2">
-				<div class="card bg-bleuf2 p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Rapport validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport validé"]["user_"~app.user.id] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Rapports validés</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-		</div> #}
+		<!-- ========== title-wrapper start ========== -->
+		{# <div class="title-wrapper pt-10">
+																												<div class="row m-1 pt-2">
+																													<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
+																												</div>
+																												<div class="row">
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Demandes soumises</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Demandes Domestiques</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Demandes Professionnelles</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Demande ERP - ERT"]["user_"~app.user.id] is defined  %} {{ mes_stat["Demande ERP - ERT"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Demandes ERP - ERT</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Paiements enregistrés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Paiements validés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Dossier validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier validé"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Dossiers validés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Dossier attribué"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier attribué"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Dossiers attribués</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Rapport Affecté"]["user_"~app.user.id] is defined  %} {{ mes_stat["Dossier Affecté"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Dossiers affectés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Visite planifiée"]["user_"~app.user.id] is defined  %} {{ mes_stat["Visite planifiée"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Visites planifiées</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Rapport élaboré"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport élaboré"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Rapports élaborés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-bleuf2 p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  mes_stat["Rapport validé"]["user_"~app.user.id] is defined  %} {{ mes_stat["Rapport validé"]["user_"~app.user.id] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Rapports validés</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																										
+																												</div> #}
 		{# <hr />
-																	<div class="row mt-2">
-																		<div class="col-md-3 mt-2">
-																			<div class="card bg-red p-2 card-stat">
-																				<div class="un-stat d-flex">
-																					<div class="">
-																						<p class="mb-1 pt">
-																							<span class="number mb-0 fs-7 badge badge-warning">
-																							{% if  mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] is defined  %} {{ mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] }}
-																							{% else %}
-																								0
-																							{% endif %}
-																							</span>
-																							<span class="text-light fw-light">Dossiers Hors délais 5j</span>
-																						</p>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-														
-																		<div class="col-md-3 mt-2">
-																			<div class="card bg-rougef p-2 card-stat">
-																				<div class="un-stat d-flex">
-																					<div class="">
-																						<p class="mb-1 pt">
-																							<span class="number mb-0 fs-7 badge badge-warning">
-																							{% if  mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] is defined  %} {{ mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] }}
-																							{% else %}
-																								0
-																							{% endif %}
-																							</span>
-																							<span class="text-light fw-light">Dossiers Hors délais 15j</span>
-																						</p>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div> #}
+																																											<div class="row mt-2">
+																																												<div class="col-md-3 mt-2">
+																																													<div class="card bg-red p-2 card-stat">
+																																														<div class="un-stat d-flex">
+																																															<div class="">
+																																																<p class="mb-1 pt">
+																																																	<span class="number mb-0 fs-7 badge badge-warning">
+																																																	{% if  mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] is defined  %} {{ mes_alerte["Hors délais 5 jours"]["user_"~app.user.id] }}
+																																																	{% else %}
+																																																		0
+																																																	{% endif %}
+																																																	</span>
+																																																	<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+																																																</p>
+																																															</div>
+																																														</div>
+																																													</div>
+																																												</div>
+																																								
+																																												<div class="col-md-3 mt-2">
+																																													<div class="card bg-rougef p-2 card-stat">
+																																														<div class="un-stat d-flex">
+																																															<div class="">
+																																																<p class="mb-1 pt">
+																																																	<span class="number mb-0 fs-7 badge badge-warning">
+																																																	{% if  mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] is defined  %} {{ mes_alerte["Hors délais 15 jours"]["user_"~app.user.id] }}
+																																																	{% else %}
+																																																		0
+																																																	{% endif %}
+																																																	</span>
+																																																	<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+																																																</p>
+																																															</div>
+																																														</div>
+																																													</div>
+																																												</div>
+																																											</div> #}
 		{# <hr class="border-bottom border-secondary border-2"/>
+																										
+																												<div class="row m-1 mt-4 pt-2">
+																													<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
+																												</div>
+																												<div class="row">
+																													<div class="col-md-4 mt-2">
+																														<div class="card bg-dark p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
+																																		<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+																																		<span class="text-light fw-light">Total des demandes</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<!-- end col -->
+																													<div class="col-md-8 mt-2">
+																														<div class="row">
+																															<div class="col">
+																																<div class="card bg-warning p-2 card-stat">
+																																	<div class="un-stat d-flex">
+																																		<div class="">
+																																			<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
+																																				<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+																																				<span class="fw-light">Demandes domestiques</span>
+																																			</p>
+																																		</div>
+																																	</div>
+																																</div>
+																															</div>
+																										
+																															<div class="col">
+																																<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+																																	<div class="un-stat d-flex">
+																																		<div class="">
+																																			<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
+																																				<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
+																																				<span class="fw-light text-dark">Demandes professionnelles</span>
+																																			</p>
+																																		</div>
+																																	</div>
+																																</div>
+																															</div>
+																										
+																															<div class="col">
+																																<div class="card bg-primary p-2 card-stat">
+																																	<div class="un-stat d-flex">
+																																		<div class="">
+																																			<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
+																																				<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
+																																				<span class="fw-light text-light">Demandes ERP - ERT</span>
+																																			</p>
+																																		</div>
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																													<!-- end col -->
+																													<div class="row m-1 mt-4 pt-2">
+																														<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+																													</div>
+																													<!-- end col -->
+																										
+																													{% set les_etat = ["Soumis, en attente paiement"] %}
+																													{% set les_col = ["danger"] %}
+																										
+																													{% if is_granted('ROLE_CAISSIER') %}
+																														{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+																														{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+																													{% endif %}
+																										
+																													{% if is_granted('ROLE_DAF') %}
+																														{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
+																														{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+																													{% endif %}
+																										
+																													{% if is_granted('ROLE_RFO') %}
+																														{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
+																														{% set les_col = ["success bg-opacity-25", ] %}
+																													{% endif %}
+																										
+																													{% if is_granted('ROLE_CONTROLEUR') %}
+																														{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+																														{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+																													{% endif %}
+																										
+																													{% if is_granted('ROLE_REFERENT') %}
+																														{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+																														{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+																													{% endif %}
+																										
+																													{% if is_granted('ROLE_ADMIN') %}
+																														{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
+																														{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+																													{% endif %}
+																										
+																													{% set ix = 0 %}
+																													{% for etat in les_etat  %}
+																														{% set col = les_col[ix] %}
+																														<div class="col-md-4 mt-2">
+																															<div class="card bg-{{col}} p-2 card-stat">
+																																<div class="un-stat d-flex">
+																																	<div class="">
+																																		<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
+																																			<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+																																			<span class="fw-light">{{etat}}</span>
+																																		</p>
+																										
+																																	</div>
+																																</div>
+																															</div>
+																														</div>
+																														{% set ix = ix+1 %}
+																													{% endfor %}
+																												</div>
+																												<!-- end row -->
+																										
+																												<hr/>
+																												<div class="row mt-2">
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-red p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  les_alerte["Hors délais 5 jours"] is defined  %} {{ les_alerte["Hors délais 5 jours"] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																										
+																													<div class="col-md-3 mt-2">
+																														<div class="card bg-rougef p-2 card-stat">
+																															<div class="un-stat d-flex">
+																																<div class="">
+																																	<p class="mb-1 pt">
+																																		<span class="number mb-0 fs-7 badge badge-warning">
+																																			{% if  les_alerte["Hors délais 5 jours"] is defined  %} {{ les_alerte["Hors délais 5 jours"] }}
+																																			{% else %}
+																																				0
+																																			{% endif %}
+																																		</span>
+																																		<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+																																	</p>
+																																</div>
+																															</div>
+																														</div>
+																													</div>
+																												</div> #}
 
-		<div class="row m-1 mt-4 pt-2">
-			<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
-		</div>
-		<div class="row">
-			<div class="col-md-4 mt-2">
-				<div class="card bg-dark p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
-								<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
-								<span class="text-light fw-light">Total des demandes</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- end col -->
-			<div class="col-md-8 mt-2">
-				<div class="row">
-					<div class="col">
-						<div class="card bg-warning p-2 card-stat">
-							<div class="un-stat d-flex">
-								<div class="">
-									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
-										<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
-										<span class="fw-light">Demandes domestiques</span>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col">
-						<div class="card bg-primary bg-opacity-75 p-2 card-stat">
-							<div class="un-stat d-flex">
-								<div class="">
-									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
-										<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
-										<span class="fw-light text-dark">Demandes professionnelles</span>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="col">
-						<div class="card bg-primary p-2 card-stat">
-							<div class="un-stat d-flex">
-								<div class="">
-									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
-										<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
-										<span class="fw-light text-light">Demandes ERP - ERT</span>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- end col -->
-			<div class="row m-1 mt-4 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
-			</div>
-			<!-- end col -->
-
-			{% set les_etat = ["Soumis, en attente paiement"] %}
-			{% set les_col = ["danger"] %}
-
-			{% if is_granted('ROLE_CAISSIER') %}
-				{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
-				{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
-			{% endif %}
-
-			{% if is_granted('ROLE_DAF') %}
-				{% set les_etat = ["Payé, en attente confirmation paiement", "Payé, en attente validation"] %}
-				{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
-			{% endif %}
-
-			{% if is_granted('ROLE_RFO') %}
-				{% set les_etat = ["Dossier Validé, En Attente Affectation"] %}
-				{% set les_col = ["success bg-opacity-25", ] %}
-			{% endif %}
-
-			{% if is_granted('ROLE_CONTROLEUR') %}
-				{% set les_etat = ["Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-				{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
-			{% endif %}
-
-			{% if is_granted('ROLE_REFERENT') %}
-				{% set les_etat = ["Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-				{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
-			{% endif %}
-
-			{% if is_granted('ROLE_ADMIN') %}
-				{% set les_etat = ["Soumis, en attente paiement", "Payé, en attente confirmation paiement", "Payé, en attente validation", "Dossier Validé, En Attente Affectation", "Dossier Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de validation Rapport", "Rapport validé, en attente clôture"] %}
-				{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
-			{% endif %}
-
-			{% set ix = 0 %}
-			{% for etat in les_etat  %}
-				{% set col = les_col[ix] %}
-				<div class="col-md-4 mt-2">
-					<div class="card bg-{{col}} p-2 card-stat">
-						<div class="un-stat d-flex">
-							<div class="">
-								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
-									<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
-									<span class="fw-light">{{etat}}</span>
-								</p>
-
-							</div>
-						</div>
-					</div>
-				</div>
-				{% set ix = ix+1 %}
-			{% endfor %}
-		</div>
-		<!-- end row -->
-
-		<hr/>
-		<div class="row mt-2">
-			<div class="col-md-3 mt-2">
-				<div class="card bg-red p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  les_alerte["Hors délais 5 jours"] is defined  %} {{ les_alerte["Hors délais 5 jours"] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Dossiers Hors délais 5j</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-md-3 mt-2">
-				<div class="card bg-rougef p-2 card-stat">
-					<div class="un-stat d-flex">
-						<div class="">
-							<p class="mb-1 pt">
-								<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  les_alerte["Hors délais 5 jours"] is defined  %} {{ les_alerte["Hors délais 5 jours"] }}
-									{% else %}
-										0
-									{% endif %}
-								</span>
-								<span class="text-light fw-light">Dossiers Hors délais 15j</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div> #}
-
-		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
-			<div class="row mt-50">
-				<div class="col-md-8">
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+				<div class="row mt-50"> <div class="col-md-8">
 					<div class="card">
 						<div class="d-flex align-items-center justify-content-between">
 							<h4 class="fw-bold">Demandes en préparation ({{ les_install|length }})</h4>
@@ -853,12 +1216,12 @@
 											</td>
 											{# <td>{{ ag.agence }}</td> #}
 											{# <td class="text-center">
-																																																																			{% if reg.departement.count >0 %}
-																																																																				<span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
-																																																																			{% else %}
-																																																																				<code class="text-danger text-opacity-50">Aucun département</code>
-																																																																			{% endif %}
-																																																																		</td> #}
+																																																																																																																																																																																																																		{% if reg.departement.count >0 %}
+																																																																																																																																																																																																																			<span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+																																																																																																																																																																																																																		{% else %}
+																																																																																																																																																																																																																			<code class="text-danger text-opacity-50">Aucun département</code>
+																																																																																																																																																																																																																		{% endif %}
+																																																																																																																																																																																																																	</td> #}
 										</tr>
 									{% endfor %}
 								</tbody>
@@ -906,6 +1269,6 @@
 {% else %}
 	<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
 		Votre adresse email n'a pas encore été confirmée !
-																	Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+																																											Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
 	</div>
 {% endif %}{% endblock %}
