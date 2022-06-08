@@ -45,7 +45,61 @@ class RemboursementRepository extends ServiceEntityRepository
         }
     }
 
-    // /**
+    public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
+    {
+        $les_col0=array("num");
+        $les_col1=array("compteur", "abonnement", "adresse", "nomSite", "usages", "activite", "habitation");
+        $les_col2=array("numero");
+        $str='1 = 0';
+        foreach($les_col0 as $col) {
+            $str.=' or a.'.$col.' like :val';
+        }
+        foreach($les_col1 as $col) {
+            $str.=' or b.'.$col.' like :val';
+        }
+        foreach($les_col2 as $col) {
+            $str.=' or c.'.$col.' like :val';
+        }
+        $q = $this->createQueryBuilder('a');
+        $q->select('a')
+        ->join('App\Entity\Paiement', 'p', 'WITH', 'p.id = a.paiement')
+        ->join('App\Entity\Demande', 'c', 'WITH', 'p.demande = c.id')
+        ->join('App\Entity\Installation', 'b', 'WITH', 'c.installation = b.id')
+        ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = b.localite')
+        ;
+        if($val_rech) {
+            $q->andWhere($str)
+            ->setParameter('val', '%'.$val_rech.'%');
+        }
+        if(is_array($val_filtre) && count($val_filtre)) {
+            $restr="";
+            $ix=0;
+            foreach ($val_filtre as $p => $v) {
+                if($p=="agence") {
+                    $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="usages") {
+                    $q->andWhere('b.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } else {
+                    $q->andWhere('a.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                }
+            $ix++;
+            }
+        }
+        if($orderBy) {
+            $q->orderBy('a.'.$orderBy, 'ASC');
+        }
+        if($page) {
+            $q
+            ->setFirstResult($page-1)
+            ->setMaxResults(20);
+        }
+        // echo $sql=$q->getQuery()->getSQL();
+        return $q->getQuery()->getResult();
+    }
+        // /**
     //  * @return Remboursement[] Returns an array of Remboursement objects
     //  */
     /*

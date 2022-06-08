@@ -11,6 +11,8 @@ use App\Repository\ElectricienRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\UtilisateurRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -28,8 +30,13 @@ use Symfony\Component\Validator\Constraints\Regex;
 class UtilisateurController extends AbstractController
 {
     #[Route('/', name: 'app_utilisateur_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
+    public function index(Request $request, PaginatorInterface $pgn, UtilisateurRepository $utilisateurRepository, ProfilRepository $profilRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'utilisateur');
         $request->getSession()->set('sousmenu', '');
@@ -44,8 +51,12 @@ class UtilisateurController extends AbstractController
             $obj_profil=$profilRepository->find($val_profil);
             if($val_profil) { $val_filtre["roles"] = strtoupper($obj_profil->getCode()); }
         }
+
+        $list=$utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
         return $this->render('utilisateur/index.html.twig', [
-            'les_utilisateur' => $utilisateurRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_utilisateur' => $list,
             'val_rech' => $val_rech,
 
             'les_profil'=> $les_profil,
@@ -56,6 +67,11 @@ class UtilisateurController extends AbstractController
     #[Route('/add', name: 'app_utilisateur_add', methods: ['GET', 'POST'])]
     public function new(Request $request, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher, ElectricienRepository $electricienRepository, ProprietaireRepository $proprietaireRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $utilisateur = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form 
@@ -196,7 +212,7 @@ class UtilisateurController extends AbstractController
                 $utilisateur->setIdType($electricien->getId());
             }
             $utilisateur->setIsVerified(true);
-            $utilisateur->setRoles(["ROLE_CLIENT"]);
+            $utilisateur->setRoles(["ROLE_PUBLIC"]);
             $utilisateurRepository->add($utilisateur);
             return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
         }
@@ -207,9 +223,54 @@ class UtilisateurController extends AbstractController
         ]);
     }
 
+    //Profil User
+    #[Route('/moncompte', name: 'app_utilisateur_moncompte')]
+     public function connected()
+     {
+        return $this->render('utilisateur/user.html.twig' );
+     } 
+
+   //Modification Mdp User
+   #[Route('/editPassword', name: 'app_utilisateur_password')]
+   public function editPass(Request $request, ManagerRegistry $doctrine, UserPasswordHasherInterface $userPasswordHasher)
+   {
+       if($request->isMethod('POST')){
+           $em = $doctrine->getManager();
+           $user = $this->getUser();
+           $utilisateur = $em->getRepository(Utilisateur::class)->find($user->getId());
+
+           $mdp0=$request->request->get('pass0');
+           $mdp1=$request->request->get('pass1');
+           $mdp2=$request->request->get('pass2');
+
+           $ok_mdp=$userPasswordHasher->isPasswordValid($utilisateur, $mdp0);
+           if( $ok_mdp ) {
+                // On vérifie si les 2 mots de passe sont identiques
+                if(  $mdp1 && $mdp1 == $mdp2 ) {
+                    // encode the plain password
+                    $utilisateur->setPassword( $userPasswordHasher->hashPassword($utilisateur, $mdp1 ) );
+                    $em->flush();
+                    $this->addFlash('success', 'Mot de passe mis à jour avec succès !');
+
+                    return $this->redirectToRoute('app_utilisateur_moncompte');
+                } else {
+                    $this->addFlash('error', 'Les deux mots de passe ne sont pas identiques !');
+                }
+            } else {
+                    $this->addFlash('error', 'Le mot de passe actuel est incorrect !');
+            }            
+        }
+       return $this->render('utilisateur/editPassword.html.twig');
+   }
+
     #[Route('/{id}', name: 'app_utilisateur_show', methods: ['GET'])]
     public function show(Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('utilisateur/show.html.twig', [
             'les_utilisateur' => $utilisateurRepository->findAll(),
             'utilisateur' => $utilisateur,
@@ -219,6 +280,11 @@ class UtilisateurController extends AbstractController
     #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form->handleRequest($request);
 
@@ -237,6 +303,11 @@ class UtilisateurController extends AbstractController
     #[Route('/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]
     public function delete(Request $request, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         if ($this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->request->get('_token'))) {
             $utilisateurRepository->remove($utilisateur);
         }

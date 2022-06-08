@@ -20,6 +20,11 @@ class RapportController extends AbstractController
      */
     public function index(Request $request, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'rapport');
         $request->getSession()->set('sousmenu', '');
@@ -33,6 +38,11 @@ class RapportController extends AbstractController
      */
     public function add(Request $request, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $rapport = new Rapport();
         $form = $this->createForm(RapportFormType::class, $rapport);
         $form->handleRequest($request);
@@ -54,6 +64,11 @@ class RapportController extends AbstractController
      */
     public function edit(Request $request, Rapport $rapport, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $rapport = $rapportRepository->find($rapport->getId());
         $form = $this->createForm(RapportFormType::class, $rapport);
         $form->handleRequest($request);
@@ -76,6 +91,11 @@ class RapportController extends AbstractController
      */
     public function showpdf(Rapport $rapport, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('rapport/show.html.twig', [
             'les_rapport' => $rapportRepository->findBy([],['libelle'=>'asc']),
             'rapport' => $rapport,
@@ -87,6 +107,11 @@ class RapportController extends AbstractController
      */
     public function show(Rapport $rapport, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('rapport/showpdf.html.twig', [
             'les_rapport' => $rapportRepository->findBy([],['libelle'=>'asc']),
             'rapport' => $rapport,

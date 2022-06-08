@@ -23,6 +23,10 @@ class AgenceController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(Request $request, AgenceRepository $agenceRepository, LocaliteRepository $localiteRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
         
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agence');
@@ -47,6 +51,11 @@ class AgenceController extends AbstractController
     #[Route('/add', name: 'add')]
     public function create(Request $request, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $ag = new Agence();
         $form = $this->createForm(AgenceType::class, $ag);
         $form->handleRequest($request);
@@ -66,6 +75,11 @@ class AgenceController extends AbstractController
     #[Route('/update/{id}', name: 'edit')]
     public function update(Agence $id,Request $request, AgenceRepository $agenceRepository, Tools $tools): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $agence = $agenceRepository->find($id);
         $form = $this->createForm(AgenceType::class, $agence);
         $form->handleRequest($request);
@@ -90,6 +104,11 @@ class AgenceController extends AbstractController
     #[Route('/localite/{id}', name: 'localite')]
     public function addlocalite(Agence $id, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager();
         $agence = $agenceRepository->find($id);
         $form = $this->createFormBuilder()
@@ -144,6 +163,11 @@ class AgenceController extends AbstractController
     #[Route('{id}/dellocalite/{idL}', name: 'localitedel')]
     public function dellocalite(Agence $id, Localite $idL, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager();
         $agence = $agenceRepository->find($id);
         $localite = $localiteRepository->find($idL);
@@ -156,6 +180,11 @@ class AgenceController extends AbstractController
     #[Route('/show/{id}', name: 'show')]
     public function show(ManagerRegistry $doctrine, Agence $agence, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $agence = $doctrine->getRepository(Agence::class)->find($agence->getId());
 
         if (!$agence) {
@@ -174,6 +203,11 @@ class AgenceController extends AbstractController
     #[Route('/delete/{id}', name: 'delete')]
     public function delete(ManagerRegistry $doctrine, int $id): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(Agence::class)->find($id);
         $entityManager->remove($ag);

@@ -22,6 +22,11 @@ class RubriqueController extends AbstractController
      */
     public function index(Request $request, RubriqueRepository $rubriqueRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
@@ -36,6 +41,11 @@ class RubriqueController extends AbstractController
      */
     public function add(Request $request, Rapport $rapport, RubriqueRepository $rubriqueRepository, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $rubrique = new Rubrique();
         $form = $this->createForm(RubriqueFormType::class, $rubrique);
         $form->handleRequest($request);
@@ -60,6 +70,11 @@ class RubriqueController extends AbstractController
      */
     public function edit(Rubrique $rubrique, Request $request, RubriqueRepository $rubriqueRepository, RapportRepository $rapportRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $rubrique = $rubriqueRepository->find($rubrique->getId());
         $form = $this->createForm(RubriqueFormType::class, $rubrique);
         $form->handleRequest($request);
@@ -82,6 +97,11 @@ class RubriqueController extends AbstractController
      */
     public function show(Rubrique $rubrique, RubriqueRepository $rubriqueRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('rubrique/show.html.twig', [
             'les_rubrique' => $rubriqueRepository->findBy([],['numero'=>'asc']),
             'rubrique' => $rubrique,

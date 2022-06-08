@@ -113,6 +113,9 @@
                 {% endfor %}
             </tbody>
             </table>
+            {% do les_agent.setPageRange(1)%}
+            {{ knp_pagination_render(les_agent, 'pagination.html.twig')}}
+
             {% endif %}
         </div>
     </section>

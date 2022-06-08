@@ -88,6 +88,8 @@
 <script>
     $(document).ready(function () {
         $('.intervenantAutre1').hide(); $("#form_intervenant").prop('required',false); $('.natureTravaux1').hide();
+        $("#form_typeInstallation").prop('required',true);
+        $("#form_natureTravaux").prop('required',true);
         optSel=$('input[type=radio][name="form[intervenantAutre]"]:checked');
         valSel=optSel.val();
         if (valSel==1) {

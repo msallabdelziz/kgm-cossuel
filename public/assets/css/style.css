@@ -1860,6 +1860,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     max-width: 75%;
 }    
 
+  
 @media screen and (max-width: 1225px) and (min-width: 1045px) {
     .priority-5{
         display:none;
@@ -1906,3 +1907,17 @@ only screen and (min-width: 768px) and (max-width: 991px),
 
 }
 
+input[required], input:required, input.required {
+    border-left: 2px solid red;
+}
+
+textarea[required], textarea:required, textarea.required {
+    border-left: 2px solid red;
+}
+
+select:required, select.required  {
+    border-left: 2px solid red;
+}
+div.required  {
+    border-left: 2px solid red;
+}

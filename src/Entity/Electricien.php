@@ -30,7 +30,7 @@ class Electricien
     #[ORM\Column(type: 'string', length: 255)]
     private $telephone;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $email;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -51,6 +51,8 @@ class Electricien
     public function __construct()
     {
         $this->created_by = "";
+        $this->email = "";
+        $this->adresse = "";
         $this->role = "ROLE_PUBLIC";
         $this->created_at = new \DateTimeImmutable();
         $this->installation = new ArrayCollection();
@@ -124,7 +126,7 @@ class Electricien
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 

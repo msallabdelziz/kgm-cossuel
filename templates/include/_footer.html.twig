@@ -5,6 +5,11 @@
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
 		<script src="{{ asset('assets/js/main.js') }}"></script>
 		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
+
+		<script src="{{ asset('assets/js/d3.min.js') }}"></script>
+		<script src="{{ asset('assets/js/d3Pie.min.js') }}"></script>
+		<script src="{{ asset('assets/js/c3.min.js') }}"></script>
+
 		<script>
 
 		{# $('body').on('click', '[data-bs-toggle="modal"]', function(){
@@ -32,13 +37,16 @@
 			$("#modal").on("show.bs.modal", function(e) {
 				var link = $(e.relatedTarget); 
 				$(this).find(".modal-body").load(link.attr("href"));
+				$(".modal-backdrop").remove();
 			});	
 
 			// Fill modal with content from link href
 			$("#modal2").on("show.bs.modal", function(e) {
 				var link = $(e.relatedTarget); 
 				$(this).find(".modal-body").load(link.attr("href"));
+				$(".modal-backdrop").remove();
 			});	
+
 
 		});
 		</script>

@@ -28,6 +28,11 @@ class DemandeController extends AbstractController
     #[Route('/{id}', name: 'app_demande_show', methods: ['GET'])]
     public function show(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
@@ -41,6 +46,11 @@ class DemandeController extends AbstractController
     #[Route('/pop/{id}', name: 'app_demande_showpop', methods: ['GET'])]
     public function showpop(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
@@ -54,6 +64,11 @@ class DemandeController extends AbstractController
     #[Route('/{id}/histo', name: 'app_demande_histo', methods: ['GET'])]
     public function showtime(Demande $demande, EntityManagerInterface $em, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
         $tools = new Tools($em);
@@ -74,6 +89,11 @@ class DemandeController extends AbstractController
     #[Route('/{id}/valid', name: 'app_demande_valid')]
     public function valid(Request $request, Demande $demande, DemandeRepository $demandeRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
 

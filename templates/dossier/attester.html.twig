@@ -65,6 +65,8 @@
         {% set link_liste = app.session.get('page_liste_dossier') %}
     {% endif %}
 
+    {% set link_liste = 'app_dossier_showrapp' %}
+
     <section class="container">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
@@ -95,7 +97,7 @@
             <div class="col-lg-8 mb-2">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
+                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                         <div class="row bloc_0">
                             <hr class="mb-3" />
                             <div class="col-lg-3">
@@ -167,6 +169,29 @@
             </div>
 
             <div class="col-lg-4 mb-2" id="paiement_demande">
+                <div id="validation_dossier" class="mb-4">
+                    {{ form_start(dossierForm) }}
+                    <div class="card mb-2 pb-0">
+                        <h2 class="fs-title">Validation du rapport d'inspection</h2>
+                        <div class="row">
+                            <hr class="mb-3" />
+                            <div class="">
+                                {{ form_label(dossierForm.decision) }}<br />
+                                {{ form_widget(dossierForm.decision) }}<br />
+                            </div>
+                            <div class="">
+                                {{ form_label(dossierForm.commentaire) }}<br />
+                                {{ form_widget(dossierForm.commentaire) }}<br />
+                            </div>
+                        </div>  
+                        <div align="right">
+                            <a href="{{ path(link_liste, {'id': dossier.id}) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
+                            <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider et Cloturer le dossier</button>
+                        </div>
+                    </div>
+                    {{ form_end(dossierForm) }}
+                </div>
+
                 <div class="card mb-2 pb-0">
                     <h2 class="fs-title">Traitement du dossier
                         <div class="float-end">
@@ -231,29 +256,13 @@
                     </div>  
                 </div>
 
-                <div id="validation_dossier" class="mt-4">
-                    {{ form_start(dossierForm) }}
-                    <div class="card mb-2 pb-0">
-                        <h2 class="fs-title">Validation du rapport d'inspection</h2>
-                        <div class="row">
-                            <hr class="mb-3" />
-                        </div>  
-                    <div align="right">
-                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
-                        <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider le Rapport d'inspection</button>
-                    </div>                                
-                    </div>
-                    </div>
-                    {{ form_end(dossierForm) }}
-                </div>
-
             </div>
         </div>
     </section>
 {% endblock %}
 
 {% block javascripts %}
-    {% set demande = paiement.demande %}
+    {% set demande = dossier.demande %}
     {% set installation = demande.installation %}
 <script>
     $(document).ready(function() {

@@ -34,12 +34,6 @@ class Paiement
     private $reference;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $motifRemboursement;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $motifRejet;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $etatRembousement;
 
     #[ORM\Column(type: 'boolean')]
@@ -124,30 +118,6 @@ class Paiement
     public function setReference(string $reference): self
     {
         $this->reference = $reference;
-
-        return $this;
-    }
-
-    public function getMotifRemboursement(): ?string
-    {
-        return $this->motifRemboursement;
-    }
-
-    public function setMotifRemboursement(string $motifRemboursement): self
-    {
-        $this->motifRemboursement = $motifRemboursement;
-
-        return $this;
-    }
-
-    public function getMotifRejet(): ?string
-    {
-        return $this->motifRejet;
-    }
-
-    public function setMotifRejet(string $motifRejet): self
-    {
-        $this->motifRejet = $motifRejet;
 
         return $this;
     }

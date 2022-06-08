@@ -160,6 +160,7 @@ class ResetPasswordController extends AbstractController
         }
 
         $email = (new TemplatedEmail())
+            // ->from(new Address('alert@cossuel.sn', 'Notification COSSUEL'))
             ->from(new Address('yatamala.net@gmail.com', 'Notification COSSUEL'))
             ->to($user->getEmail())
             ->subject('COSSUEL: Réinitialisation de votre mot de passe')

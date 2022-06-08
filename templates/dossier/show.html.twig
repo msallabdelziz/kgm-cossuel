@@ -25,34 +25,53 @@
     </style>
     {% set link_action = "" %}
     {% set paiement = dossier.demande.paiement %}
+    {% set agentConn = tools.getUtilisateurAgent(app.user.id) %}
+
+    {% set action_demande = "Consultation" %}
     {% if not dossier.affecte %}
         {% set action_demande = "Affectation" %}
         {% set link_liste = 'app_dossier_affectation' %}
-        {% if is_granted('ROLE_REFERENT') %}
+        {% if is_granted('ROLE_REFERENT') and agentConn and dossier.referent and agentConn.id == dossier.referent.id %}
             {% set link_action = 'app_dossier_affecter' %}
+            {% set libelle_action = 'Affecter à un contrôleur' %}
         {% endif %}
-        {% set libelle_action = 'Affecter à un contrôleur' %}
     {% elseif not dossier.visite %}
-        {% set action_demande = "Planification Visite" %}
-        {% set link_liste = 'app_dossier_visite' %}
-        {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
+        {% if is_granted('ROLE_CONTROLEUR') and agentConn and dossier.controleur and agentConn.id == dossier.controleur.id %}
+            {% set action_demande = "Planification Visite" %}
+            {% set link_liste = 'app_dossier_visite' %}
             {% set link_action = 'app_dossier_visiter' %}
+            {% set libelle_action = 'Planifier une visite' %}
         {% endif %}
-        {% set libelle_action = 'Planifier une visite' %}
+        {% if is_granted('ROLE_REFERENT') and agentConn and dossier.referent and agentConn.id == dossier.referent.id %}
+            {% set link_action = 'app_dossier_desaffecter' %}
+            {% set action_demande = "Consultation Affectation" %}
+            {% set link_liste = 'app_dossier_affectation' %}
+            {% set libelle_action = 'Retirer dossier affecté' %}
+        {% endif %}
     {% elseif not dossier.rapport %}
-        {% set action_demande = "Rapport de Visite" %}
-        {% set link_liste = 'app_dossier_rapport' %}
-        {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
+        {% if is_granted('ROLE_CONTROLEUR') and agentConn and dossier.controleur and agentConn.id == dossier.controleur.id %}
+            {% set action_demande = "Rapport de Visite" %}
+            {% set link_liste = 'app_dossier_rapport' %}
             {% set link_action = 'app_dossier_rapporter' %}
+            {% set libelle_action = 'Elaborer le rapport de visite' %}
+            {% set libelle_action2 = 'Nouvelle Planification de visite' %}
+            {% set link_action2 = 'app_dossier_revisiter' %}
         {% endif %}
-        {% set libelle_action = 'Elaborer le rapport de visite' %}
+        {% if is_granted('ROLE_REFERENT') and agentConn and dossier.referent and agentConn.id == dossier.referent.id %}
+            {% set link_action = 'app_dossier_desaffecter' %}
+            {% set action_demande = "Consultation Affectation" %}
+            {% set link_liste = 'app_dossier_affectation' %}
+            {% set libelle_action = 'Retirer dossier affecté' %}
+        {% endif %}
     {% elseif not dossier.attestation %}
         {% set action_demande = "Résultat Inspection" %}
         {% set link_liste = 'app_dossier_attestation' %}
-        {% if is_granted('ROLE_REFERENT') %}
-            {% set link_action = 'app_dossier_attestation' %}
+        {% if is_granted('ROLE_REFERENT') and agentConn and dossier.referent and agentConn.id == dossier.referent.id %}
+            {% set link_action = 'app_dossier_showrapp' %}
+            {% set libelle_action = 'Consulter le rapport' %}
         {% endif %}
-        {% set libelle_action = 'Confirmer Résultats Inspection' %}
+    {% else %}
+        {% set action_demande = "Consultation " %}
     {% endif %}
 
     {% set demande = dossier.demande %}
@@ -79,7 +98,15 @@
                                 Détails du dossier
                             </div>
                             <div class="col" align="right">
-                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                                {% if not dossier.attestation %}
+                                    <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                                {% else %}
+                                    {% if dossier.visiteCourante.conclusion %}
+                                        <span class="badge bg-success fs-5">[{{ dossier.Etat }}]</span>
+                                    {% else %}
+                                        <span class="badge bg-danger fs-5">[{{ dossier.Etat }}]</span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </div>
 
@@ -89,19 +116,35 @@
 
         <div class="row">
             <div class="col-lg-8 mb-2">
-                <div align="right">
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                </div>
-                <fieldset id="synthese_demande">
                     {% if tools.getUtilisateur(installation.createdBy) %}
                         {% set creator = tools.getUtilisateur(installation.createdBy) %}
-                        <div align="left" class="float-start border border-warning shadow p-2 fs-8 fw-light">
+                        <div align="left" class="float-start border border-warning shadow p-2 mt-2 fs-8 fw-light">
                             <div><label class="text-warning">Créée par:</label> <span class="">{{creator.nomComplet}}</span></div>
                             <div><label class="text-warning">Créée le:</label> <span class="">{{installation.createdAt|date("d-m-Y à H:i:s")}}</span></div>
                         </div>
+                        <div class="clear"></div>
                     {% endif %}
+                <div align="right">
+                {% if (dossier.rapport and not dossier.attestation) or dossier.attestation %}
+                    <a href="{{ path('app_dossier_showrapp', {'id': dossier.id}) }}" class="next action-button btn btn-secondary btn my-3">Consulter le rapport</a>
+                {% endif %}
+                {% if dossier.attestation %}
+                    {% if dossier.visiteCourante.conclusion %}
+                        <a target="_blank" href="{{ path('app_attestation_showpdf', {'id': dossier.id}) }}" class="next action-button btn btn-success btn my-3">Attestation de conformité</a>
+                    {% else %}
+                        <a target="_blank" href="{{ path('app_attestation_showpdf', {'id': dossier.id}) }}" class="next action-button btn btn-danger btn my-3">Bon de travaux</a>
+                    {% endif %}
+                {% else %}
+                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
+                {% endif %}
+
+                {% if link_action2 is defined and link_action2 %}
+                    <a href="{{ path(link_action2, {'id': dossier.id}) }}" class="next action-button btn btn-secondary btn my-3">{{libelle_action2}}</a>
+                {% endif %}
+                </div>
+                <fieldset id="synthese_demande">
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
+                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if demande and demande.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                         <div class="row bloc_0">
                             <hr class="mb-3" />
                             <div class="col-lg-3">
@@ -473,7 +516,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    {% set demande = paiement.demande %}
+    {% set paiement = dossier.demande.paiement %}
+    {% set demande = dossier.demande %}
     {% set installation = demande.installation %}
 <script>
     $(document).ready(function() {

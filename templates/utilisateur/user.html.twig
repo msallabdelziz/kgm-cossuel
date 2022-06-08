@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+ {% block body %}
+ <div class="offset-3 col-lg-6 mb-2 shadow border border-light card p-3">
+                 <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
+                     <div class="container-fluid">
+                         <span class="navbar-brand mb-0 h1">Informations Compte Utilisateur</span>
+                     </div>
+                 </nav>
+                 <div class="container">
+                     <div class="row p-2 bg-light bg-opacity-25 border rounded">
+                         <div class="col-7 mb-2">
+                             <label class="fw-light fs-7">Nom</label>
+                             <div class="ms-4">{{ app.user.nom}} {{ app.user.prenom }}</div>
+                         </div>
+                         <div class="col-5 mb-2">
+                             <label class="fw-light fs-7">Role</label>
+                             <div class="ms-4">{{ app.user.roles[0] | replace({'ROLE_':''}) }}</div>
+                         </div>
+                         <div class="col-12 mb-2">
+                             <label class="fw-light fs-7">Adresse</label>
+                             <div class="ms-4">{{ app.user.adresse }}</div>
+                         </div>
+                         <div class="col-5 mb-2">
+                             <label class="fw-light fs-7">Type</label>
+                             <div class="ms-4">{{ app.user.type }}</div>
+                         </div>
+                         <div class="col-7 mb-2">
+                             <label class="fw-light fs-7">Email</label>
+                             <div class="ms-4">{{ app.user.email }}</div>
+                         </div>
+                         <div class="col-12 mb-2">
+                             <label class="fw-light fs-7">Telephone</label>
+                             <div class="ms-4">{{ app.user.Telephone }}</div>
+                         </div>
+                         {# <div class="col-7 mb-2">
+                             <label class="fw-light fs-7">Création</label>
+                              <div class="ms-4">{{ app.user.created_at }}</div> 
+                         </div> #}
+                     </div>
+                      <div class="col pt-2" align="right">
+                             {# <a href="{{ path('app_electricien_index') }}" class="mx-2" title="Retour">
+                                 <svg class="bi" width="16" height="16" fill="black">
+                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-counterclockwise') }}"></use>
+                                 </svg>
+                             </a> #}
+
+                             <a href="{{path('app_utilisateur_password')}}" class="btn btn-primary">
+
+                                 Modifier le mot de passe 
+                             </a>
+                             {# <a href="" class="mx-2" title="Supprimer">
+                                 <svg class="bi" width="16" height="16" fill="red">
+                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#trash') }}"></use>
+                                 </svg>
+                             </a> #}
+                     </div> 
+                 </div>
+
+             </div>
+
+ {% endblock %}

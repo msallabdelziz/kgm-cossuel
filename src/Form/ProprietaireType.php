@@ -53,7 +53,7 @@ class ProprietaireType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => true,
+            'required' => false,
             'label' => 'Adresse'
         ])
         ->add('telephone', TextType::class, [
@@ -80,26 +80,26 @@ class ProprietaireType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => true,
+            'required' => false,
             'label' => 'Email'
         ])
         ->add('numPiece', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
             ],
-            'constraints' => [
-                new Regex('/^(0|[1-9][0-9]*)$/'),
-                new Callback(function($object, ExecutionContextInterface $context) {
-                    $v = $object;
-                    if($object) {
-                        if (strlen($object) >15) {
-                            $context
-                            ->buildViolation('Format incorrect ! 13 caractères au max !')
-                            ->addViolation();
-                        }
-                    }
-                }),
-            ],
+            // 'constraints' => [
+            //     new Regex('/^(0|[1-9][0-9]*)$/'),
+            //     new Callback(function($object, ExecutionContextInterface $context) {
+            //         $v = $object;
+            //         if($object) {
+            //             if (strlen($object) >15) {
+            //                 $context
+            //                 ->buildViolation('Format incorrect ! 13 caractères au max !')
+            //                 ->addViolation();
+            //             }
+            //         }
+            //     }),
+            // ],
             'required' => true,
             'label' => 'Numéro Piece'
         ])

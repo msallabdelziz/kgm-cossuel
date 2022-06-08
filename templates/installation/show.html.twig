@@ -10,6 +10,8 @@
         font-weight:500;
     }
     </style>
+    {% set action_demande = "Soumission" %}
+    {% set link_liste = 'app_installation_index' %}
     {% if (installation.step < 7) %}
         {% set action_demande = "Soumission" %}
         {% set link_liste = 'app_installation_index' %}
@@ -72,7 +74,6 @@
                                         </div>
                                     {% endif %}
                                     <div align="right">
-                                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                                         {% if installation.step<7 %}
                                             {% set link_edit = 'app_installation_add' %}
                                             {% if installation.step > 1 %}
@@ -93,10 +94,11 @@
                                                 <a href="#" class="next action-button btn btn-success btn my-3 ms-5">Valider la demande</a> #}
                                             {% endif %}
                                         {% endif %}
+                                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                                     </div>                                
                                 {% if installation.demandeCourante %}
                                     <div class="card mb-2">
-                                        <h2 class="fs-title">Puissance demandée et tarif</h2>
+                                        <h2 class="fs-title">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                                         <div class="row">
                                             <hr class="mb-3" />
                                             <div class="col-lg-3">

@@ -167,6 +167,10 @@
                     </div>
                 {% endfor %}
             </div>
+
+                {% do les_installation.setPageRange(1)%}
+                {{ knp_pagination_render(les_installation, 'pagination.html.twig')}}
+
             {% endif %}
         </div>
     </section>

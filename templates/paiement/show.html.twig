@@ -74,14 +74,20 @@
                 {% endif %}
                 <div align="right">
                     <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                    <a target="_blank" href="{{ path('app_installation_facturepdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Facture</a>
+                    
+                    {% if is_granted('ROLE_CAISSIER') or  is_granted('ROLE_COMPTABLE') or  is_granted('ROLE_DAF') %}
+                        <a target="_blank" href="{{ path('app_installation_facturepdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Facture</a>
+                    {% endif %}
                     {% if demande.installation.step == 8 %}
                         <a target="_blank" href="{{ path('app_installation_recupdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-warning btn my-3">Générer PDF Reçu</a>
+                    {% endif %}
+                    {% if paiement.paiementeffectue and (is_granted('ROLE_COMPTABLE') or  is_granted('ROLE_DAF')) %}
+                        <a href="{{ path('app_remboursement_add', {'id': paiement.id}) }}" class="next action-button btn btn-danger btn my-3">Créer Remboursement</a>
                     {% endif %}
                 </div>
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
+                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                         <div class="row bloc_0">
                             <hr class="mb-3" />
                             <div class="col-lg-3">
@@ -361,6 +367,9 @@
                         {% if is_granted('ROLE_RFO') %}
                         <a href="{{ path('app_demande_valid', {'id': demande.id}) }}" type="button" class="next action-button btn btn-success btn my-3 ms-2">Valider la Demande</a>
                         {% endif %}
+                    {% endif %}
+                    {% if installation.step>9 and installation.demandeCourante.numeroPassage==1 and (is_granted('ROLE_ACCUEIL')) %}
+                        <a href="{{ path('app_installation_clone', {'id': installation.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Cloner la Demande</a>
                     {% endif %}
                 </div>                                
                 <div class="card mb-2 pb-0">

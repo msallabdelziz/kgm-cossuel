@@ -10,6 +10,7 @@
         font-weight:500;
     }
     </style>
+    {% set action_demande = "Soumission" %}
     {% if (installation.step < 7) %}
         {% set action_demande = "Soumission" %}
     {% elseif (installation.step == 7 or installation.step == 8) %}
@@ -21,10 +22,11 @@
     {% set link_liste = 'stat' %}
 
     <section class="container">
-        <a data-bs-dismiss="modal" class="float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+        <a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de demandes </span>
+                <a href="{{ path('app_installation_show', {'id': installation.id}) }}" class="next action-button btn btn-success btn my-0 ms-5">Gestion de la demande ...</a>
             </a>
         </header>
         <div class="row">
@@ -36,7 +38,6 @@
             {% set badge_etat = "text-success" %}
         {% endif %}
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
-
                 <div class="container">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
@@ -62,7 +63,7 @@
                             	<fieldset id="synthese_demande">
                                 {% if installation.demandeCourante %}
                                     <div class="card mb-2">
-                                        <h2 class="fs-title">Puissance demandée et tarif</h2>
+                                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandeCourante and installation.demandeCourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                                         <div class="row">
                                             <hr class="mb-3" />
                                             <div class="col-lg-3">

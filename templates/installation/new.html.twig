@@ -71,13 +71,15 @@
                                         </div>
                                         <div class="col-lg-8">
                                             {{ form_row(installationForm.habitation) }}<br>
-                                        </div>
+                                        </div> #}
+                                        {#                                         
                                         <div class="col-lg-2">
                                             {{ form_row(installationForm.lattitude) }}<br>
                                         </div>
                                         <div class="col-lg-2">
                                             {{ form_row(installationForm.longitude) }}<br>
-                                        </div>
+                                        </div> 
+                                        #}
                                     </div>
                                 </div>
                                 <div align="right">
@@ -104,6 +106,9 @@
         $('.alimente0').show(); $('.alimente1').hide();
         $('#form_abonnement').prop('required',false);
         $('#form_compteur').prop('required',false);
+        $('#form_region').prop('required',true);
+        $('#form_usages').prop('required',true);
+        $('#form_departement').prop('required',true);
         $('#form_localite').prop('required',true);
         $('#form_adresse').prop('required',true);
         optSel=$('input[type=radio][name="form[alimente]"]:checked');

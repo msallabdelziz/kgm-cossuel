@@ -10,7 +10,7 @@
 				<div class="card">
 					<div class="d-flex align-items-center justify-content-between">
 						<h4 class="fw-bold">Demandes {{titre}} ({{ les_demande|length }})</h4>
-						<a data-bs-dismiss="modal" class="float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+						<a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
 					</div>
 					<span class="divider">
 						<hr></span>
@@ -102,7 +102,10 @@
 								{% if dossier %}
 									{% set link = 'app_dossier_showpop' %}
 									{% set id_ent = dossier.id %}
-									{% set etat = 'En attente ' ~ dossier.etat %}
+									{% set etat = dossier.etat %}
+									{% if not dossier.attestation %}
+										{% set etat = 'En attente ' ~ dossier.etat %}
+									{% endif %}
 									{% set label_etat = 'success' %} 
 								{% endif %}
 									<span class="fs-8 badge badge-{{label_etat}}">{{ etat }}</span>
@@ -120,6 +123,10 @@
 					{% endfor %}
 				</tbody>
 				</table>
+
+                {% do les_demande.setPageRange(1)%}
+                {{ knp_pagination_render(les_demande, 'pagination.html.twig')}}
+
 				{% endif %}
 					</div>
 

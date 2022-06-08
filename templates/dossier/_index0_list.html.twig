@@ -14,10 +14,10 @@
                     <hr></span>
             <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
                 <div class="col-2 offset-3 fs-6 border-bottom">
-                    <select name="val_localite0" id="val_localite0" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Toutes les Localités ...</option>
-                        {% for obj in les_localite %}
-                            <option value="{{obj.id}}" {% if obj.id == val_localite %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Agences ...</option>
+                        {% for obj in les_agence %}
+                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -84,7 +84,7 @@
                     {% set electricien = installation.electricien %}
                     {% set proprietaire = installation.proprietaire %}
 
-                    {% set badge_etat = "danger" %}
+                    {% set badge_etat = "success" %}
                     {% if doss.etat == 1 %}
                         {% set badge_etat = "warning" %}
                     {% elseif doss.etat == 2 %}
@@ -96,6 +96,15 @@
                         {% set badge_usage = "primary text-light" %}
                         {% set text_usage = "text-light" %}
                     {% endif %}
+
+                    {% if doss.attestation %}
+                        {% if doss.visiteCourante and doss.visiteCourante.conclusion %}
+                            {% set badge_etat = " bg-success p-1" %}
+                        {% else %}
+                            {% set badge_etat = " bg-danger p-1" %}
+                        {% endif %}
+                    {% endif %}
+
                     <tr>
                         <td scope="row">
                             <a href="{{ path('app_dossier_show', {'id': doss.id }) }}" class="text-dark text-decoration-none fw-bold">
@@ -127,7 +136,7 @@
                         </td>
                         <td>
                             <a  href="{{ path('app_dossier_show', {'id': doss.id }) }}">
-                                <span class="badge badge-{{ badge_etat }} fs-8">Attente {{ doss.etat }}</span>
+                                <span class="badge badge-{{ badge_etat }} fs-8">{% if not doss.attestation %}Attente{% endif %} {{ doss.etat }}</span>
                             </a>
                         </td>
                         {# <td>{{ ag.agence }}</td> #}
@@ -154,6 +163,10 @@
                 {% endfor %}
             </tbody>
             </table>
+
+                {% do les_dossier.setPageRange(1)%}
+                {{ knp_pagination_render(les_dossier, 'pagination.html.twig')}}
+
             {% endif %}
         </div>
     </section>

@@ -31,6 +31,11 @@ class PointVerificationController extends AbstractController
      */
     public function add(Request $request, Rubrique $rubrique, RubriqueRepository $rubriqueRepository, PointVerificationRepository $pointVerificationRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $pointVerification = new PointVerification();
         $form = $this->createForm(PointVerificationFormType::class, $pointVerification);
         $form->handleRequest($request);
@@ -55,6 +60,11 @@ class PointVerificationController extends AbstractController
      */
     public function edit(PointVerification $pointVerification, Request $request, RubriqueRepository $rubriqueRepository, PointVerificationRepository $pointVerificationRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $pointVerification = $pointVerificationRepository->find($pointVerification->getId());
         $form = $this->createForm(PointVerificationFormType::class, $pointVerification);
         $form->handleRequest($request);
@@ -77,6 +87,11 @@ class PointVerificationController extends AbstractController
      */
     public function show(PointVerification $pointVerification, PointVerificationRepository $pointVerificationRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('pointverification/show.html.twig', [
             'les_pointverification' => $pointVerificationRepository->findBy([],['numero'=>'asc']),
             'pointverification' => $pointVerification,

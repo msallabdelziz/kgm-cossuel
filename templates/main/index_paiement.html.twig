@@ -9,14 +9,14 @@
 		<div class="title-wrapper">
 		{% if app.user.roles[0] == "ROLE_CAISSIER" or app.user.roles[0] == "ROLE_COMPTABLE" %}
 			<div class="row m-1 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances</h5>
 			</div>
 			<div class="row">
 				<div class="col-md-3 mt-2">
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Paiement enregistré;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
 									{% if  mes_stat["Paiement enregistré"]["user_"~app.user.id] is defined  %}
 										{{ mes_stat["Paiement enregistré"]["user_"~app.user.id] }}
@@ -34,7 +34,7 @@
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Paiement validé;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
 									{% if  mes_stat["Paiement validé"]["user_"~app.user.id] is defined  %}
 										{{ mes_stat["Paiement validé"]["user_"~app.user.id] }}
@@ -53,7 +53,7 @@
 		{% endif %}
 
 			<div class="row m-1 mt-4 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage et passage visite</h5>
 			</div>
 			<div class="row">
 				<div class="col-md-4 mt-2">
@@ -109,11 +109,41 @@
 								</div>
 							</div>
 						</div>
+
 					</div>
 				</div>
+
+				<div class="row mt-4">
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '1ère visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["1ère visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 1ère visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '2e visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["2e visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 2e visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+
 				<!-- end col -->
 				<div class="row m-1 mt-4 pt-2">
-					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par état de traitement</h5>
 				</div>
 				<!-- end col -->
 				

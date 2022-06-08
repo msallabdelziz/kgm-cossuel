@@ -35,6 +35,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,8 +66,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class InstallationController extends AbstractController
 {
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
-    public function index0(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index0(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
@@ -91,7 +97,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -122,8 +128,11 @@ class InstallationController extends AbstractController
             if($val_statut) { $val_filtre["etat"] = $val_statut; }
         }
 
+        $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
         return $this->render('installation/index0.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' => $list,
             'page_list' => "app_installation_index0",
             'affichage' => $mode_affichage,
             'val_rech' => $val_rech,
@@ -142,8 +151,13 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
@@ -168,7 +182,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -177,6 +191,9 @@ class InstallationController extends AbstractController
             $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
         }
 
+        if($role=="ROLE_USER" || $role=="ROLE_CLIENT" || $role=="ROLE_PUBLIC") {
+            $val_filtre["created_by"] = $userConn->getId();
+        }
         $val_usage=""; 
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
@@ -190,8 +207,11 @@ class InstallationController extends AbstractController
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
+        $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' => $list,
             'modif' => 1,
             'page_list' => "app_installation_index",
             'affichage' => $mode_affichage,
@@ -209,8 +229,13 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
-    public function index2(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index2(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
@@ -222,7 +247,7 @@ class InstallationController extends AbstractController
         }
         
         // Définition en session du module en cours
-        $request->getSession()->set('menu', 'demande');
+        $request->getSession()->set('menu', 'caisse');
         $request->getSession()->set('sousmenu', 'demande_paiement');
         $request->getSession()->set('page_liste_demande', 'app_installation_index2');
 
@@ -235,7 +260,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -257,8 +282,11 @@ class InstallationController extends AbstractController
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
+        $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' => $list,
             'modif' => 0,
             'affichage' => $mode_affichage,
             'page_list' => "app_installation_index2",
@@ -276,8 +304,13 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
-    public function index3(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index3(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
         $em = $doctrine->getManager(); $tools = new Tools($em);
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
@@ -302,7 +335,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if(in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -324,8 +357,11 @@ class InstallationController extends AbstractController
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
         }
 
+        $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
         return $this->render('installation/index.html.twig', [
-            'les_installation' => $installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page),
+            'les_installation' => $list,
             'modif' => 0,
             'page_list' => "app_installation_index3",
             'affichage' => $mode_affichage,
@@ -342,9 +378,115 @@ class InstallationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/add', name: 'app_installation_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, Installation $installation = null, InstallationRepository $installationRepository, DepartementRepository $departRepo, RegionRepository $regionRepo, LocaliteRepository $localiteRepo): Response
+    #[Route('/{id}/renew', name: 'app_installation_renew', methods: ['GET', 'POST'])]
+    public function addrenew(Request $request, Installation $installation = null, InstallationRepository $installationRepository, DemandeRepository $demandeRepo): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $installation_old=$installationRepository->find($installation);
+        $old_demande=$installation_old->getDemandeCourante();
+
+        $installation_new=clone $installation_old;
+        $installation_new->restId();
+        $installation_new->setEtat("En Saisie 6/6");
+        $installation_new->setStep("6");
+        $installation_new->setCreatedby($this->getUser()->getId());
+        $installation_new->setCreatedAt(new \DateTimeImmutable());
+
+        $installationRepository->add($installation_new);
+
+        $demande=new Demande();
+        $demande->setInstallation($installation_new);
+        $demande->setCout($old_demande->getCout()*80/100);
+        $demande->setPuissance($old_demande->getPuissance());
+        $demande->setCreatedby($this->getUser()->getId());
+        $demande->setDemandeParente($old_demande->getId());
+        $demande->setNumeroPassage(2);
+        $demandeRepo->add($demande);
+        $demande->setNumero($old_demande->getNumero());
+        $demandeRepo->add($demande);
+
+        return $this->redirectToRoute('app_installation_add6', array('id' => $installation_new->getId())); 
+    }
+
+    #[Route('/{id}/clone', name: 'app_installation_clone', methods: ['GET', 'POST'])]
+    public function addclone(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepo): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $installation_old=$installationRepository->find($installation);
+        $old_demande=$installation_old->getDemandeCourante();
+
+        $installation_new=clone $installation_old;
+        $installation_new->restId();
+        $installation_new->setEtat("En Saisie 6/6");
+        $installation_new->setStep("6");
+        $installation_new->setCreatedby($this->getUser()->getId());
+        $installation_new->setCreatedAt(new \DateTimeImmutable());
+        $installation_new->restDemande();
+
+        $installationRepository->add($installation_new);
+
+        // $demande=new Demande();
+        // $demande->setInstallation($installation_new);
+        // $demande->setCout($old_demande->getCout());
+        // $demande->setPuissance($old_demande->getPuissance());
+        // $demande->setCreatedby($this->getUser()->getId());
+        // $demande->setDemandeParente($old_demande->getId());
+        // $demande->setNumeroPassage(2);
+        // $demandeRepo->add($demande);
+        
+        // $numD=str_pad($demande->getId(), 8, '0', STR_PAD_LEFT);
+        // $demande->setNumero($numD);
+        // $demandeRepo->add($demande);
+
+        return $this->redirectToRoute('app_installation_add6', array('id' => $installation_new->getId())); 
+    }
+
+    #[Route('/{id}/addfromE/{idE}', name: 'app_installation_addfromE', methods: ['GET', 'POST'])]
+    public function newfromE(Request $request, Electricien $idE, InstallationRepository $installationRepository, ElectricienRepository $electricienRepo): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $electricien=$electricienRepo->find($idE);
+        $installation = new Installation();
+        $installation->setElectricien($electricien);
+        $installation->setLocalite($electricien->getLocalite());
+        $installation->setStep(4);
+        $installation->setCreatedby($this->getUser()->getId());
+        $installation->setEtat("En Saisie 4/6"); 
+        $installation->setUsages("domestique");
+        $installationRepository->add($installation);
+
+        return $this->redirectToRoute('app_installation_add', array('id' => $installation->getId())); 
+    }
+
+    #[Route('/{id}/add', name: 'app_installation_add', methods: ['GET', 'POST'])]
+    public function new(Request $request, ManagerRegistry $doctrine, Installation $installation = null, InstallationRepository $installationRepository, DepartementRepository $departRepo, RegionRepository $regionRepo, LocaliteRepository $localiteRepo): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
         if($installation==null) {
             $installation = new Installation();
         } else {
@@ -371,6 +513,17 @@ class InstallationController extends AbstractController
             ],
             'mapped' => false,
             'class' => Region::class,
+            'query_builder' => function (RegionRepository $er) use ($agence) {
+                if($agence) {
+                    return $er->createQueryBuilder('r')
+                    ->leftJoin('App\Entity\Departement', 'd', 'WITH', 'd.region = r.id') 
+                    ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
+                    ->where('l.agence = :val') 
+                    ->setParameter('val', $agence);
+                } else {
+                    return $er->createQueryBuilder('r');
+                }
+            },
             'choice_label' => 'nom',
             'data' => $o_region,
             'label' => 'Région',
@@ -383,10 +536,19 @@ class InstallationController extends AbstractController
             'mapped' => false,
             'class' => Departement::class,
             'data' => $o_departement,
-            'query_builder' => function (DepartementRepository $er) use ($o_region) {
-                return $er->createQueryBuilder('l')
-                ->where('l.region = :val') 
-                ->setParameter('val', $o_region!=null?$o_region:null);
+            'query_builder' => function (DepartementRepository $er) use ($o_region, $agence) {
+                if($agence) {
+                    return $er->createQueryBuilder('d')
+                    ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
+                    ->where('l.agence = :val') 
+                    ->andWhere('d.region = :val2') 
+                    ->setParameter('val', $agence)
+                    ->setParameter('val2', $o_region!=null?$o_region:null);
+                } else {
+                    return $er->createQueryBuilder('d')
+                    ->where('d.region = :val') 
+                    ->setParameter('val', $o_region!=null?$o_region:null);
+                }
             },
             'choice_label' => 'nom',
             'label' => 'Département',
@@ -398,10 +560,18 @@ class InstallationController extends AbstractController
             ],
             'class' => Localite::class,
             'data' => $o_localite,
-            'query_builder' => function (LocaliteRepository $er) use ($o_departement) {
-                return $er->createQueryBuilder('l')
-                ->where('l.departement = :val') 
-                ->setParameter('val', $o_departement!=null?$o_departement:null);
+            'query_builder' => function (LocaliteRepository $er) use ($o_departement, $agence) {
+                if($agence) {
+                    return $er->createQueryBuilder('l')
+                    ->where('l.departement = :val') 
+                    ->andWhere('l.agence = :val2') 
+                    ->setParameter('val', $o_departement!=null?$o_departement:null)
+                    ->setParameter('val2', $agence);
+                } else {
+                    return $er->createQueryBuilder('l')
+                    ->where('l.departement = :val') 
+                    ->setParameter('val', $o_departement!=null?$o_departement:null);
+                }
             },
             'choice_label' => 'nom',
             'label' => 'Localité',
@@ -421,6 +591,7 @@ class InstallationController extends AbstractController
             'required' => false,
             'label' => 'Complément Adresse'
         ])
+/*
         ->add('lattitude', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
@@ -459,6 +630,7 @@ class InstallationController extends AbstractController
             'required' => false,
             'label' => 'Longitude'
         ])
+        */
         ->add('usages', ChoiceType::class, [
                 'required' => true,
                 'attr' => [
@@ -613,6 +785,11 @@ class InstallationController extends AbstractController
     #[Route('/{id}/add2', name: 'app_installation_add2', methods: ['GET', 'POST'])]
     public function new2(Request $request, Installation $installation, InstallationRepository $installationRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $installation=$installationRepository->find($installation);
         // $form = $this->createForm(InstallationType::class, $installation);
         $val_collectif=false; if($installation->getCollectif()) { $val_collectif=true; }
@@ -711,6 +888,11 @@ class InstallationController extends AbstractController
     #[Route('/{id}/add3', name: 'app_installation_add3', methods: ['GET', 'POST'])]
     public function new3(Request $request, Installation $installation, InstallationRepository $installationRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $installation=$installationRepository->find($installation);
         $val_typeinstall=$installation->getTypeInstallation();
         // $form = $this->createForm(InstallationType::class, $installation);
@@ -832,7 +1014,13 @@ class InstallationController extends AbstractController
     #[Route('/{id}/add4', name: 'app_installation_add4', methods: ['GET', 'POST'])]
     public function new4(Request $request, Installation $installation, InstallationRepository $installationRepository, SluggerInterface $slugger, ElectricienRepository $electricienRepository, PieceJointeRepository $pjRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $installation=$installationRepository->find($installation);
+        $ok_elec=0;
         if($installation->getElectricien()) { 
             $electricien=$electricienRepository->find($installation->getElectricien()->getId());
         } else {
@@ -842,6 +1030,8 @@ class InstallationController extends AbstractController
                 if($resrech_electricien) {
                     $this->addFlash("success", "Un électricien répondant au critère ($rech_electricien) trouvé et chargé !");
                     $electricien=$resrech_electricien;
+                    $installation->setElectricien($electricien);
+                    $ok_elec=1;
                 } else {
                     $this->addFlash("danger", "Aucun électricien répondant au critère ($rech_electricien) trouvé !");
                     $electricien = new Electricien();
@@ -861,7 +1051,7 @@ class InstallationController extends AbstractController
                 'required' => false,
                 'constraints' => [
                     new ConstraintsFile([
-                        'maxSize' => '4M',
+                        'maxSize' => '5M',
                         'mimeTypes' => [
                             'image/*',
                             'application/pdf'
@@ -921,6 +1111,11 @@ class InstallationController extends AbstractController
     #[Route('/{id}/add5', name: 'app_installation_add5', methods: ['GET', 'POST'])]
     public function new5(Request $request, Installation $installation, InstallationRepository $installationRepository, SluggerInterface $slugger, ProprietaireRepository $proprietaireRepository, PieceJointeRepository $pjRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $proprietaire = new Proprietaire();
         $installation=$installationRepository->find($installation);
         if($installation->getProprietaire()) { 
@@ -1055,6 +1250,11 @@ class InstallationController extends AbstractController
     #[Route('/{id}/add6', name: 'app_installation_add6', methods: ['GET', 'POST'])]
     public function new6(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository, MailerInterface $mailer): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $demande = new Demande();
         $installation=$installationRepository->find($installation);
 
@@ -1101,25 +1301,37 @@ class InstallationController extends AbstractController
                 if ( ($val_puissance>6) && ($val_puissance<=17) ) $result="150000";
                 if ($val_puissance>17)  $result="250000";
             } 
+            if($demande->getDemandeParente()) {
+                $result=$result*80/100;
+                $demande->setNumeroPassage(2);
+            }
             $demande->setCout($result);
             $demande->setNumero($numD);
             $demandeRepository->add($demande);
             $installationRepository->add($installation);
             $this->addFlash("success", "La demande a été soumise sous le numero $numD ! Le montant à payer est de ".number_format($demande->getCout(), 0, ""," ")." FCFA");
             
-            // generate an email 
-            $email = (new Email())
-            ->from('yatamala.net@gmail.com')
-            ->to($installation->getElectricien()->getEmail())
-            ->cc($installation->getProprietaire()->getEmail())
-            //->bcc('bcc@example.com')
-            //->replyTo('fabien@example.com')
-            //->priority(Email::PRIORITY_HIGH)
-            ->subject('Demande COSSUEL soumise !')
-            ->text('Votre demande a été enregistrée et soumise à COSSUEL !')
-            ->html('<p>Votre demande a été enregistrée et soumise à COSSUEL !</p><p>Numéro: '.$demande->getNumero().'</p> </p><p>Montant à payer: '.number_format($demande->getCout(), 0, ""," ").' FCFA</p>');
+            if($installation->getElectricien()->getEmail() || $installation->getElectricien()->getEmail()) {
+                // generate an email 
+                $email = (new Email())
+                // ->from('alert@cossuel.sn');
+                ->from('yatamala.net@gmail.com');
+                if($installation->getElectricien()->getEmail()) {
+                    $email->to($installation->getElectricien()->getEmail());
+                }
+                if($installation->getProprietaire()->getEmail()) {
+                    $email->cc($installation->getProprietaire()->getEmail());
+                }
+                //->bcc('bcc@example.com')
+                //->replyTo('fabien@example.com')
+                //->priority(Email::PRIORITY_HIGH)
+                $email
+                ->subject('Demande COSSUEL soumise !')
+                ->text('Votre demande a été enregistrée et soumise à COSSUEL !')
+                ->html('<p>Votre demande a été enregistrée et soumise à COSSUEL !</p><p>Numéro: '.$demande->getNumero().'</p> </p><p>Montant à payer: '.number_format($demande->getCout(), 0, ""," ").' FCFA</p>');
 
-            $mailer->send($email);
+                // $mailer->send($email);
+            }
         
             return $this->redirectToRoute('app_installation_show', array('id' => $installation->getId())); 
         }
@@ -1133,8 +1345,13 @@ class InstallationController extends AbstractController
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
     public function show(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager(); $tools = new Tools($em);
-        if($installation->getStep()<=7) {
+        if($installation->getStep()<=7 || !$installation->getDemandeCourante()->getPaiement()) {
             return $this->render('installation/show.html.twig', [
                 'installation' => $installation,
 
@@ -1151,16 +1368,24 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/pop/{id}', name: 'app_installation_showpop', methods: ['GET'])]
-    public function showpop(Installation $installation, PaiementRepository $paiementRepository): Response
+    public function showpop(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
     {
-        if($installation->getStep()<=7) {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        if($installation->getStep()<=7 || !$installation->getDemandeCourante()->getPaiement()) {
             return $this->render('installation/showpop.html.twig', [
                 'installation' => $installation,
+                'tools'=> $tools,
             ]);
         } elseif($installation->getDemandeCourante()) {
             $paiement = $installation->getDemandeCourante()->getPaiement();
             return $this->render('paiement/showpop.html.twig', [
                 'paiement' => $paiement,
+                'tools'=> $tools,
             ]);
         }
     }
@@ -1183,18 +1408,38 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_installation_delete', methods: ['POST'])]
-    public function delete(Request $request, Installation $installation, InstallationRepository $installationRepository): Response
+    public function delete(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         if ($this->isCsrfTokenValid('delete'.$installation->getId(), $request->request->get('_token'))) {
-            $installationRepository->remove($installation);
+            if($installation->getDemandeCourante() && $installation->getDemandeCourante()->getNumeroPassage()==2) {
+                $demande=$demandeRepository->find($installation->getDemandeCourante()->getId());
+                $demandeRepository->remove($demande);
+            } else {
+                if($installation->getDemandeCourante()) {
+                    $demande=$demandeRepository->find($installation->getDemandeCourante()->getId());
+                    $demandeRepository->remove($demande);
+                }                
+                $installationRepository->remove($installation);
+            }
         }
 
-        return $this->redirectToRoute('app_installation_index', [], Response::HTTP_SEE_OTHER);
+        
+        return $this->redirectToRoute($request->getSession()->get('page_liste_demande'), [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/showpdf0', name: 'app_installation_showpdf0', methods: ['GET'])]
     public function showpdf0(Request $request, Installation $installation)
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
         // $pdfOptions->set('defaultFont', 'Courier');
@@ -1242,6 +1487,11 @@ class InstallationController extends AbstractController
     #[Route('/{id}/showpdf', name: 'app_installation_showpdf', methods: ['GET'])]
     public function showpdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('installation/showpdf.html.twig', [
             'installation' => $installation,
@@ -1282,6 +1532,10 @@ class InstallationController extends AbstractController
     #[Route('/{id}/facturepdf', name: 'app_installation_facturepdf', methods: ['GET'])]
     public function facturepdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
         
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('installation/facturepdf.html.twig', [
@@ -1320,6 +1574,10 @@ class InstallationController extends AbstractController
     #[Route('/{id}/recupdf', name: 'app_installation_recupdf', methods: ['GET'])]
     public function recupdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
         
         // Retrieve the HTML generated in our twig file
         $html = $this->renderView('installation/recupdf.html.twig', [

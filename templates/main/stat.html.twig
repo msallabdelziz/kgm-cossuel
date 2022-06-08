@@ -5,7 +5,24 @@
 {% block body %}
 	{% if app.user and app.user.isverified %}
 		<!-- ========== title-wrapper start ========== -->
-		<div class="title-wrapper pt-0">
+		<div class="title-wrapper pt-10">
+
+			<ul class="nav nav-tabs mb-4 border-bottom border-dark border-2">
+				<li class="nav-item bg-warning mx-1 rounded-top mb-0 mt-1">
+					<a class="nav-link text-dark" aria-current="page" href="{{ path('main', {'dash_page': 'perso'}) }}">Mon espace personnel</a>
+				</li>
+				{% if  app.user.roles[0] != "ROLE_PUBLIC" %}
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_dem'}) }}">Statistiques sur les demandes</a>
+				</li>
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_paye'}) }}">Statistiques sur les paiements</a>
+				</li>
+				<li class="nav-item bg-dark rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link fw-bold text-light" href="{{ path('stat') }}">Consultation des demandes</a>
+				</li>
+				{% endif %}
+			</ul>
 
 			{# {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_PUBLIC') %} #}
 			{% if is_granted('ROLE_USER') %}
@@ -138,9 +155,21 @@
 								{% if dossier %}
 									{% set link = 'app_dossier_showpop' %}
 									{% set id_ent = dossier.id %}
-									{% set etat = 'En attente ' ~ dossier.etat %}
+									{% set etat = dossier.etat %}
+									{% if not dossier.attestation %}
+										{% set etat = 'En attente ' ~ dossier.etat %}
+									{% endif %}
 									{% set label_etat = 'success' %} 
+
+									{% if dossier.attestation %}
+										{% if dossier.visiteCourante and dossier.visiteCourante.conclusion %}
+											{% set label_etat = " bg-vertf bg-success p-1" %}
+										{% else %}
+											{% set label_etat = " bg-danger p-1" %}
+										{% endif %}
+									{% endif %}
 								{% endif %}
+
 									<span class="fs-8 badge badge-{{label_etat}}">{{ etat }}</span>
 							</td>
 							<td align="right">
@@ -165,6 +194,10 @@
 					{% endfor %}
 				</tbody>
 				</table>
+
+					{% do les_demande.setPageRange(1)%}
+					{{ knp_pagination_render(les_demande, 'pagination.html.twig')}}
+
 				{% endif %}
 					</div>
 

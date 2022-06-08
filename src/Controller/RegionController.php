@@ -20,6 +20,11 @@ class RegionController extends AbstractController
      */
     public function index(Request $request, RegionRepository $regionRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'localite');
         $request->getSession()->set('sousmenu', '');
@@ -33,6 +38,11 @@ class RegionController extends AbstractController
      */
     public function add(Request $request, RegionRepository $regionRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $region = new Region();
         $form = $this->createForm(RegionFormType::class, $region);
         $form->handleRequest($request);
@@ -54,6 +64,11 @@ class RegionController extends AbstractController
      */
     public function edit(Request $request, Region $region, RegionRepository $regionRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $region = $regionRepository->find($region->getId());
         $form = $this->createForm(RegionFormType::class, $region);
         $form->handleRequest($request);
@@ -76,6 +91,11 @@ class RegionController extends AbstractController
      */
     public function show(Region $region, RegionRepository $regionRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         return $this->render('region/show.html.twig', [
             'les_region' => $regionRepository->findBy([],['code'=>'asc']),
             'region' => $region,

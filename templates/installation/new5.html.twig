@@ -82,7 +82,7 @@
                                                     <svg class="bi" width="24" height="24" fill="gray">
                                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
                                                     </svg>
-                                                    <span class="text-success pt fs-8">{{installation.PJElectricien.fichier}} </span>
+                                                    <span class="text-success pt fs-8">{{installation.PJProprietaire.fichier}} </span>
                                                     <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj1').show()">
                                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
                                                     </svg>
@@ -100,8 +100,12 @@
                                             {{ form_row(installationForm.pj1) }}
                                         </div>
                                         <div></div>
-                                        <div class="col-lg-4">
-                                            <label for="">PJ Dossier Technique</label>
+                                        <div class="col-lg-4 bloc_pj2">
+                                        {% set lib_pj = "Dossier Technique" %}
+                                        {% if installation.usages == "domestique" %}
+                                            {% set lib_pj = "Titre de proprièté" %}
+                                        {% endif %}
+                                            <label for="">PJ {{ lib_pj }}</label>
                                             {% if installation.PJDossierTechnique %}
                                                 <div class="form-control">
                                                     <svg class="bi" width="24" height="24" fill="gray">
@@ -121,7 +125,7 @@
                                                 </div>
                                             {% endif %}
                                         </div>
-                                        <div class="col-lg-8 z_pj2">
+                                        <div class="col-lg-8 z_pj2 bloc_pj2">
                                             {{ form_row(installationForm.pj2) }}
                                         </div>
                                     </div>
@@ -145,7 +149,33 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-        $('.z_pj1').hide(); $('.z_pj2').hide();
+        $('.z_pj1').hide(); $('.z_pj2').hide(); 
+        {% if installation.usages !="domestique" %} $('.bloc_pj2').show(); $('.z_pj2').hide();  {% endif %}
+        
+        $("#proprietaire_numPiece").keydown(function(e) {
+            type_p=$("#proprietaire_typePiece option:selected").val();
+            val_num=$("#proprietaire_numPiece").val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=15
+            if(type_p=="CNI") {
+                var test = /[0-9\b]/; //regex
+                $("#proprietaire_numPiece").val($("#proprietaire_numPiece").val().replace(/[a-zA-Z]/g,''));
+                val_num=$("#proprietaire_numPiece").val().replace(/ /g,'').length;
+                nb_max=13
+            } else {
+                var test = /[a-zA-Z0-9\b]/; //regex
+            }
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+
         $("#telephone_proprietaire").keydown(function(event){
             if(event.keyCode == 13) {
                 $("#rech_proprietaire").val($("#telephone_proprietaire").val());

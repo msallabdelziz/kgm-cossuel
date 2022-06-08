@@ -108,16 +108,16 @@
                         <div class="wrapper">
                             <ul class="sessions" align="left">
                                 <li>
-                                    <div class="time">{{ installation.createdAt | date('d-m-Y à H:i:s') }}
+                                    <div class="time">{{ demande.createdAt | date('d-m-Y à H:i:s') }}
                                     </div>
                                     <p class="fw-light fs-7">
                                         <svg class="bi" width="24" height="24" fill="black">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
                                         </svg>
                                         Création de la demande</p>
-                                    {% if installation.createdBy %}
+                                    {% if demande.createdBy %}
                                         <div class="float-end fw-light fs-8">
-                                            {{ tools.getUtilisateur(installation.createdBy).nomComplet}}
+                                            {{ tools.getUtilisateur(demande.createdBy).nomComplet}}
                                             <svg class="bi" width="16" height="16" fill="green">
                                                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
                                             </svg>
@@ -127,7 +127,7 @@
                                 </li>
                                 <li>
                                     <div class="time">{{ demande.dateCreation | date('d-m-Y à H:i:s') }}</div>
-                                    <p class="delai" >{{ tools.nbjours_entre((installation.createdAt | date('d-m-Y')), (demande.dateCreation | date('d-m-Y'))) }} j</p>
+                                    <p class="delai" >{{ tools.nbjours_entre((demande.createdAt | date('d-m-Y')), (demande.dateCreation | date('d-m-Y'))) }} j</p>
                                     <p class="fw-light fs-7">
                                         <svg class="bi" width="24" height="24" fill="black">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
@@ -204,15 +204,40 @@
                                             <div class="clear mb-2"></div>
                                         {% endif %}
                                 </li>
+                                {% for vv in dossier.visites %}
+                                    {% if vv.id != dossier.visiteCourante.id %}
+                                    <li>
+                                        <div class="time">{{ vv.createdAt | date('d-m-Y à H:i:s') }}</div>
+                                        <p class="delai" >{{ tools.nbjours_entre((dossier.dateCreation | date('d-m-Y')), (vv.createdAt | date('d-m-Y'))) }} j</p>
+                                        <p class="fw-light fs-7">
+                                            <svg class="bi" width="24" height="24" fill="black">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                            </svg>
+                                            Planification inspection installation <font style="font-size:11px; color:green">({{vv.datePlanifie|date('d/m/Y')}})</font> <br /><span style="font-size:11px; color:red">[Reporté]</span>
+                                            <span style="font-size:11px; font-style:italic; color:#900">{{vv.commentaire}}</span>
+                                            </p>
+                                            {% if vv.createdBy %}
+                                                <div class="float-end fw-light fs-8">
+                                                    {{ tools.getUtilisateur(vv.createdBy).nomComplet}}
+                                                    <svg class="bi" width="16" height="16" fill="green">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                    </svg>
+                                                </div>
+                                                <div class="clear mb-2"></div>
+                                            {% endif %}
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+
                                 {% if dossier.visiteCourante %}
                                 <li>
-                                    <div class="time">{{ dossier.visiteCourante.datePlanifie | date('d-m-Y à H:i:s') }}</div>
-                                    <p class="delai" >{{ tools.nbjours_entre((dossier.dateCreation | date('d-m-Y')), (dossier.visiteCourante.datePlanifie | date('d-m-Y'))) }} j</p>
+                                    <div class="time">{{ dossier.visiteCourante.createdAt | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((dossier.dateCreation | date('d-m-Y')), (dossier.visiteCourante.createdAt | date('d-m-Y'))) }} j</p>
                                     <p class="fw-light fs-7">
                                         <svg class="bi" width="24" height="24" fill="black">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
                                         </svg>
-                                        Planification inspection installation</p>
+                                        Planification inspection installation  <span style="font-size:11px; color:green">({{dossier.visiteCourante.datePlanifie|date('d/m/Y')}})</span></p>
                                         {% if dossier.visiteCourante.createdBy %}
                                             <div class="float-end fw-light fs-8">
                                                 {{ tools.getUtilisateur(dossier.visiteCourante.createdBy).nomComplet}}
@@ -271,7 +296,7 @@
                                         <svg class="bi" width="24" height="24" fill="black">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
                                         </svg>
-                                        Attestation des résultats de l'inspection</p>
+                                        Attestation et Cloture de la demande</p>
                                 </li>
                                 {% endif %}
                                 {% endif %}

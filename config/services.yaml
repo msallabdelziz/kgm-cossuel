@@ -29,4 +29,5 @@ services:
     App\Services\Tools:
         arguments: 
             $siteEmail: 'yatamala.net@gmail.com'
+            # $siteEmail: 'alert@cossuel.sn'
             $siteName: 'Notification COSSUEL'

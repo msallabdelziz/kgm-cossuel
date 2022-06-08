@@ -145,6 +145,19 @@ class Installation
         return $this->id;
     }
 
+    public function restId(): self
+    {
+       $this->id=null;
+       return $this;
+    }
+
+    public function restDemande(): self
+    {
+       $this->demande=null;
+       $this->demande = new ArrayCollection();
+       return $this;
+    }
+
     public function getEtat(): ?string
     {
         return $this->etat;
@@ -450,7 +463,7 @@ class Installation
         return $this->activite;
     }
 
-    public function setActivite(string $activite): self
+    public function setActivite(?string $activite): self
     {
         $this->activite = $activite;
 
@@ -462,7 +475,7 @@ class Installation
         return $this->niveau;
     }
 
-    public function setNiveau(string $niveau): self
+    public function setNiveau(?string $niveau): self
     {
         $this->niveau = $niveau;
 
@@ -474,7 +487,7 @@ class Installation
         return $this->habitation;
     }
 
-    public function setHabitation(string $habitation): self
+    public function setHabitation(?string $habitation): self
     {
         $this->habitation = $habitation;
 

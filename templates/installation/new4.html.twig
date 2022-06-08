@@ -91,6 +91,9 @@
                                             {% else %}
                                                 <div class="form-control">
                                                     <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                                    <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj').show()">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                    </svg>
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -118,7 +121,35 @@
 {% block javascripts %}
 <script>
     $(document).ready(function() {
-        $('.z_pj').hide()
+        $("#electricien_localite").prop('required',true);
+        $("#electricien_typePiece").prop('required',true);
+        $('.z_pj').hide();
+
+
+        $("#electricien_numPiece").keydown(function(e) {
+            type_p=$("#electricien_typePiece option:selected").val();
+            val_num=$("#electricien_numPiece").val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=15
+            if(type_p=="CNI") {
+                var test = /[0-9\b]/; //regex
+                $("#electricien_numPiece").val($("#electricien_numPiece").val().replace(/[a-zA-Z]/g,''));
+                val_num=$("#electricien_numPiece").val().replace(/ /g,'').length;
+                nb_max=13
+            } else {
+                var test = /[a-zA-Z0-9\b]/; //regex
+            }
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+
         $("#telephone_electricien").keydown(function(event){
             if(event.keyCode == 13) {
                 $("#rech_electricien").val($("#telephone_electricien").val());

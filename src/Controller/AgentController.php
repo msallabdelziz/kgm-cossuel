@@ -20,6 +20,7 @@ use App\Repository\AgentRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\UtilisateurRepository;
 use App\Services\Tools;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -27,8 +28,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AgentController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(Request $request, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
+    public function index(Request $request, PaginatorInterface $pgn, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'agent');
         $request->getSession()->set('sousmenu', '');
@@ -48,7 +54,7 @@ class AgentController extends AbstractController
             if($val_profil) { $val_filtre["profil"] = $val_profil; }
         }
         $ag = $agentRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
-
+        $ag= $pgn->paginate($ag, $request->query->getInt('page', 1), 20);
         return $this->render('agent/index.html.twig', [
             'les_agent' => $ag,
             'val_rech' => $val_rech,
@@ -65,6 +71,11 @@ class AgentController extends AbstractController
     #[Route('/add', name: 'add')]
     public function create(Request $request, ManagerRegistry $doctrine, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $entityManager = $doctrine->getManager();
         $agent = new Agent();
         $form = $this->createForm(AgentType::class, $agent);
@@ -131,6 +142,11 @@ class AgentController extends AbstractController
     #[Route('/update/{id}', name: 'edit')]
     public function update(AgentRepository $agentRepository, Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $agent = $agentRepository->find($id);
 
         $form = $this->createForm(AgentType::class, $agent);
@@ -182,6 +198,11 @@ class AgentController extends AbstractController
     #[Route('/affecter/{id}', name: 'affect')]
     public function affecter(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $les_agent = $agentRepository->findAll();
         $agent = $agentRepository->find($agent);
         $agaff = new AffectationsAgents();
@@ -221,6 +242,11 @@ class AgentController extends AbstractController
     #[Route('/show/{id}', name: 'show')]
     public function show(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         // $agent = $doctrine->getRepository(Agent::class)->find($agent);
         $les_agent = $agentRepository->findAll();
         if (!$agent) {
@@ -240,6 +266,11 @@ class AgentController extends AbstractController
     #[Route('/createuser/{id}', name: 'createuser')]
     public function createuser(Request $request, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $entityManager = $doctrine->getManager();
         $les_agent = $entityManager->getRepository(Agent::class)->findAll();
         $agent = $entityManager->getRepository(Agent::class)->find($agent);
@@ -287,6 +318,11 @@ class AgentController extends AbstractController
     #[Route('/delete/{id}', name: 'delete')]
     public function delete(ManagerRegistry $doctrine, int $id): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $entityManager = $doctrine->getManager();
         $ag = $entityManager->getRepository(Agent::class)->find($id);
         $entityManager->remove($ag);

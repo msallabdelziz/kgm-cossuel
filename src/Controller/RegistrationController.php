@@ -69,12 +69,14 @@ class RegistrationController extends AbstractController
                 $entityManager->flush();
                 $user->setIdType($electricien->getId());
             }
+            $user->setRoles(["ROLE_PUBLIC"]);
             $entityManager->persist($user);
             $entityManager->flush();
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
+                    // ->from(new Address('alert@cossuel.sn', 'COSSUEL - Inscription'))
                     ->from(new Address('yatamala.net@gmail.com', 'COSSUEL - Inscription'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
@@ -139,6 +141,7 @@ class RegistrationController extends AbstractController
         // generate a signed url and email it to the user
         $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
             (new TemplatedEmail())
+                // ->from(new Address('alert@cossuel.sn', 'COSSUEL - Inscription'))
                 ->from(new Address('yatamala.net@gmail.com', 'COSSUEL - Inscription'))
                 ->to($user->getEmail())
                 ->subject('Please Confirm your Email')

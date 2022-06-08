@@ -44,8 +44,8 @@ security:
         - { path: ^/agent, roles: [ROLE_ADMIN] }
         - { path: ^/electricien, roles: [ROLE_ACCUEIL] }
         - { path: ^/proprietaire, roles: [ROLE_ACCUEIL] }
-        - { path: ^/installation/soumission, roles: [ROLE_PUBLIC] }
-        - { path: ^/installation/paiement, roles: [ROLE_CAISSIER] }
+        - { path: ^/installation/soumission, roles: [ROLE_PUBLIC, ROLE_RFO] }
+        - { path: ^/installation/paiement, roles: [ROLE_CAISSIER, ROLE_COMPTABLE] }
         - { path: ^/installation/validation, roles: [ROLE_RFO] }
         - { path: ^/dossier/affectation, roles: [ROLE_REFERENT] }
         - { path: ^/dossier/visite, roles: [ROLE_CONTROLEUR] }
@@ -53,11 +53,11 @@ security:
         - { path: ^/utilisateur, roles: [ROLE_ADMIN] }
 
     role_hierarchy:
-            ROLE_ADMIN: ROLE_DAF, ROLE_REFERENT, ROLE_RFO, ROLE_ACCUEIL
+            ROLE_ADMIN: ROLE_DAF, ROLE_REFERENT, ROLE_RFO, ROLE_CONTROLEUR, ROLE_ACCUEIL
             ROLE_DAF: ROLE_COMPTABLE
             ROLE_COMPTABLE: ROLE_CAISSIER
             ROLE_ACCUEIL: ROLE_PUBLIC
-            ROLE_REFERENT: ROLE_CONTROLEUR
+            ROLE_REFERENT: ROLE_USER
             ROLE_CAISSIER: ROLE_USER
             ROLE_CONTROLEUR: ROLE_USER
             ROLE_RFO: ROLE_USER

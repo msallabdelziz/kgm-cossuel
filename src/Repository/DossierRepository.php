@@ -116,7 +116,9 @@ class DossierRepository extends ServiceEntityRepository
         $q = $this->createQueryBuilder('a');
         $q->select('a')
         ->join('App\Entity\Demande', 'c', 'WITH', 'a.demande = c.id')
-        ->join('App\Entity\Installation', 'b', 'WITH', 'c.installation = b.id');
+        ->join('App\Entity\Installation', 'b', 'WITH', 'c.installation = b.id')
+        ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = b.localite')
+        ;
         if($val_rech) {
             $q->andWhere($str)
             ->setParameter('val', '%'.$val_rech.'%');
@@ -136,7 +138,15 @@ class DossierRepository extends ServiceEntityRepository
 //                    elseif($v=="Demande Validée" || $v=="Validé") { $restr="c.etat='Demande validée'"; }
                     elseif($v=="Paiement enregistré" || $v=="Payé, En Attente confirmation Paiement" || $v=="En Attente confirmation Paiement") { $restr="c.etat='Paiement enregistré'"; }
                     elseif($v=="Paiement confirmé" || $v=="Payé" || $v=="En Attente Validation" || $v=="Payé, En Attente Validation") { $restr="c.etat='Paiement confirmé'"; }
+                    elseif($v=="Chez Controleur") { $restr="(a.affecte = 0 or a.visite = 0 or a.rapport = 0)"; }
+                    elseif($v=="Chez Controleur0") { $restr="(a.affecte = 1 and (a.visite = 0 or a.rapport = 0))"; }
+                    elseif($v=="Cloture") { $restr="(a.attestation = 1 and a.dateCloture is not null and a.cloture = 1)"; }
+                    elseif($v=="Clôturé - Conforme") { $restr="(a.cloture = 1 and a.conforme = 1)"; }
+                    elseif($v=="Clôturé - Non Conforme") { $restr="(a.cloture = 1 and a.conforme = 0)"; }
                     $q->andWhere($restr);
+                } elseif($p=="agence") {
+                    $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");

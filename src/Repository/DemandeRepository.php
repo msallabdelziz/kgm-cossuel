@@ -64,6 +64,7 @@ class DemandeRepository extends ServiceEntityRepository
 
         $q = $this->createQueryBuilder('a')
         ->leftjoin('App\Entity\Installation', 'i', 'WITH', 'i.id = a.installation')
+        ->leftjoin('App\Entity\Paiement', 'pm', 'WITH', 'pm.id = a.paiement')
         ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = i.localite')
         ->leftjoin('App\Entity\Electricien', 'e', 'WITH', 'e.id = i.electricien')
         ->leftjoin('App\Entity\Proprietaire', 'p', 'WITH', 'p.id = i.proprietaire')
@@ -82,6 +83,15 @@ class DemandeRepository extends ServiceEntityRepository
                     elseif($v=="Payé") $restr='i.step = 9';
                     elseif($v=="Validé") $restr='i.step = 10';
                     $q->andWhere($restr);
+                } elseif($p=="paiement_deb") {
+                    $q->andWhere('pm.datePaiement >= :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="mode_paiement") {
+                    $q->andWhere('pm.mode = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="paiement_fin") {
+                    $q->andWhere('pm.datePaiement <= :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
                 } elseif($p=="agence") {
                     $q->andWhere('l.'.$p.' = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
@@ -110,6 +120,8 @@ class DemandeRepository extends ServiceEntityRepository
         ->leftjoin('App\Entity\Installation', 'i', 'WITH', 'i.id = a.installation')
         ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = i.localite')
         ->leftjoin('App\Entity\Dossier', 'd', 'WITH', 'd.demande = a.id')
+        ->leftjoin('App\Entity\Paiement', 'p', 'WITH', 'p.demande = a.id')
+        ->leftjoin('App\Entity\Visite', 'v', 'WITH', 'v.dossier = d.id')
         ;
         if(is_array($val_filtre) && count($val_filtre)) {
             $ix=0;

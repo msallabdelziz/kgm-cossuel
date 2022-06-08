@@ -25,6 +25,7 @@
     </style>
     {% set link_action = "" %}
     {% set paiement = dossier.demande.paiement %}
+    {% set action_demande = "Consultation " %}
     {% if not dossier.affecte %}
         {% set action_demande = "Affectation" %}
         {% if is_granted('ROLE_REFERENT') %}
@@ -56,10 +57,11 @@
     {% set link_liste = 'stat' %}
     
     <section class="container-fluid">
-        <a data-bs-dismiss="modal" class="float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+        <a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/installation" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de dossiers </span>
+                <a href="{{ path('app_dossier_show', {'id': dossier.id}) }}" class="next action-button btn btn-success btn my-0 ms-5">Gestion du dossier ...</a>
             </a>
         </header>
 
@@ -74,7 +76,12 @@
                                 Détails du dossier
                             </div>
                             <div class="col" align="right">
-                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                                <span class="text-success">
+                                [
+                                {% if not dossier.attestation %}
+                                    En attente de 
+                                {% endif %}
+                                {{ dossier.Etat }}]</span>
                             </div>
                         </div>
 
@@ -86,7 +93,7 @@
             <div class="col-lg-8 mb-2">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
-                        <h2 class="fs-title text-black">Puissance demandée et tarif</h2>
+                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                         <div class="row bloc_0">
                             <hr class="mb-3" />
                             <div class="col-lg-3">
@@ -385,7 +392,7 @@
             <div class="col-lg-4 mb-2" id="paiement_demande">
                 {% if tools.getUtilisateur(installation.createdBy) %}
                     {% set creator = tools.getUtilisateur(installation.createdBy) %}
-                    <div align="left" class="border border-warning shadow p-2 fs-8 fw-light">
+                    <div align="left" class="border border-warning shadow p-2 fs-8 mb-3 fw-light">
                         <div><label class="text-warning">Créée par:</label> <span class="">{{creator.nomComplet}}</span></div>
                         <div><label class="text-warning">Créée le:</label> <span class="">{{installation.createdAt|date("d-m-Y à H:i:s")}}</span></div>
                     </div>
@@ -454,7 +461,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    {% set demande = paiement.demande %}
+    {% set demande = dossier.demande %}
+    {% set paiement = demande.paiement %}
     {% set installation = demande.installation %}
 <script>
     $(document).ready(function() {

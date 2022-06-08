@@ -42,6 +42,12 @@ class Dossier
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $attestation = false;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $cloture;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $conforme;
+
     #[ORM\OneToOne(targetEntity: Demande::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private $demande;
@@ -61,8 +67,8 @@ class Dossier
     public function __construct()
     {
         $this->created_by = "";
-        $this->affecte = false;
         $this->created_at = new \DateTimeImmutable();
+        $this->affecte = false;
         $this->visites = new ArrayCollection();
     }
 
@@ -112,7 +118,7 @@ class Dossier
         return $this->dateAffecte;
     }
 
-    public function setDateAffecte(\DateTimeInterface $dateAffecte): self
+    public function setDateAffecte(?\DateTimeInterface $dateAffecte): self
     {
         $this->dateAffecte = $dateAffecte;
 
@@ -164,6 +170,28 @@ class Dossier
     {
         $this->attestation = $attestation;
 
+        return $this;
+    }
+
+    public function getCloture(): ?bool
+    {
+        return $this->cloture;
+    }
+
+    public function setCloture(bool $cloture): self
+    {
+        $this->cloture = $cloture;
+        return $this;
+    }
+
+    public function getConforme(): ?bool
+    {
+        return $this->conforme;
+    }
+
+    public function setConforme(bool $conforme): self
+    {
+        $this->conforme = $conforme;
         return $this;
     }
 
@@ -270,6 +298,7 @@ class Dossier
         }
         elseif($this->affecte == true && $this->visite == true && $this->rapport == true && $this->attestation == true) {
             $etat = "Clôturé";
+            $etat.=($this->getVisiteCourante()->getConclusion())?" - Conforme":" - Non Conforme";
         }
         return $etat;
     }

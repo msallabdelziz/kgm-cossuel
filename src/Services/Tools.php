@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Agent;
 use App\Entity\Demande;
 use App\Entity\Dossier;
 use App\Entity\Installation;
@@ -123,8 +124,18 @@ class Tools
 
     public function getAgentUtilisateur(string $id): ?Utilisateur {
         $res = null;
-        $res= $this->em->getRepository(Utilisateur::class)->findOneBy(array("type"=>"agent", "id_type"=>$id));
+        $res= $this->em->getRepository(Utilisateur::class)->findOneBy(array("type"=>"Agent", "id_type"=>$id));
         return $res;
+    }
+
+    public function getUtilisateurAgent(string $id): ?Agent {
+        $res = null;
+        $user= $this->em->getRepository(Utilisateur::class)->find($id);
+        $agent = null;
+        if($user && $user->getType()=="Agent") {
+            $agent= $this->em->getRepository(Agent::class)->find($user->getIdType());
+        }
+        return $agent;
     }
 
     public function getUtilisateur(string $id): ?Utilisateur {
@@ -219,5 +230,90 @@ class Tools
         return true;
     }
 
-
+    public function vgraph_d3($id_div, $titre_graph, $label=null, $data=null) {
+        global $les_coul;
+        echo '
+        <script language="javascript">
+        var pie_'.$id_div.' = new d3pie("'.$id_div.'", {
+            "header": {
+                "title": {
+                    "text": "'.$titre_graph.'",
+                    "fontSize": 16,
+                    "font": "verdana"
+                },
+            },
+            "size": {
+                "canvasWidth": 350,
+                "canvasHeight": 150,
+                "pieOuterRadius": "70%"
+            },
+            "data": {
+                "content": [';
+        for($i=0;$i<count($data)-1; $i++) {
+            $coul=$les_coul[$i];
+            echo '
+                    {
+                        "label": "'.$label[$i].'",
+                        "value": '.$data[$i].',
+                        "color": "'.$coul.'"
+                    },';
+        }
+        $coul=$les_coul[$i];
+        echo '
+                    {
+                        "label": "'.$label[$i].'",
+                        "value": '.$data[$i].',
+                        "color": "'.$coul.'"
+                    }';
+        echo '
+                ]
+            },
+            "labels": {
+                "outer": {
+                    "pieDistance": 12
+                },
+                "inner": {
+    //				"format": "percentage"
+                    "format": "none"
+                },
+                "mainLabel": {
+                    "font": "verdana"
+                },
+                "percentage": {
+                    "color": "#e1e1e1",
+                    "font": "verdana",
+                    "decimalPlaces": 1
+                },
+                "value": {
+                    "color": "#e1e1e1",
+                    "font": "verdana"
+                },
+                "lines": {
+                    "enabled": true,
+                    "color": "#cccccc"
+                },
+                "truncation": {
+                    "enabled": true
+                },
+            },
+            "tooltips": {
+                "enabled": true,
+                "type": "placeholder",
+                "string": "{label}, {value}, {percentage}%"
+            },
+            "legend": {
+                "enabled": true,
+            },
+            "effects": {
+                "pullOutSegmentOnClick": {
+                    "effect": "linear",
+                    "speed": 600,
+                    "size": 8
+                }
+            }
+        });
+        </script>
+        ';
+    }
+    
 }

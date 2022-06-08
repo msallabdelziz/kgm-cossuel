@@ -33,6 +33,16 @@ class LocaliteController extends AbstractController
      */
     public function load(Request $request, DepartementRepository $departementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+        }
+
         $departement = null;
         if($request->request->get("departement")) {
             $id_departement = $request->request->get("departement");
@@ -46,10 +56,18 @@ class LocaliteController extends AbstractController
             'mapped' => false,
             'data' => null,
             'class' => Localite::class,
-            'query_builder' => function (LocaliteRepository $er) use ($departement) {
-                return $er->createQueryBuilder('l')
-                ->where('l.departement = :val') 
-                ->setParameter('val', $departement);
+            'query_builder' => function (LocaliteRepository $er) use ($departement, $agence) {
+                if($agence) {
+                    return $er->createQueryBuilder('l')
+                    ->where('l.departement = :val') 
+                    ->andWhere('l.agence = :val2') 
+                    ->setParameter('val', $departement)
+                    ->setParameter('val2', $agence);
+                } else {
+                    return $er->createQueryBuilder('l')
+                    ->where('l.departement = :val') 
+                    ->setParameter('val', $departement);
+                }
             },
             'choice_label' => 'nom',
             'label' => 'Localité',
@@ -68,6 +86,11 @@ class LocaliteController extends AbstractController
      */
     public function add(Request $request, Departement $departement, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $localite = new Localite();
         $form = $this->createForm(LocaliteFormType::class, $localite);
         $form->handleRequest($request);
@@ -90,6 +113,11 @@ class LocaliteController extends AbstractController
      */
     public function edit(Localite $localite, Request $request, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $localite = $localiteRepository->find($localite->getId());
         $form = $this->createForm(LocaliteFormType::class, $localite);
         $form->handleRequest($request);

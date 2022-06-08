@@ -323,6 +323,20 @@ class Agent
     /**
      * @return Collection<int, Dossier>
      */
+    public function getDossierActifReferent(): Collection
+    {
+        $les_dossier=new ArrayCollection();
+        foreach($this->dossierReferent as $doss) {
+            if(!$doss->getAttestation()) {
+                $les_dossier->add($doss);
+            }
+        }
+        return $les_dossier;
+    }
+
+    /**
+     * @return Collection<int, Dossier>
+     */
     public function getDossierReferent(): Collection
     {
         return $this->dossierReferent;
@@ -358,6 +372,20 @@ class Agent
         return $this->dossierControleur;
     }
 
+    /**
+     * @return Collection<int, Dossier>
+     */
+    public function getDossierActifControleur(): Collection
+    {
+        $les_dossier=new ArrayCollection();
+        foreach($this->dossierControleur as $doss) {
+            if(!$doss->getAttestation()) {
+                $les_dossier->add($doss);
+            }
+        }
+        return $les_dossier;
+    }
+
     public function addDossierControleur(Dossier $dossier): self
     {
         if (!$this->dossierControleur->contains($dossier)) {
@@ -386,6 +414,20 @@ class Agent
     public function getDossierRFO(): Collection
     {
         return $this->dossierRFO;
+    }
+
+    /**
+     * @return Collection<int, Dossier>
+     */
+    public function getDossierActifRFO(): Collection
+    {
+        $les_dossier=new ArrayCollection();
+        foreach($this->dossierRFO as $doss) {
+            if(!$doss->getAttestation()) {
+                $les_dossier->add($doss);
+            }
+        }
+        return $les_dossier;
     }
 
     public function addDossierRFO(Dossier $dossier): self

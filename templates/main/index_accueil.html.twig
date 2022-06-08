@@ -6,19 +6,24 @@
 
 	{% if app.user and app.user.isverified %}
 		<!-- ========== title-wrapper start ========== -->
-		<div class="title-wrapper pt-10">
+		<div class="title-wrapper pt-10 accordion" id="accordionExample">
 			<div class="row m-1 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances personnelles</h5>
+					<div class="accordion-item">
+					<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+						<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances</h5>
+					</button>
+				</div>
 			</div>
+			<div id="collapseOne" class="accordion-collapse collapse show card" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
 			<div class="row">
 				<div class="col-md-3 mt-2">
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande ;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["All"]["user_"~app.user.id] is defined  %}
-										{{ mes_stat["All"]["user_"~app.user.id] }}
+									{% if  mes_stat["Demande Soumise"]["user_"~app.user.id] is defined  %}
+										{{ mes_stat["Demande Soumise"]["user_"~app.user.id] }}
 									{% else %}
 										0
 									{% endif %}
@@ -33,10 +38,10 @@
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande Domestique;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Domestique"]["user_"~app.user.id] is defined  %}
-										{{ mes_stat["Domestique"]["user_"~app.user.id] }}
+									{% if  mes_stat["Demande Domestique"]["user_"~app.user.id] is defined  %}
+										{{ mes_stat["Demande Domestique"]["user_"~app.user.id] }}
 									{% else %}
 										0
 									{% endif %}
@@ -51,10 +56,10 @@
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande Professionnelle;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
-									{% if  mes_stat["Professionnelle"]["user_"~app.user.id] is defined  %}
-										{{ mes_stat["Professionnelle"]["user_"~app.user.id] }}
+									{% if  mes_stat["Demande Professionnelle"]["user_"~app.user.id] is defined  %}
+										{{ mes_stat["Demande Professionnelle"]["user_"~app.user.id] }}
 									{% else %}
 										0
 									{% endif %}
@@ -69,7 +74,7 @@
 					<div class="card bg-bleuf2 p-2 card-stat">
 						<div class="un-stat d-flex">
 							<div class="">
-								<p class="mb-1 pt">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
 									<span class="number mb-0 fs-7 badge badge-warning">
 									{% if  mes_stat["ERP - ERT"]["user_"~app.user.id] is defined  %}
 										{{ mes_stat["ERP - ERT"]["user_"~app.user.id] }}
@@ -84,11 +89,18 @@
 					</div>
 				</div>
 			</div>
+			</div>
+
 			<hr class="border-bottom border-secondary border-2" />
 
-			<div class="row m-1 mt-4 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage</h5>
+			<div class="row m-1 mt-4 pt-2 accordion-item">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+					<a class="row m-1 mt-4 pt-2" data-bs-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="false" aria-controls="collapseExample">
+						<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage et passage visite</h5>
+					</a>
+				</button>
 			</div>
+			<div id="collapseTwo" class="accordion-collapse collapse card" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
 			<div class="row">
 				<div class="col-md-4 mt-2">
 					<div class="card bg-dark p-2 card-stat">
@@ -143,11 +155,41 @@
 								</div>
 							</div>
 						</div>
+						
 					</div>
 				</div>
+
+				<div class="row mt-4">
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '1ère visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["1ère visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 1ère visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '2e visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["2e visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 2e visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+
 				<!-- end col -->
 				<div class="row m-1 mt-4 pt-2">
-					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par niveau de traitement</h5>
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par état de traitement</h5>
 				</div>
 				<!-- end col -->
 				
@@ -172,6 +214,7 @@
 					</div>
 					{% set ix = ix+1 %}
 				{% endfor %}
+			</div>
 			</div>
 			<!-- end row -->
 

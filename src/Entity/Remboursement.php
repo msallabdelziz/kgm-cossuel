@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\createdAtTrait;
 use App\Repository\RemboursementRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RemboursementRepository::class)]
 class Remboursement
 {
+
+    use createdAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -16,22 +20,66 @@ class Remboursement
     #[ORM\Column(type: 'date')]
     private $dateDemande;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateValidation;
 
     #[ORM\Column(type: 'integer')]
     private $montant;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $motif;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $motifRejet;
+
     #[ORM\Column(type: 'boolean')]
     private $valide;
 
+    #[ORM\Column(type: 'boolean')]
+    private $rejete;
+
     #[ORM\ManyToOne(targetEntity: Paiement::class, inversedBy: 'remboursements')]
     #[ORM\JoinColumn(nullable: false)]
-    private $paiement_id;
+    private $paiement;
+
+    public function __construct()
+    {
+        $this->valide = 0;
+        $this->motifRejet = "";
+        $this->rejete = 0;
+        $this->motif = "";
+        $this->created_by = "";
+        $this->created_at = new \DateTimeImmutable();
+        $this->date_demande = new \DateTime();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getMotif(): ?string
+    {
+        return $this->motif;
+    }
+
+    public function setMotif(string $motif): self
+    {
+        $this->motif = $motif;
+
+        return $this;
+    }
+
+    public function getMotifRejet(): ?string
+    {
+        return $this->motifRejet;
+    }
+
+    public function setMotifRejet(string $motifRejet): self
+    {
+        $this->motifRejet = $motifRejet;
+
+        return $this;
     }
 
     public function getDateDemande(): ?\DateTimeInterface
@@ -82,14 +130,26 @@ class Remboursement
         return $this;
     }
 
-    public function getPaiementId(): ?Paiement
+    public function getRejet(): ?bool
     {
-        return $this->paiement_id;
+        return $this->rejet;
     }
 
-    public function setPaiementId(?Paiement $paiement_id): self
+    public function setRejet(bool $rejet): self
     {
-        $this->paiement_id = $paiement_id;
+        $this->rejet = $rejet;
+
+        return $this;
+    }
+
+    public function getPaiement(): ?Paiement
+    {
+        return $this->paiement;
+    }
+
+    public function setPaiement(?Paiement $paiement): self
+    {
+        $this->paiement = $paiement;
 
         return $this;
     }

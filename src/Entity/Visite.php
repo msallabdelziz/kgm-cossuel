@@ -88,7 +88,7 @@ class Visite
         return $this->dateRapporte;
     }
 
-    public function setDateRapporte(\DateTimeInterface $dateRapporte): self
+    public function setDateRapporte(?\DateTimeInterface $dateRapporte): self
     {
         $this->dateRapporte = $dateRapporte;
         return $this;
@@ -129,7 +129,7 @@ class Visite
     }
 
     /**
-     * @return Collection<int, Verification>
+     * @return Collection<int, DetailVerification>
      */
     public function getDetailVerification(): Collection
     {
@@ -187,7 +187,7 @@ class Visite
         return $this->commentaire;
     }
 
-    public function setCommentaire(string $commentaire): self
+    public function setCommentaire(?string $commentaire): self
     {
         $this->commentaire = $commentaire;
 
@@ -202,6 +202,18 @@ class Visite
     public function setPlanifie(bool $planifie): self
     {
         $this->planifie = $planifie;
+
+        return $this;
+    }
+
+    public function getConclusion(): ?bool
+    {
+        return $this->conclusion;
+    }
+
+    public function setConclusion(bool $conclusion): self
+    {
+        $this->conclusion = $conclusion;
 
         return $this;
     }

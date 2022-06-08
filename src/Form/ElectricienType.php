@@ -32,6 +32,7 @@ class ElectricienType extends AbstractType
             'attr' => [
                 'class' => 'form-select'
             ],
+            'required' => true,
             'data' => "CNI",
             'label' => 'Type Pièce'
         ])
@@ -53,7 +54,7 @@ class ElectricienType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => true,
+            'required' => false,
             'label' => 'Adresse'
         ])
         ->add('telephone', TextType::class, [
@@ -67,7 +68,7 @@ class ElectricienType extends AbstractType
                     if($object) {
                         if (strlen($object) >15) {
                             $context
-                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone ! Au max 15')
+                                ->buildViolation('Trop de chiffres saisis pour un numéro de téléphone ! Au max 15')
                                 ->addViolation();
                         }
                     }
@@ -80,26 +81,26 @@ class ElectricienType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => true,
+            'required' => false,
             'label' => 'Email'
         ])
         ->add('numPiece', TextType::class, [
             'attr' => [
                 'class' => 'form-control'
             ],
-            'constraints' => [
-                new Regex('/^[a-zA-Z0-9\-\_]+$/'),
-                new Callback(function($object, ExecutionContextInterface $context) {
-                    $v = $object;
-                    if($object) {
-                        if (strlen($object) >13) {
-                            $context
-                                ->buildViolation('Format incorrect ! 13 caractères au max !')
-                                ->addViolation();
-                        }
-                    }
-                }),
-            ],
+            // 'constraints' => [
+            //     new Regex('/^[a-zA-Z0-9\-\_]+$/'),
+            //     new Callback(function($object, ExecutionContextInterface $context) {
+            //         $v = $object;
+            //         if($object) {
+            //             if (strlen($object) >13) {
+            //                 $context
+            //                     ->buildViolation('Format incorrect ! 13 caractères au max !')
+            //                     ->addViolation();
+            //             }
+            //         }
+            //     }),
+            // ],
         'required' => true,
             'label' => 'Numéro Piece'
         ])

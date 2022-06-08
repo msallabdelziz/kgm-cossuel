@@ -46,7 +46,7 @@
                             	<fieldset id="synthese_demande">
                                 {% include "installation/_actions_new.html.twig" %}
                                 <div class="card mb-2">
-                                    <h2 class="fs-title">Puissance demandée et tarif</h2>
+                                    <h2 class="fs-title">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                                     <div class="row col-6 offset-3">
                                         <hr class="mb-3" />
                                         <div class="col-lg-6">
@@ -337,25 +337,49 @@
         $("#form_puissance").change(function(event){
             getTarif();
         });
+
+        {% if installation.demandeCourante %} getTarif() {% endif %}
     });
     function getTarif() {
         // Tarif
         val_usage=$("#form_usage").val();
         val_puissance=$("#form_puissance").val();
-        
+        val_passage=1;
+        {% if installation.demandeCourante %} 
+        val_passage=2;
+        {% endif %}
+
         if ( ( val_puissance == 0 ) || (val_puissance == '' ) || (val_puissance == null ) || (!val_puissance)  ) result=0;
         if(val_usage=="domestique") {
-            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="10 000";
-            if ( (val_puissance>6) && (val_puissance<=17) )   result="30 000";
-            if (val_puissance>17)  result="100 000";
+            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="10000";
+            if ( (val_puissance>6) && (val_puissance<=17) )   result="30000";
+            if (val_puissance>17)  result="100000";
         }
         else {
-            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="12 000";
-            if ( (val_puissance>6) && (val_puissance<=17) ) result="150 000";
-            if (val_puissance>17)  result="250 000";
+            if ( (val_puissance>0) && (val_puissance <= 6 )  ) result="12000";
+            if ( (val_puissance>6) && (val_puissance<=17) ) result="150000";
+            if (val_puissance>17)  result="250000";
         } 
+
+        if(val_passage==2) {
+            result=parseFloat(result*80/100);
+        }
+
+        result=addCommas(result);
+
         $("#form_tarif").val(result+" FCFA");
     }
 
+    function addCommas(nStr) {
+        nStr += '';
+        var x = nStr.split('.');
+        var x1 = x[0];
+        var x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ' ' + '$2');
+        }
+        return x1 + x2;
+    }
 </script>
 {% endblock %}

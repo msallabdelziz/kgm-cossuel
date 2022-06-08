@@ -141,11 +141,44 @@
                         </td>
                         <td>
                             <a  href="{{ path('app_installation_show', {'id': ag.id }) }}">
-                                {% if ag.step>=7 %}
+                                {# {% if ag.step>=7 %}
                                     <span class="badge badge-{{ badge_etat }} fs-8">{{ ag.demandeCourante.etat }}</span>
                                 {% else %}
                                     <span class="badge badge-{{ badge_etat }} fs-8">{{ ag.etat }}</span>
+                                {% endif %} #}
+
+                                {% set label_etat = "warning" %}
+                                {% set etat = "Soumis" %}
+                                {% set demande = ag.demandeCourante %} 
+                                {% if demande %}
+                                    {% set paiement = demande.paiement %} 
+                                    {% set dossier = demande.dossier %} 
+                                    {% if paiement %}
+                                        {% set etat = 'Paiement enregistré' %}
+                                        {% if paiement.paiementEffectue %}
+                                            {% set etat = 'Paiement validé' %}
+                                        {% endif %}
+                                        {% set label_etat = 'warning' %} 
+                                    {% endif %}
+                                    {% if dossier %}
+                                        {% set link = 'app_dossier_showpop' %}
+                                        {% set id_ent = dossier.id %}
+                                        {% set etat = dossier.etat %}
+                                        {% if not dossier.attestation %}
+                                            {% set etat = 'En attente ' ~ dossier.etat %}
+                                        {% endif %}
+                                        {% set label_etat = 'success' %} 
+
+                                        {% if dossier.attestation %}
+                                            {% if dossier.visiteCourante and dossier.visiteCourante.conclusion %}
+                                                {% set label_etat = " bg-vertf bg-success p-1" %}
+                                            {% else %}
+                                                {% set label_etat = " bg-danger p-1" %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
                                 {% endif %}
+                                <span class="fs-8 badge badge-{{label_etat}}">{{etat}}</span>
                             </a>
                         </td>
                         {# <td>{{ ag.agence }}</td> #}
@@ -157,7 +190,7 @@
                             {% endif %}
                         </td> #}
                         <td class="text-end">
-                            {% if ag.step>7 %} 
+                            {% if ag.step>7 and (ag.demandeCourante and ag.demandeCourante.paiement) %} 
                                 <a href="{{ path('app_paiement_show', {'id': ag.demandeCourante.idPaiement }) }}" class="mx-1" title="Afficher les détails">
                                     <svg class="bi" width="16" height="16" fill="black">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
@@ -180,6 +213,10 @@
                 {% endfor %}
             </tbody>
             </table>
+
+                {% do les_installation.setPageRange(1)%}
+                {{ knp_pagination_render(les_installation, 'pagination.html.twig')}}
+
             {% endif %}
         </div>
     </section>

@@ -9,7 +9,7 @@
                             <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
                         </select>
                     </div>
-                    {% if modif == 1 and is_granted('ROLE_PUBLIC') %}
+                    {% if modif == 1 and (is_granted('ROLE_PUBLIC') or is_granted('ROLE_RFO')) %}
                     <a href="{{ path('app_installation_add', { 'id': 0}) }}" class="btn btn-primary btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
@@ -189,6 +189,10 @@
                     </div>
                 {% endfor %}
             </div>
+
+                {% do les_installation.setPageRange(1)%}
+                {{ knp_pagination_render(les_installation, 'pagination.html.twig')}}
+
             {% endif %}
         </div>
     </section>
