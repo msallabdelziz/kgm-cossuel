@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
+
 class MainController extends AbstractController
 {
     /**
@@ -945,6 +947,7 @@ class MainController extends AbstractController
                 'les_stat' => $les_stat0,
             ]);
         }
+    
     }
 
     #[Route('/demandepop/{restr}', name: 'main_demandepop', methods: ['GET', 'POST'])]

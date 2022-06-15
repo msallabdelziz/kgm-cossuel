@@ -2,25 +2,28 @@
 
 namespace App\Controller;
 
-use App\Entity\Agence;
+use DateTime;
 use App\Entity\Agent;
+use App\Entity\Agence;
 use App\Entity\Demande;
 use App\Entity\Dossier;
+use App\Services\Tools;
+use Doctrine\ORM\EntityManager;
 use App\Repository\AgentRepository;
 use App\Repository\DemandeRepository;
 use App\Repository\DossierRepository;
-use App\Repository\InstallationRepository;
 use App\Repository\PaiementRepository;
-use App\Services\Tools;
-use DateTime;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Repository\InstallationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/demande')]
 class DemandeController extends AbstractController
@@ -37,6 +40,8 @@ class DemandeController extends AbstractController
             'tools' => $tools,
         ]);
     }
+
+  
 
     #[Route('/pop/{id}', name: 'app_demande_showpop', methods: ['GET'])]
     public function showpop(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response

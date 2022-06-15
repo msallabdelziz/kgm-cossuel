@@ -2,64 +2,66 @@
 
 namespace App\Controller;
 
-use App\Entity\Agence;
-use App\Entity\Agent;
-use App\Entity\Demande;
-use App\Entity\Departement;
-use App\Entity\Electricien;
-use App\Entity\Installation;
-use App\Entity\Localite;
-use App\Entity\NatureTravaux;
-use App\Entity\PieceJointe;
-use App\Entity\Proprietaire;
-use App\Entity\Region;
-use App\Entity\TypeConstruction;
-use App\Entity\Utilisateur;
-use App\Form\ElectricienType;
-use App\Form\ProprietaireType;
-use App\Form\InstallationType;
-use App\Repository\AgenceRepository;
-use App\Repository\DemandeRepository;
-use App\Repository\DepartementRepository;
-use App\Repository\ElectricienRepository;
-use App\Repository\InstallationRepository;
-use App\Repository\LocaliteRepository;
-use App\Repository\PaiementRepository;
-use App\Repository\PieceJointeRepository;
-use App\Repository\ProprietaireRepository;
-use App\Repository\RegionRepository;
-use App\Repository\TypeConstructionRepository;
-use App\Services\Tools;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
-use Symfony\Component\Form\Extension\Core\Type\RadioType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Mailer\MailerInterface;
+use App\Entity\Agent;
+use App\Entity\Agence;
+use App\Entity\Region;
+use App\Entity\Demande;
+use App\Services\Tools;
+use App\Entity\Localite;
+use App\Entity\Departement;
+use App\Entity\Electricien;
+use App\Entity\PieceJointe;
+use App\Entity\Utilisateur;
+use App\Entity\Installation;
+use App\Entity\Proprietaire;
+use App\Entity\NatureTravaux;
+use App\Form\ElectricienType;
+use App\Form\InstallationType;
+use App\Form\ProprietaireType;
+use App\Entity\TypeConstruction;
 use Symfony\Component\Mime\Email;
+use Doctrine\ORM\EntityRepository;
+use App\Repository\AgenceRepository;
+use App\Repository\RegionRepository;
+use App\Repository\DemandeRepository;
+use Symfony\Component\Form\FormEvent;
+use App\Repository\LocaliteRepository;
+use App\Repository\PaiementRepository;
+use Symfony\Component\Form\FormEvents;
+use App\Repository\DepartementRepository;
+use App\Repository\ElectricienRepository;
+use App\Repository\PieceJointeRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\Form\FormInterface;
+use App\Repository\InstallationRepository;
+use App\Repository\ProprietaireRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
+use App\Repository\TypeConstructionRepository;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\RadioType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
@@ -140,6 +142,57 @@ class InstallationController extends AbstractController
             'tools'=> $tools,
         ]);
     }
+
+      //{#----------------------------------Excel File---------------------------------#}
+
+      #[Route('/demande_excel', name: 'app_insta_excel')]
+      public function genExcel(ManagerRegistry $doctrine, array $headers = [],
+      $fileName = 'data.xlsx'): Response
+      {
+          // {#-----------Generation de fichiers Excel-------------#} 
+          $spreadsheet = new Spreadsheet();
+  
+          /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+          $sheet = $spreadsheet->getActiveSheet();
+          $sheet->setCellValue('A1', 'ID ');
+          $sheet->setCellValue('B1', 'ABONNEMENT ');
+          $sheet->setCellValue('C1', 'ADRESSE ');
+          $sheet->setCellValue('D1', 'NIVEAU ');
+          $sheet->setCellValue('E1', 'HABITATION ');
+          $sheet->setTitle("Liste des Demandes");
+  
+          $em = $doctrine->getManager();
+          $listInstallation = $em->getRepository(
+              Installation::class
+          )->findAll();
+  
+           $i =2;
+              foreach ($listInstallation as $d )
+              
+              {
+                  $sheet->setCellValue('A'.$i , $d->getId());
+                  $sheet->setCellValue('B'.$i , $d->getAbonnement());
+                  $sheet->setCellValue('C'.$i , $d->getAdresse());
+                  $sheet->setCellValue('D'.$i , $d->getNiveau());
+                  $sheet->setCellValue('E'.$i , $d->getHabitation());
+                  $i++;
+              }
+  
+         
+          // Create your Office 2007 Excel (XLSX Format)
+          $writer = new Xlsx($spreadsheet);
+  
+          // Create a Temporary file in the system
+          $fileName = 'Données des xlsx';
+          $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+  
+          // Create the excel file in the tmp directory of the system
+          $writer->save($temp_file);
+  
+          // Return the excel file as an attachment
+          return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+      }
+
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
     public function index(Request $request, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
@@ -1129,6 +1182,9 @@ class InstallationController extends AbstractController
             'installationForm' => $form,
         ]);
     }
+
+
+    
 
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
     public function show(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response

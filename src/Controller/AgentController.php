@@ -2,24 +2,27 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Agent;
 use App\Entity\Agence;
-use App\Entity\AffectationsAgents;
-use App\Entity\Utilisateur;
 use App\Form\AgentType;
-use App\Repository\AffectationsAgentsRepository;
-use App\Repository\AgenceRepository;
+use App\Services\Tools;
+use App\Entity\Utilisateur;
+use App\Entity\AffectationsAgents;
 use App\Repository\AgentRepository;
+use App\Repository\AgenceRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\UtilisateurRepository;
-use App\Services\Tools;
+use Doctrine\Persistence\ManagerRegistry;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\AffectationsAgentsRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -60,6 +63,58 @@ class AgentController extends AbstractController
             'val_profil'=> $val_profil,
         ]);
     }
+
+
+       //{#----------------------------------Excel File---------------------------------#}
+
+       #[Route('/agent_excel', name: 'excel')]
+       public function genExcel(ManagerRegistry $doctrine, array $headers = [],
+       $fileName = 'data.xlsx'): Response
+       {
+           // {#-----------Generation de fichiers Excel-------------#} 
+           $spreadsheet = new Spreadsheet();
+   
+           /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+           $sheet = $spreadsheet->getActiveSheet();
+           $sheet->setCellValue('A1', 'ID ');
+           $sheet->setCellValue('B1', 'MATRICULE ');
+           $sheet->setCellValue('B1', 'NOM ');
+           $sheet->setCellValue('C1', 'PRENOM ');
+           $sheet->setCellValue('D1', 'ADRESS ');
+           $sheet->setTitle("Liste des Agents");
+   
+           $em = $doctrine->getManager();
+           $listAgent = $em->getRepository(
+               Agent::class
+           )->findAll();
+   
+            $i = 2;
+               foreach ($listAgent as $a )
+               
+               {
+                   $sheet->setCellValue('A'.$i , $a->getId());
+                   $sheet->setCellValue('C'.$i , $a->getMatricule());
+                   $sheet->setCellValue('B'.$i , $a->getNom());
+                   $sheet->setCellValue('C'.$i , $a->getPrenom());
+                   $sheet->setCellValue('D'.$i , $a->getAdresse());
+                   $i++;
+               }
+   
+          
+           // Create your Office 2007 Excel (XLSX Format)
+           $writer = new Xlsx($spreadsheet);
+   
+           // Create a Temporary file in the system
+           $fileName = 'Données des xlsx';
+           $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+   
+           // Create the excel file in the tmp directory of the system
+           $writer->save($temp_file);
+   
+           // Return the excel file as an attachment
+           return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+       }
+
 
 
     #[Route('/add', name: 'add')]

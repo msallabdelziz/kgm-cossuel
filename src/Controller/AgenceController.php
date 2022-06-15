@@ -2,20 +2,23 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\Persistence\ManagerRegistry;
-use App\Repository\AgenceRepository;
 use App\Entity\Agence;
+use App\Services\Tools;
 use App\Entity\Localite;
 use App\Form\AgenceType;
+use App\Repository\AgenceRepository;
 use App\Repository\LocaliteRepository;
-use App\Services\Tools;
+use Doctrine\Persistence\ManagerRegistry;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Notifier\TexterInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Notifier\Message\SmsMessage;
-use Symfony\Component\Notifier\TexterInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/agence', name: 'app_agence_')]
 class AgenceController extends AbstractController
@@ -43,6 +46,56 @@ class AgenceController extends AbstractController
             'val_rech'=> $val_rech,
         ]);
     }
+
+    ##--------Generation de Excel---------
+    // #[Route('/agenceExcel', name:'app_agence_excel')]
+    #[Route('/agence_excel', name:'excel')]
+    public function genExcel(ManagerRegistry $doctrine, array $headers = [],
+    $fileName = 'data.xlsx'): Response
+    {
+        // {#-----------Generation de fichiers Excel-------------#} 
+        $spreadsheet = new Spreadsheet();
+
+        /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'ID ');
+        $sheet->setCellValue('B1', 'NOM ');
+        $sheet->setCellValue('C1', 'TELEPHONE ');
+        $sheet->setCellValue('D1', 'ADRESS ');
+        $sheet->setTitle("Liste des Agences");
+
+        $em = $doctrine->getManager();
+        $listAgence = $em->getRepository(
+            Agence::class
+        )->findAll();
+
+         $i = 3;
+            foreach ($listAgence as $u )
+            
+            {
+                $sheet->setCellValue('A'.$i , $u->getId());
+                $sheet->setCellValue('B'.$i ,  $u->getNom());
+                $sheet->setCellValue('C'.$i ,  $u->getTelephone());
+                $sheet->setCellValue('D'.$i ,  $u->getAdresse());
+                $i++;
+            }
+
+       
+        // Create your Office 2007 Excel (XLSX Format)
+        $writer = new Xlsx($spreadsheet);
+
+        // Create a Temporary file in the system
+        $fileName = 'Données des Agences.xlsx';
+        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+
+        // Create the excel file in the tmp directory of the system
+        $writer->save($temp_file);
+
+        // Return the excel file as an attachment
+        return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+
 
     #[Route('/add', name: 'add')]
     public function create(Request $request, AgenceRepository $agenceRepository): Response
