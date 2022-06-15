@@ -1,0 +1,369 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+	{% if app.user and app.user.isverified %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-10">
+
+			<ul class="nav nav-tabs mb-4 border-bottom border-dark border-2">
+				<li class="nav-item bg-dark mx-1 rounded-top mb-0 mt-1">
+					<a class="nav-link fw-bold text-light" aria-current="page">Mon espace personnel</a>
+				</li>
+				{% if  app.user.roles[0] != "ROLE_PUBLIC" %}
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_dem'}) }}">Statistiques sur les demandes</a>
+				</li>
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_paye'}) }}">Statistiques sur les paiements</a>
+				</li>
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('stat') }}">Consultation des demandes</a>
+				</li>
+				{% endif %}
+			</ul>
+
+			<div class="row m-1 pt-2">
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances
+				<div class="float-end text-dark fs-6">Vous êtes actif sur <span class="badge bg-success fw-bold px-1">{% if les_stat["All"] %}{{(mes_stat["All"]/les_stat["All"]*100)|round(1)}}{% else %}0{% endif %}%</span> du total des demandes</div>
+				</h5>
+			</div>
+			{% if mes_stat["All"] %}
+			<div class="row">
+				{# 
+				TAB STAT 
+				----------------------------------------------------------------------------------------------- #}
+				<div class="col-lg-4">
+					<div class="mt-2">
+						<div class="card bg-dark p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-warning">{{ mes_stat["All"] }}</span>
+										<span class="text-light fw-light">Total des demandes</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- end col -->
+					<div class="mt-2">
+						<div class="card bg-warning p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-success">{{ mes_stat["Domestiques"] }}</span>
+										<span class="fw-light">Demandes domestiques</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-2">
+						<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-success">{{ mes_stat["Professionnelles"] }}</span>
+										<span class="fw-light text-dark">Demandes professionnelles</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-2">
+						<div class="card bg-primary p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-success">{{ mes_stat["ERP - ERT"] }}</span>
+										<span class="fw-light text-light">Demandes ERP - ERT</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-4">
+						<div class="card bg-vertf p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '1ère visite;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-success">{{ mes_stat["1ère visite"] }}</span>
+										<span class="fw-light text-light">Demandes en 1ère visite</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-2">
+						<div class="card bg-rougef2 p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '2e visite;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-success">{{ mes_stat["2e visite"] }}</span>
+										<span class="fw-light text-light">Demandes en 2e visite</span>
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{# 
+				GRAPHIQUE STAT 
+				----------------------------------------------------------------------------------------------- #}
+				<div class="col-lg-4" align="center">
+					<div id="pieC" class="p-2 mt-2 shadow border" align="center"></div>
+				</div>
+				<div class="col-lg-4" align="center">
+					<div id="pieC2" class="p-2 mt-2 shadow border" align="center"></div>
+				</div>
+				{# ------------------- #}
+				</div>
+			</div>
+			<!-- end col -->
+			
+			<div class="row m-1 mt-4 pt-2">
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par état de traitement</h5>
+			</div>
+			<!-- end col -->
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="row">
+
+						{# {% set les_etat = ["Soumis"] %}
+						{% set les_col = ["danger"] %}
+						
+						{% if is_granted('ROLE_CAISSIER') or is_granted('ROLE_COMPTABLE') or is_granted('ROLE_DAF') %}
+							{% set les_etat = ["Paiement enregistré", "Paiement validé"] %}
+							{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_RFO') %}
+							{% set les_etat = ["Dossier validé"] %}
+							{% set les_col = ["success bg-opacity-25", ] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_CONTROLEUR') %}
+							{% set les_etat = ["Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+							{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+						{% endif %}
+
+						{% if is_granted('ROLE_REFERENT') %}
+							{% set les_etat = ["Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+							{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+						{% endif %}
+						
+						{% if is_granted('ROLE_ADMIN') %} #}
+							{% set les_etat = ["Soumis","Paiement enregistré", "Paiement validé","Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+							{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+						{# {% endif %} #}
+
+						{% set ix = 0 %}
+						{% for etat in les_etat  %}
+							{% set col = les_col[ix] %}
+							<div class="mt-2">
+								<div class="card bg-{{col}} p-2 card-stat">
+									<div class="un-stat d-flex">
+										<div class="">
+											<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat ~ ';' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+												<span class="number mb-0 fs-7 badge badge-danger">{{ mes_stat[etat] }}</span>
+												<span class="fw-light">{{etat}}</span>
+											</p>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+							{% set ix = ix+1 %}
+						{% endfor %}
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div id="pieC3" class="p-2 mt-2 shadow border" align="center"></div>
+				</div>
+			</div>
+			<!-- end row -->
+
+			<hr />
+			<div class="row mt-2">
+				<div class="col-md-3 mt-2">
+					<div class="card bg-red p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 5 jours'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_alerte["Hors délais 5 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-3 mt-2">
+					<div class="card bg-rougef p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 15 jours'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_alerte["Hors délais 15 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% else %}
+				<div class="alert alert-danger col-4 offset-4 mt-4">Vous n'êtes actif sur aucune demande !</div>
+			{% endif %}
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
+	{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+
+		{% set les_etat = ["Soumis","Paiement enregistré", "Paiement validé","Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+		{% set les_col = ["#d83444", "#b5cbf1", "#b8d0c7", "#13c5ea", "#e1501e", "#508bf6", "#508bf6", "#4b9f47"] %}
+
+<script>
+    $(document).ready(function () {
+
+        var pieC = new d3pie("pieC", {
+            "header": {
+                "title": {
+                    "text": "Répartition des demandes par usage",
+                    "fontSize": 14,
+                    "font": "verdana"
+                },
+            },
+            "size": {
+                "canvasWidth": 400,
+                "canvasHeight": 300,
+                "pieOuterRadius": "70%"
+            },
+            "data": {
+                "content": [
+                    {
+                        "label": "Domestique",
+                        "value": {{ mes_stat["Domestiques"] }},
+                        "color": "#febf04"
+                    },
+                    {
+                        "label": "Professionnel",
+                        "value": {{ mes_stat["Professionnelles"] }},
+                        "color": "#508af5"
+                    },
+                    {
+                        "label": "ERP - ERT",
+                        "value": {{ mes_stat["ERP - ERT"] }},
+                        "color": "#0b6efc"
+                    }
+                ]
+            },
+		"labels": {
+			"mainLabel": {
+				"font": "verdana",
+				"fontSize":"12"
+			},
+			"percentage": {
+				"color": "#000000"
+			}
+		}
+        });
+
+        var pieC2 = new d3pie("pieC2", {
+            "header": {
+                "title": {
+                    "text": "Répartition par passage de visite",
+                    "fontSize": 14,
+                    "font": "verdana"
+                },
+            },
+            "size": {
+                "canvasWidth": 400,
+                "canvasHeight": 300,
+                "pieOuterRadius": "70%"
+            },
+            "data": {
+                "content": [
+                    {
+                        "label": "1ère visite",
+                        "value": {{ mes_stat["1ère visite"] }},
+                        "color": "#196110"
+                    },
+                    {
+                        "label": "2e visite",
+                        "value": {{ mes_stat["2e visite"] }},
+                        "color": "#825454"
+                    },
+                ]
+            },
+			"labels": {
+				"mainLabel": {
+					"font": "verdana",
+					"fontSize":"12"
+				},
+				"percentage": {
+					"color": "yellow"
+				}
+			}
+        });
+
+        var pieC3 = new d3pie("pieC3", {
+            "header": {
+                "title": {
+                    "text": "Répartition des demandes par etat de traitement",
+                    "fontSize": 14,
+                    "font": "verdana"
+                },
+            },
+            "size": {
+                "canvasWidth": 500,
+                "canvasHeight": 400,
+                "pieOuterRadius": "80%"
+            },
+            "data": {
+                "content": [
+				{% set ix = 0 %}
+				{% for etat in les_etat  %}
+					{% set col = les_col[ix] %}
+						{
+							"label": "{{etat}}",
+							"value": {{ mes_stat[etat] }},
+							"color": "{{col}}"
+						}
+					{% if ix<les_etat|length %}
+						,
+					{% endif %}
+					{% set ix = ix+1 %}
+				{% endfor %}
+                ]
+            },
+			"labels": {
+				"mainLabel": {
+					"font": "verdana",
+					"fontSize":"12"
+				},
+				"percentage": {
+					"color": "#000000"
+				}
+			}
+        });
+
+
+    });
+</script>
+
+{% endblock %}

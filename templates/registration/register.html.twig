@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL:: Inscription{% endblock %}
+
+{% block body %}
+    <main class="login-page h-100 bg-yellow">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12 mb-4">
+                    <div class="text-center logo-intro">
+                        <img src="{{ asset('assets/img/logo-cossuel-black.png') }}" alt="LOGO COSSUEL">
+                    </div>
+                </div>
+                <div class="col-md-6 offset-md-3">
+                    {% for flash_error in app.flashes('verify_email_error') %}
+                        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                    {% endfor %}
+                    <div class="form-signup card">
+                        <h3 class="text-center mb-4 fw-bold">INSCRIVEZ-VOUS</h3>
+                {{ form_start(registrationForm) }}
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.nom.vars.id }}" class="">{{ registrationForm.nom.vars.label }}</label>
+                        {{ form_widget(registrationForm.nom) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.prenom.vars.id }}" class="">{{ registrationForm.prenom.vars.label }}</label>
+                        {{ form_widget(registrationForm.prenom) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.nom) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.prenom) }}
+                    </div>
+                        {# {{ form_row(registrationForm.login) }} #}
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.email.vars.id }}" class="">{{ registrationForm.email.vars.label }}</label>
+                        {{ form_widget(registrationForm.email) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.telephone.vars.id }}" class="">{{ registrationForm.telephone.vars.label }}</label>
+                        {{ form_widget(registrationForm.telephone) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.email) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.telephone) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.type.vars.id }}" class="">{{ registrationForm.type.vars.label }}</label>
+                        {{ form_widget(registrationForm.type) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.type_login.vars.id }}" class="">{{ registrationForm.type_login.vars.label }}</label>
+                        {{ form_widget(registrationForm.type_login) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.plainPassword.first.vars.id }}" class="">{{ registrationForm.plainPassword.first.vars.label }}</label>
+                        {{ form_widget(registrationForm.plainPassword.first) }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ registrationForm.plainPassword.second.vars.id }}" class="">{{ registrationForm.plainPassword.second.vars.label }}</label>
+                        {{ form_widget(registrationForm.plainPassword.second) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.plainPassword.first) }}
+                    </div>
+                    <div class="col-md-6 m-0 text-danger">
+                        {{ form_errors(registrationForm.plainPassword.second) }}
+                    </div>
+                    {# <div class="col-md-12">
+                        {{ form_row(registrationForm.adresse) }}
+                    </div> #}
+                    <div class="col-12 my-2">
+                        {{ form_widget(registrationForm.agreeTerms) }}
+                        <label for="{{ registrationForm.agreeTerms.vars.id }}" class="">{{ registrationForm.agreeTerms.vars.label }}</label>
+                    </div>
+                    <div class="col-12 mb-0 text-center">
+                        <a href="{{ path('app_login') }}" class="btn btn-secondary btn-lg my-2 me-3">Annuler</a>
+                        <button type="submit" class="btn btn-primary btn-lg my-2">S'inscrire</button>
+                    </div>
+                    <div class="col-12">
+                        <div class="text-end">
+                            <p class="mb-0">Vous avez déjà un compte? <a href="{{ path('app_login') }}">Se connecter</a>
+                            </p>
+                        </div>
+                    </div>
+                    {{ form_end(registrationForm) }}            
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+
+	{% if app.user and app.user.isverified %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-10">
+                    <div class="text-center">
+                        <img width="400" style="margin-top:100px;" src="{{ asset('assets/img/logo-cossuel-black.png') }}" alt="LOGO COSSUEL">
+                    </div>
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+			<div class="mt-4">
+				<a href="{{ path('app_register_confirm2') }}" class="btn btn-primary mx-2">Envoyer un nouveau lien d'activation</a>
+			</div>
+		</div>
+	{% endif %}
+
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends 'base_modal.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+{% block body %}
+    <style>
+    #synthese_demande input[disabled] {
+        background-color:#f1f5f9;
+        border: 1px solid #7a7b7c;
+        color: gray;
+        font-weight:normal;
+    }
+    #synthese_demande .card {
+        background-color:#ffffff;
+    }
+    #synthese_demande label, #synthese_demande .fs-title {
+        color:gray;
+        font-weight:normal;
+    }
+
+    #paiement_demande .card {
+        background-color:#fff;
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #000
+    }
+    
+    </style>
+    {% set paiement = dossier.demande.paiement %}
+    {% if not dossier.affecte %}
+        {% set action_demande = "Affectation" %}
+        {% if is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_show' %}
+        {% endif %}
+        {% set libelle_action = 'Gérer le dossier' %}
+    {% elseif not dossier.visite %}
+        {% set action_demande = "Planification Visite" %}
+        {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_show' %}
+        {% endif %}
+        {% set libelle_action = 'Gérer le dossier' %}
+    {% elseif not dossier.rapport %}
+        {% set action_demande = "Rapport de Visite" %}
+        {% if is_granted('ROLE_CONTROLEUR') and not is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_show' %}
+        {% endif %}
+        {% set libelle_action = 'Gérer le dossier' %}
+    {% elseif not dossier.attestation %}
+        {% set action_demande = "Résultat Inspection" %}
+        {% if is_granted('ROLE_REFERENT') %}
+            {% set link_action = 'app_dossier_show' %}
+        {% endif %}
+        {% set libelle_action = 'Gérer le dossier' %}
+    {% endif %}
+
+    {% set demande = dossier.demande %}
+    {% set installation = demande.installation %}
+    {% set link_liste = 'stat' %}
+    
+    <section class="container">
+        <a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">{{ action_demande }} de dossiers </span>
+            </a>
+        </header>
+
+        <div class="container">
+            <nav class="navbar shadow bg-warning border border-dark my-2 p-0">
+                <div class="container-fluid ps-4">
+                        <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                            <div class="col">
+                                <svg class="bi" width="24" height="24" fill="black">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                </svg>
+                                Détails du dossier
+                            </div>
+                            <div class="col" align="right">
+                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                            </div>
+                        </div>
+
+                </div>
+            </nav>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-2">
+                <fieldset id="synthese_demande">
+                    <div class="card mb-2">
+                        <h2 class="fs-title text-black">Puissance demandée et tarif {% if demande and demande.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
+                        <div class="row bloc_0">
+                            <hr class="mb-3" />
+                            <div class="col-lg-3">
+                                <label >Numéro Demande</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.numero }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Date Demande</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.dateCreation | date('d-m-Y') }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Puissance</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.puissance }} kW">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Cout de la demande</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.cout }} FCFA">
+                            </div>
+                        </div>  
+                    </div>
+
+                    <div class="container mt-4">
+                        <div class="row">
+                            <div>
+                        {% set rub = "" %}
+                        {% set ix = 0 %}
+                        {% set les_detailverif = dossier.visiteCourante.detailVerification %}
+                            {% for pt in les_detailverif %}
+                                {% if rub != pt.pointverification.rubrique.id %}
+                                    {% if rub %}
+                                        </div>
+                                    {% endif %}
+                                    <div id="zrub_{{ ix }}">
+                                        <h5 class="p-2 bg-dark text-light shadow border-bottom"> {{ pt.pointverification.rubrique.numero }}- {{ pt.pointverification.rubrique.libelle }}</h5>
+                                    {% set rub = pt.pointverification.rubrique.id %}
+                                    {% set ix = ix + 1 %}
+                                {% endif %}
+                                <div class="shadow p-4 pt-2 mb-3">
+                                    <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                        <svg class="bi" width="20" height="20" fill="#333">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                        </svg> {{ pt.pointVerification.objetVerification }}
+                                        <div class="float-end fw-bold">
+                                        {% if pt.conclusion %}
+                                                <svg class="bi" width="32" height="32" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                                </svg>
+                                                <span class="text-success">{{ pt.pointVerification.libelleConclusion1 }}</span>
+                                        {% else %}
+                                                <svg class="bi" width="32" height="32" fill="red">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                                </svg>
+                                                <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                        {% endif %}
+                                        </div>
+                                    </div>
+                                        {% if not pt.conclusion %}
+                                                <div class="fw-light ms-4 fs-8">
+                                                Commentaire: <span class="text-danger">{{pt.commentaire}}</span>
+                                                </div>
+                                        {% endif %}
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+
+            <div class="col-lg-4 mb-2" id="paiement_demande">
+                {% if tools.getUtilisateur(installation.createdBy) %}
+                    {% set creator = tools.getUtilisateur(installation.createdBy) %}
+                    <div align="left" class="border border-warning shadow p-2 fs-8 mb-3 fw-light">
+                        <div><label class="text-warning">Créée par:</label> <span class="">{{creator.nomComplet}}</span></div>
+                        <div><label class="text-warning">Créée le:</label> <span class="">{{installation.createdAt|date("d-m-Y à H:i:s")}}</span></div>
+                    </div>
+                {% endif %}
+                <div class="card mb-2 pb-0">
+                    <h2 class="fs-title">Traitement du dossier
+                    </h2>
+                    <div class="row">
+                        <hr class="mb-3" />
+                        <div class="mb-3 ">
+                            <label >Date création dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Référent chargé du dossier</label>
+                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.referent }}">
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Contrôleur chargé du traitement</label>
+                            {% if dossier.controleur %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.controleur }}">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Visite du site pour inspection</label>
+                            {% if dossier.visite %}
+                                <div class="row">
+                                    <div class="col-7">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y') }}">
+                                    </div>
+                                    <div class="col-12">
+                                        Modèle Rapport d'inspection
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.rapport.libelle }} - {{ dossier.visiteCourante.rapport.PointVerification.count }} points de vérification">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Rapport de visite</label>
+                            {% if dossier.rapport %}
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite réalisée et Rapport élaboré">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non finalisé">
+                            {% endif %}
+                        </div>
+                        <div class="mb-3 ">
+                            <label >Résultat de conformité</label>
+                            {% if dossier.attestation %}
+                                <input type="text" disabled readonly class="bg-success bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Résultat inspection disponile">
+                            {% else %}
+                                <input type="text" disabled readonly class="bg-success  form-control text-light form-control py-1 fw-bold fs-6" value="Non défini">
+                            {% endif %}
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {% set demande = paiement.demande %}
+    {% set installation = demande.installation %}
+<script>
+    $(document).ready(function() {
+
+        $('.reference').hide();
+        if ("{{ paiement.mode }}"!="Espèce") {
+            $('.reference').show(); 
+        }
+
+        function showhide_bloc(x) {
+            le_bloc=".bloc_"+x
+            le_btn_bloc=".btn_bloc_"+x
+            le_titre_bloc=".titre_bloc_"+x
+            
+            if($(le_btn_bloc).prop('title')=="Afficher les détails") {
+                $(le_bloc).show();
+                $(le_titre_bloc).addClass("text-black");
+                $(le_btn_bloc).html('<svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...'); 
+                $(le_btn_bloc).prop('title', 'Cacher les détails');
+                $(le_btn_bloc).addClass("text-danger");
+                $(le_btn_bloc).removeClass("text-warning");
+            } else {
+                $(le_bloc).hide();
+                $(le_titre_bloc).removeClass("text-black");
+                $(le_btn_bloc).html('<svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>Afficher ...'); 
+                $(le_btn_bloc).prop('title', 'Afficher les détails');
+                $(le_btn_bloc).removeClass("text-danger");
+                $(le_btn_bloc).addClass("text-warning");
+            }
+        }
+
+    });
+</script>
+{% endblock %}

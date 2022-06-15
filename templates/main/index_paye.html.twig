@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+	<style>
+		.p0_title {
+			border:1px solid #ccc;
+			fon-weight:bold;
+		}
+	</style>
+	{% if app.user and app.user.isverified %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-10">
+
+			<ul class="nav nav-tabs mb-4 border-bottom border-dark border-2">
+				<li class="nav-item bg-warning mx-1 rounded-top mb-0 mt-1">
+					<a class="nav-link text-dark" aria-current="page" href="{{ path('main', {'dash_page': 'perso'}) }}">Mon espace personnel</a>
+				</li>
+				{% if  app.user.roles[0] != "ROLE_PUBLIC" %}
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_dem'}) }}">Statistiques sur les demandes</a>
+				</li>
+				<li class="nav-item bg-dark rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link fw-bold text-light" href="{{ path('main', {'dash_page': 'stat_paye'}) }}">Statistiques sur les paiements</a>
+				</li>
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('stat') }}">Consultation des demandes</a>
+				</li>
+				{% endif %}
+			</ul>
+
+					{% set les_mode = {"All":"Total Paiements", "Espèce":"Espèces", "Chèque":"Chèque", "Autre":"Autre"} %}
+					{% set les_col = ["green bg-opacity-50", "success bg-opacity-50", "warning bg-opacity-25", "danger bg-opacity-50"] %}
+
+				<div class="row m-1 mt-4 pt-2">
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Situation des paiements par mode et usage installation</h5>
+				</div>
+				<div class="row">
+					{% set ix = 0 %}
+					{% for mode,lib_mode in les_mode  %}
+					{% set col = les_col[ix] %}
+					<div class="col-md-3 mt-2">
+						{% if ix==0 %}
+						<div class="card bg-warning bg-opacity-50 p-2 card-stat shadow">
+						{% else %}
+						<div class="card bg-dark bg-opacity-25 p-2 card-stat shadow">
+						{% endif %}
+							<div class="un-stat d-flex">
+								<div class="row px-2">
+									{# <p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': mode}) }}" title="Afficher la liste des demandes"> #}
+									<p class="mb-1 pt" >
+										<div class="border-bottom border-secondary mb-1 pb-1">
+											<span class="number mb-0 fs-7 p-1 badge badge-danger py-1">{{ stat_paiement[mode][0][0] }}</span>
+											<span class="">{{lib_mode}}</span>
+											<div class="float-end"><span class="number mb-0 fs-7 badge bg-success p-1">{{ stat_paiement[mode][0][1]|number_format(0, ',', ' ') }} FCFA</span></div>
+										</div>
+										<div class="ms-3 fs-8 mt-1">
+											<span class="number p-1 mb-0 fs-8 badge bg-warning text-dark">{{ stat_paiement[mode][1][0] }}</span> <span class="text-dark px-1 rounded">Domestiques</span> 
+											<div class="float-end"><span class="number mb-0 me-3 fs-8 badge badge-success p-1">{{ stat_paiement[mode][1][1]|number_format(0, ',', ' ') }} FCFA</span></div>
+										</div>
+										<div class="ms-3 fs-8 mt-1">
+											<span class="number p-1 mb-0 fs-8 badge bg-primary bg-opacity-50">{{ stat_paiement[mode][2][0] }}</span> <span class="text-dark px-1 rounded">Professionnelles</span> 
+											<div class="float-end"><span class="number mb-0 me-3 fs-8 badge badge-success p-1">{{ stat_paiement[mode][2][1]|number_format(0, ',', ' ') }} FCFA</span></div>
+										</div>
+										<div class="ms-3 fs-8 mt-1">
+											<span class="number p-1 mb-0 fs-8 badge bg-primary">{{ stat_paiement[mode][3][0] }}</span> <span class="text-dark px-1 rounded">ERP - ERT</span> 
+											<div class="float-end"><span class="number mb-0 me-3 fs-8 badge badge-success p-1">{{ stat_paiement[mode][3][1]|number_format(0, ',', ' ') }} FCFA</span></div>
+										</div>
+										<div class="m-0 pt-2">
+											<div id="pieC2{{(ix+1)}}" class="p-2 mt-2 shadow border bg-light bg-opacity-50 rounded" align="center"></div>
+										</div>
+
+									</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+					{% set ix = ix+1 %}
+					{% endfor %}
+				</div>
+				</div>
+			<!-- end col -->
+			
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
+	{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+
+{% set les_etat = ["Soumis","Paiement enregistré", "Paiement validé","Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+{% set les_col = ["#d83444", "#b5cbf1", "#b8d0c7", "#13c5ea", "#e1501e", "#508bf6", "#508bf6", "#4b9f47"] %}
+{% set les_mode = {"All":"Total Paiements", "Espèce":"Paiement Espèces", "Chèque":"Paiement Chèque", "Autre":"Paiement Autre"} %}
+{% set les_code = {"1":"All", "2":"Espèce", "3":"Chèque", "4":"Autre"} %}
+<script>
+    $(document).ready(function () {
+
+		{% for ix in [1, 2, 3, 4] %}
+			{% set code = les_code[ix] %}
+			var pieC2{{ix}} = new d3pie("pieC2{{ix}}", {
+				"header": {
+					"title": false,
+				},
+				"size": {
+					"canvasWidth": 180,
+					"canvasHeight": 180,
+					"pieOuterRadius": "70%"
+				},
+				"data": {
+					"content": [
+						{
+							"label": "Domestique",
+							"value": {{ stat_paiement[code][1][1] }},
+							"color": "#febf04"
+						},
+						{
+							"label": "Professionnel",
+							"value": {{ stat_paiement[code][2][1] }},
+							"color": "#508af5"
+						},
+						{
+							"label": "ERP - ERT",
+							"value": {{ stat_paiement[code][3][1] }},
+							"color": "#0b6efc"
+						}
+					]
+				},
+				"labels": {
+					"inner": false,
+					"outer": {
+						"format":"percentage",
+						"pieDistance": -40,	
+					},
+					"percentage":{
+						"color":"#000000",
+						"fontSize":"12",
+					}
+				},
+			});
+
+		{% endfor %}
+
+    });
+</script>
+
+{% endblock %}

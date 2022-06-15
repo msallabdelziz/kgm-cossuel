@@ -1,0 +1,243 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Demande;
+use App\Entity\Paiement;
+use App\Entity\Utilisateur;
+use App\Form\PaiementType;
+use App\Repository\AgenceRepository;
+use App\Repository\AgentRepository;
+use App\Repository\DemandeRepository;
+use App\Repository\InstallationRepository;
+use App\Repository\PaiementRepository;
+use App\Services\Tools;
+use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+#[Route('/paiement')]
+class PaiementController extends AbstractController
+{
+    #[Route('/journal_caisse', name: 'app_paiement_journal')]
+    public function index(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, AgenceRepository $agenceRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'caisse');
+        $request->getSession()->set('sousmenu', 'journal_caisse');
+        $request->getSession()->set('page_liste_demande', 'app_paiement_journal');
+        
+        $affichage_demande=$request->getSession()->get('affichage_demande');
+
+        if($request->request->get('affichage_demande')) {
+            $affichage_demande=$request->request->get('affichage_demande');
+            $request->getSession()->set('affichage_demande', $affichage_demande);
+        } 
+        
+        $mode_affichage=$request->getSession()->get('affichage_demande');
+
+        $val_agence=""; $restr_agence=0;
+        if($agence && in_array($role, array('ROLE_COMPTABLE', 'ROLE_CAISSIER'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+            $restr_agence=1;
+            $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
+        } else {
+            $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
+        }
+
+        $val_usage=""; 
+        $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
+
+        $val_modep=""; 
+        $les_modep = array("Espèce", "Chèque", "Autre");
+
+        $val_statut=""; 
+        $les_statut = array("En Attente Validation", "Validé",);
+
+        $val_deb=""; $val_fin=date("Y-m-d");
+
+        if($request->request->count()) {
+            $val_rech = $request->request->get("val_rech");
+
+            $val_deb = $request->request->get("val_deb");
+            $val_fin = $request->request->get("val_fin");
+            if($val_deb && $val_fin) {
+                $val_filtre["paiement_deb"] = $val_deb;
+                $val_filtre["paiement_fin"] = $val_fin;
+            }
+            $val_usage = $request->request->get("val_usage");
+            if($val_usage) { $val_filtre["usages"] = $val_usage; }
+            
+            $val_modep = $request->request->get("val_modep");
+            if($val_modep) { $val_filtre["mode_paiement"] = $val_modep; }
+            
+            $val_agence = $request->request->get("val_agence");
+            if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_statut = $request->request->get("val_statut");
+            if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        }
+
+        $les_demande=$demandeRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+        $tot_paye=0; $tot_remb=0;
+        foreach($les_demande as $dem) {
+            $tot_paye+=$dem->getCout();
+            if($dem->getPaiement()->getEtatRembousement()) {
+                $tot_remb+=$dem->getCout();
+            }
+        }
+        // dd($les_demande);
+
+        $list=$les_demande;
+        $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
+
+        return $this->render('paiement/index.html.twig', [
+            'page_list' => "app_paiement_journal",
+            'les_demande' => $list,
+            'val_deb' => $val_deb,
+            'val_fin' => $val_fin,
+            'tot_paye' => $tot_paye,
+            'tot_remb' => $tot_remb,
+            'affichage' => $mode_affichage,
+            'val_rech' => $val_rech,
+
+            'les_modep'=> $les_modep,
+            'val_modep'=> $val_modep,
+
+            'les_usage'=> $les_usage,
+            'val_usage'=> $val_usage,
+
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
+            'les_agence'=> $les_agence,
+            'val_agence'=> $val_agence,
+        ]);
+    }
+
+    #[Route('/{id}/add', name: 'app_paiement_add')]
+    public function add(Request $request, Demande $demande, DemandeRepository $demandeRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $paiement = new Paiement();
+        $demande=$demandeRepository->find($demande);
+
+        $form = $this->createForm(PaiementType::class, $paiement);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $step = 8;
+            $installation=$installationRepository->find($demande->getInstallation());
+            $installation->setStep($step);
+            $installationRepository->add($installation);
+
+            $demande->setEtat("Paiement enregistré");
+            $demandeRepository->add($demande);
+
+            $paiement->setDemande($demande);
+            $paiement->setCreatedby($this->getUser()->getId());
+            $paiementRepository->add($paiement);
+
+            $demande->setIdPaiement($paiement->getId());
+            $demande->setPaiement($paiement);
+            $demandeRepository->add($demande);
+
+            return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 
+        }
+
+        return $this->renderForm('paiement/add.html.twig', [
+            'demande' => $demande,
+            'paiementForm' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/add2', name: 'app_paiement_add2')]
+    public function add2(Request $request, Demande $demande, DemandeRepository $demandeRepository, InstallationRepository $installationRepository, PaiementRepository $paiementRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $demande=$demandeRepository->find($demande);
+        $paiement=$demande->getPaiement();
+
+        $form = $this->createFormBuilder($paiement)->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $step = 9;
+            $installation=$installationRepository->find($demande->getInstallation());
+            $installation->setStep($step);
+            $installationRepository->add($installation);
+
+            $demande->setEtat("Paiement validé");
+            $demandeRepository->add($demande);
+
+            $paiement->setPaiementEffectue(true);
+            $paiement->setDatePaiement(new \DateTime());
+            $paiement->setUpdatedBy($this->getUser()->getId());
+            $paiementRepository->add($paiement);
+
+            return $this->redirectToRoute('app_paiement_show', array('id' => $paiement->getId())); 
+        }
+
+        return $this->renderForm('paiement/add2.html.twig', [
+            'demande' => $demande,
+            'paiement' => $paiement,
+            'paiementForm' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_paiement_show', methods: ['GET'])]
+    public function show(Paiement $paiement, ManagerRegistry $doctrine): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        return $this->render('paiement/show.html.twig', [
+            'paiement' => $paiement,
+
+            'tools' => $tools,
+        ]);
+    }
+
+    #[Route('/pop/{id}', name: 'app_paiement_showpop', methods: ['GET'])]
+    public function showpop(Paiement $paiement, ManagerRegistry $doctrine): Response
+    {
+        $em = $doctrine->getManager(); $tools = new Tools($em);
+        return $this->render('paiement/showpop.html.twig', [
+            'paiement' => $paiement,
+
+            'tools' => $tools,
+        ]);
+    }
+
+}
