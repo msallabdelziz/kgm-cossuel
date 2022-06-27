@@ -62,6 +62,7 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use App\Fpdf\DemandePDF;
+use App\Fpdf\InstallationPDF;
 
 #[Route('/installation')]
 class InstallationController extends AbstractController
@@ -383,6 +384,80 @@ class InstallationController extends AbstractController
         ]);*/
     }
 
+
+    #[Route('/pdfI', name: 'app_install_pdfI')]
+    public function pdfI(InstallationPDF $pdf, DemandeRepository $demandeRepository)
+    {
+        $pdf = new InstallationPDF('L','mm','A4');
+
+        $pdf->AddPage();
+        $pdf->SetFont('Helvetica','B',9);
+        $pdf->SetTextColor(0);
+        $pdf->AliasNbPages();
+
+        $position_entete = 60;
+        $pdf->SetFont('Helvetica','',9);
+        $pdf->SetTextColor(0);
+        $pdf->SetDrawColor(255,215,0);
+        $pdf->SetFillColor(255,215,0);
+        $pdf->SetTextColor(0);
+        $pdf->SetY($position_entete);
+        $pdf->SetX(10);
+        $pdf->Cell(40,8,utf8_decode('N° demande'),1,0,'C',1);
+        $pdf->SetX(50); 
+        $pdf->Cell(40,8,'Usage',1,0,'C',1);
+        $pdf->SetX(90); 
+        $pdf->Cell(40,8,'Agence',1,0,'C',1);
+        $pdf->SetX(130); 
+        $pdf->Cell(40,8,utf8_decode('Localité'),1,0,'C',1);
+        $pdf->SetX(170); 
+        $pdf->Cell(40,8,'Type Construction',1,0,'C',1);
+        $pdf->SetX(210); 
+        $pdf->Cell(40,8,'Electricien',1,0,'C',1);
+        $pdf->SetX(250); 
+        $pdf->Cell(40,8,'Statut demande',1,0,'C',1);
+
+
+        $pdf->Ln();
+
+        $position_detail = 68;
+        $result2 = $demandeRepository->findBy([],['numero'=>'asc']);
+        $ligne=0;
+        for ($i=0; $i<count($result2);$i++) {
+            $ligne = $ligne+1;
+                if ($ligne == 8){
+                    $pdf->AddPage();
+                    $ligne = 0;
+                    $position_detail=68;
+                }
+            $pdf->SetY($position_detail);
+            $pdf->SetX(10);
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getNumero()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(50); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getUsages()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(90); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getAgence()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(130); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getLocalite()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(170); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getTypeConstruction()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(210); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getElectricien()),1,'C');
+            $pdf->SetY($position_detail);
+            $pdf->SetX(250); 
+            $pdf->MultiCell(40,15,utf8_decode($result2[$i]->getInstallation()->getDemandeCourante()),1,'C');
+
+            $position_detail += 15; 
+        }
+        
+        $pdf->Output('liste_demande.pdf','I');
+
+    }
 
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
     public function index0(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response

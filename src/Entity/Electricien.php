@@ -218,7 +218,7 @@ class Electricien
 
     public function __toString()
     {
-        return "[".$this->getTelephone()."] ".$this->getPrenom()." ".$this->getNom();
+        return " ".$this->getPrenom()." ".$this->getNom();
     }
 
 }

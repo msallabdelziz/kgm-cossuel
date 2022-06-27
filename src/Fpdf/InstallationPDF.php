@@ -2,7 +2,7 @@
 namespace App\Fpdf;
 use App\Fpdf\FPDF;
 
-class AgentPDF extends FPDF {
+class InstallationPDF extends FPDF {
   // Header
     function Header() {
 

@@ -250,7 +250,7 @@ class Demande
 
     public function __toString()
     {
-        return "[".$this->getNumero()." ".$this->getDateCreation()->format("d/m/Y")."]";
+        return " ".$this->getEtat();
     }
 
 }

@@ -31,3 +31,7 @@ services:
             $siteEmail: 'yatamala.net@gmail.com'
             # $siteEmail: 'alert@cossuel.sn'
             $siteName: 'Notification COSSUEL'
+
+    App\Controller\AgentController:
+        autowire: true # or define your controller constructor and configure its arguments explicitly
+        tags: ['controller.service_arguments']

@@ -40,10 +40,10 @@ class AgentController extends AbstractController
         $request->getSession()->set('menu', 'agent');
         $request->getSession()->set('sousmenu', '');
 
-        $val_agence=""; 
+        $val_agence=0; 
         $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
 
-        $val_profil=""; 
+        $val_profil=0; 
         $les_profil = $profilRepository->findBy(array(), array("nom"=>"asc", ));
 
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
@@ -331,11 +331,12 @@ class AgentController extends AbstractController
         return new Response('Suppresion effectué!');
     }
 
-    #[Route('/pdf', name: 'pdf')]
-    public function pdf(AgentPDF $pdf, AgentRepository $agentRepository)
+
+    #[Route('/pdf', name: 'pdfs')]
+    public function pdfs(Request $request,AgentPDF $pdf, ProfilRepository $profilRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository)
     {
-        // On active la classe une fois pour toutes les pages suivantes
-        // Format portrait (>P) ou paysage (>L), en mm (ou en points > pts), A4 (ou A5, etc.)
+        
+       
         $pdf = new AgentPDF('L','mm','A4');
 
         // Nouvelle page A4 (incluant ici logo, titre et pied de page)
@@ -359,24 +360,24 @@ class AgentController extends AbstractController
         $pdf->SetTextColor(0); // Couleur du texte noir
         $pdf->SetY($position_entete);
         // position de colonne 1 (10mm à gauche)  
-        $pdf->SetX(5);
-        $pdf->Cell(30,8,'Matricule',1,0,'C',1);  // 60 >largeur colonne, 8 >hauteur colonne
+        $pdf->SetX(10);
+        $pdf->Cell(50,8,'Matricule',1,0,'C',1);  // 60 >largeur colonne, 8 >hauteur colonne
         // position de la colonne 2 (70 = 10+60)
-        $pdf->SetX(35); 
-        $pdf->Cell(40,8,'Nom',1,0,'C',1);
+        $pdf->SetX(60); 
+        $pdf->Cell(60,8,'Nom',1,0,'C',1);
         // position de la colonne 3 (130 = 70+60)
-        $pdf->SetX(75); 
-        $pdf->Cell(33,8,'Fonction',1,0,'C',1);
+        $pdf->SetX(120); 
+        $pdf->Cell(53,8,'Fonction',1,0,'C',1);
          // position de la colonne 3 (130 = 70+60)
-         $pdf->SetX(108); 
-         $pdf->Cell(33,8,utf8_decode('Téléphone'),1,0,'C',1);
+         $pdf->SetX(173); 
+         $pdf->Cell(55,8,utf8_decode('Téléphone'),1,0,'C',1);
           // position de la colonne 3 (130 = 70+60)
-        $pdf->SetX(141); 
-        $pdf->Cell(63,8,'Adresse Email',1,0,'C',1);
+        $pdf->SetX(228); 
+        $pdf->Cell(60,8,'Adresse Email',1,0,'C',1);
 
 
         $position_detail = 68; // Position ordonnée = $position_entete+hauteur de la cellule d'en-tête (60+8)
-        $result2 = $agentRepository->findBy([],['matricule'=>'asc']);
+        $result2=$agentRepository->findBy([],['nom'=>'asc']);
         //dd($result2[0]->getCode());
         $ligne=0;
         for ($i=0; $i<count($result2);$i++) {
@@ -387,30 +388,197 @@ class AgentController extends AbstractController
                     $position_detail=68;
                 }
             $pdf->SetY($position_detail);
-            $pdf->SetX(5);
-            $pdf->MultiCell(30,8,utf8_decode($result2[$i]->getMatricule()),1,'C');
+            $pdf->SetX(10);
+            $pdf->MultiCell(50,8,utf8_decode($result2[$i]->getNom()),1,'C');
                 // position abcisse de la colonne 2 (40 = 10 +30)  
             $pdf->SetY($position_detail);
-            $pdf->SetX(35); 
-            $pdf->MultiCell(40,8,utf8_decode($result2[$i]->getNom()),1,'C');
+            $pdf->SetX(60); 
+            $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getPrenom()),1,'C');
             // position abcisse de la colonne 3 (70 = 40+ 30)
             $pdf->SetY($position_detail);
-            $pdf->SetX(75); 
-            $pdf->MultiCell(33,8,utf8_decode($result2[$i]->getProfil()),1,'C');
+            $pdf->SetX(120); 
+            $pdf->MultiCell(53,8,utf8_decode($result2[$i]->getProfil()),1,'C');
             // position abcisse de la colonne 3 (100 = 70+ 30)
             $pdf->SetY($position_detail);
-            $pdf->SetX(108); 
-            $pdf->MultiCell(33,8,$result2[$i]->getTelephone(),1,'C');
+            $pdf->SetX(173); 
+            $pdf->MultiCell(55,8,$result2[$i]->getTelephone(),1,'C');
             // position abcisse de la colonne 3 (130 = 100+ 30)
             $pdf->SetY($position_detail);
-            $pdf->SetX(141); 
-            $pdf->MultiCell(63,8,$result2[$i]->getEmail(),1,'C');
+            $pdf->SetX(228); 
+            $pdf->MultiCell(60,8,$result2[$i]->getEmail(),1,'C');
 
             // on incrémente la position ordonnée de la ligne suivante (+8mm = hauteur des cellules)  
             $position_detail += 8; 
 
             
         }
+        
+        $pdf->Output('agence.pdf','I');
+    }
+
+
+    #[Route('/pdf/{val_profil,id2}', name: 'pdf')]
+    public function pdf(int $val_profil,int $id2,AgentPDF $pdf, ProfilRepository $profilRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository)
+    {
+        
+        if ($val_profil == 0 and $id2 != 0){
+            $agence = $agenceRepository->find($id2);
+            $result2=$agentRepository->findByAgence($agence);
+            $pdf = new AgentPDF('L','mm','A4');
+            $pdf->AddPage();
+            $pdf->SetFont('Helvetica','B',9);
+            $pdf->SetTextColor(0);
+            $pdf->AliasNbPages();
+            $position_entete = 60;
+            $pdf->SetFont('Helvetica','',9);
+            $pdf->SetTextColor(0);
+            $pdf->SetDrawColor(255,215,0);
+            $pdf->SetFillColor(255,215,0);
+            $pdf->SetTextColor(0);
+            $pdf->SetY($position_entete);
+            $pdf->SetX(10);
+            $pdf->Cell(50,8,'Matricule',1,0,'C',1);
+            $pdf->SetX(60); 
+            $pdf->Cell(60,8,'Nom',1,0,'C',1);
+            $pdf->SetX(120); 
+            $pdf->Cell(53,8,'Fonction',1,0,'C',1);
+            $pdf->SetX(173); 
+            $pdf->Cell(55,8,utf8_decode('Téléphone'),1,0,'C',1);
+            $pdf->SetX(228); 
+            $pdf->Cell(60,8,'Adresse Email',1,0,'C',1);
+            $position_detail = 68; 
+            $ligne=0;
+            for ($i=0; $i<count($result2);$i++) {
+                $ligne = $ligne+1;
+                    if ($ligne == 15){
+                        $pdf->AddPage();
+                        $ligne = 0;
+                        $position_detail=68;
+                    }
+                $pdf->SetY($position_detail);
+                $pdf->SetX(10);
+                $pdf->MultiCell(50,8,utf8_decode($result2[$i]->getNom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(60); 
+                $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getPrenom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(120); 
+                $pdf->MultiCell(53,8,utf8_decode($result2[$i]->getProfil()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(173); 
+                $pdf->MultiCell(55,8,$result2[$i]->getTelephone(),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(228); 
+                $pdf->MultiCell(60,8,$result2[$i]->getEmail(),1,'C');
+                $position_detail += 8; 
+            }
+        }
+        elseif ($val_profil!=0 and $id2 == 0){
+            $prof = $profilRepository->find($val_profil);
+            $result2=$agentRepository->findByProfil($prof);
+            $pdf = new AgentPDF('L','mm','A4');
+            $pdf->AddPage();
+            $pdf->SetFont('Helvetica','B',9);
+            $pdf->SetTextColor(0);
+            $pdf->AliasNbPages();
+            $position_entete = 60;
+            $pdf->SetFont('Helvetica','',9);
+            $pdf->SetTextColor(0);
+            $pdf->SetDrawColor(255,215,0);
+            $pdf->SetFillColor(255,215,0);
+            $pdf->SetTextColor(0);
+            $pdf->SetY($position_entete);
+            $pdf->SetX(10);
+            $pdf->Cell(50,8,'Matricule',1,0,'C',1);
+            $pdf->SetX(60); 
+            $pdf->Cell(60,8,'Nom',1,0,'C',1);
+            $pdf->SetX(120); 
+            $pdf->Cell(53,8,'Fonction',1,0,'C',1);
+            $pdf->SetX(173); 
+            $pdf->Cell(55,8,utf8_decode('Téléphone'),1,0,'C',1);
+            $pdf->SetX(228); 
+            $pdf->Cell(60,8,'Adresse Email',1,0,'C',1);
+            $position_detail = 68; 
+            $ligne=0;
+            for ($i=0; $i<count($result2);$i++) {
+                $ligne = $ligne+1;
+                    if ($ligne == 15){
+                        $pdf->AddPage();
+                        $ligne = 0;
+                        $position_detail=68;
+                    }
+                $pdf->SetY($position_detail);
+                $pdf->SetX(10);
+                $pdf->MultiCell(50,8,utf8_decode($result2[$i]->getNom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(60); 
+                $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getPrenom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(120); 
+                $pdf->MultiCell(53,8,utf8_decode($result2[$i]->getProfil()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(173); 
+                $pdf->MultiCell(55,8,$result2[$i]->getTelephone(),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(228); 
+                $pdf->MultiCell(60,8,$result2[$i]->getEmail(),1,'C');
+                $position_detail += 8; 
+            }
+        }
+        elseif ($val_profil!=0 and $id2!=0){
+            $prof = $profilRepository->find($val_profil);
+            $agence = $agenceRepository->find($id2);
+            $result2=$agentRepository->findByProfil($prof)->findByAgence($agence);
+            $pdf = new AgentPDF('L','mm','A4');
+            $pdf->AddPage();
+            $pdf->SetFont('Helvetica','B',9);
+            $pdf->SetTextColor(0);
+            $pdf->AliasNbPages();
+            $position_entete = 60;
+            $pdf->SetFont('Helvetica','',9);
+            $pdf->SetTextColor(0);
+            $pdf->SetDrawColor(255,215,0);
+            $pdf->SetFillColor(255,215,0);
+            $pdf->SetTextColor(0);
+            $pdf->SetY($position_entete);
+            $pdf->SetX(10);
+            $pdf->Cell(50,8,'Matricule',1,0,'C',1);
+            $pdf->SetX(60); 
+            $pdf->Cell(60,8,'Nom',1,0,'C',1);
+            $pdf->SetX(120); 
+            $pdf->Cell(53,8,'Fonction',1,0,'C',1);
+            $pdf->SetX(173); 
+            $pdf->Cell(55,8,utf8_decode('Téléphone'),1,0,'C',1);
+            $pdf->SetX(228); 
+            $pdf->Cell(60,8,'Adresse Email',1,0,'C',1);
+            $position_detail = 68; 
+            $ligne=0;
+            for ($i=0; $i<count($result2);$i++) {
+                $ligne = $ligne+1;
+                    if ($ligne == 15){
+                        $pdf->AddPage();
+                        $ligne = 0;
+                        $position_detail=68;
+                    }
+                $pdf->SetY($position_detail);
+                $pdf->SetX(10);
+                $pdf->MultiCell(50,8,utf8_decode($result2[$i]->getNom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(60); 
+                $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getPrenom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(120); 
+                $pdf->MultiCell(53,8,utf8_decode($result2[$i]->getProfil()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(173); 
+                $pdf->MultiCell(55,8,$result2[$i]->getTelephone(),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(228); 
+                $pdf->MultiCell(60,8,$result2[$i]->getEmail(),1,'C');
+                $position_detail += 8; 
+            }
+        }
+        
         
         $pdf->Output('agence.pdf','I');
     }

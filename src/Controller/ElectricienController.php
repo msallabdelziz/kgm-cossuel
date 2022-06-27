@@ -41,7 +41,7 @@ class ElectricienController extends AbstractController
             $val_localite = $request->request->get("val_localite");
             if($val_localite) { $val_filtre["localite"] = $val_localite; }
         }
-
+        
         $les_electricien = $electricienRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($les_electricien, $request->query->getInt('page', 1), 20);
 
@@ -129,26 +129,24 @@ class ElectricienController extends AbstractController
         return $this->redirectToRoute('app_electricien_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/pdf', name: 'pdf')]
-    public function pdf(ClientPDF $pdf, ElectricienRepository $elecRepository)
+    #[Route('/pdfE', name: 'pdfE')]
+    public function pdfE(ClientPDF $pdf, ElectricienRepository $elecRepository)
     {
-        $pdf = new ClientPDF('L','mm','A4');
+        $pdf = new ClientPDF('P','mm','A4');
         $pdf->AddPage();
         $pdf->SetFont('Helvetica','B',9);
         $pdf->SetTextColor(0);
-        // Compteur de pages {nb}
         $pdf->AliasNbPages();
 
         // AFFICHAGE EN-TÊTE DU TABLEAU
         // Position ordonnée de l'entête en valeur absolue par rapport au sommet de la page (70 mm)
         $position_entete = 60;
         // police des caractères
-        $pdf->SetFont('Helvetica','',9);
+        $pdf->SetFont('Helvetica','N',9);
         $pdf->SetTextColor(0);
-        // on affiche les en-têtes du tableau
-        $pdf->SetDrawColor(255,215,0); // Couleur du fond RVB
-        $pdf->SetFillColor(255,215,0); // Couleur des filets RVB
-        $pdf->SetTextColor(0); // Couleur du texte noir
+        $pdf->SetDrawColor(255,215,0);
+        $pdf->SetFillColor(255,215,0);
+        $pdf->SetTextColor(0);
         $pdf->SetY($position_entete);
         // position de la colonne 2 (70 = 10+60)
         $pdf->SetX(35); 
@@ -166,19 +164,20 @@ class ElectricienController extends AbstractController
         $pdf->SetX(141); 
         $pdf->Cell(63,8,utf8_decode('Localité'),1,0,'C',1);
 
-        //$pdf->Ln(); // Retour à la ligne
+        $pdf->Ln(); // Retour à la ligne
 
         $position_detail = 68; // Position ordonnée = $position_entete+hauteur de la cellule d'en-tête (60+8)
         $result2 = $elecRepository->findBy([],['nom'=>'asc']);
-        //dd($result2[0]->getCode());
+        
         $ligne=0;
         for ($i=0; $i<count($result2);$i++) {
             $ligne = $ligne+1;
-                if ($ligne == 15){
+                if ($ligne == 27){
                     $pdf->AddPage();
                     $ligne = 0;
                     $position_detail=68;
-                }
+                } 
+
             $pdf->SetY($position_detail);
             $pdf->SetX(35); 
             $pdf->MultiCell(40,8,utf8_decode($result2[$i]->getNom()),1,'C');
@@ -189,7 +188,7 @@ class ElectricienController extends AbstractController
             // position abcisse de la colonne 3 (70 = 40+ 30)
             $pdf->SetY($position_detail);
             $pdf->SetX(75); 
-            $pdf->MultiCell(33,8,$result2[$i]->getAdresse(),1,'C');
+            $pdf->MultiCell(33,8,utf8_decode($result2[$i]->getAdresse()),1,'C');
             // position abcisse de la colonne 3 (100 = 70+ 30)
             $pdf->SetY($position_detail);
             $pdf->SetX(108); 
@@ -197,12 +196,13 @@ class ElectricienController extends AbstractController
             // position abcisse de la colonne 3 (130 = 100+ 30)
             $pdf->SetY($position_detail);
             $pdf->SetX(141); 
-            $pdf->MultiCell(63,8,'aaaa',1,'C');
+            $pdf->MultiCell(63,8,utf8_decode($result2[$i]->getLocalite()),1,'C');
 
             // on incrémente la position ordonnée de la ligne suivante (+8mm = hauteur des cellules)  
             $position_detail += 8; 
-            }
-            
-            $pdf->Output('electricien.pdf','I');
+        }
+        
+        $pdf->Output('electricien.pdf','I');
     }
+
 }

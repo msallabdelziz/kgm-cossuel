@@ -65,6 +65,6 @@ class TypeConstruction
 
     public function __toString()
     {
-        return "[".$this->getCode()."] ".$this->getNom();
+        return " ".$this->getNom();
     }
 }

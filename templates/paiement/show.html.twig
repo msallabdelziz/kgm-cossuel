@@ -73,7 +73,7 @@
                     </div>
                 {% endif %}
                 <div align="right">
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
+                    <a target="_blank" href="{{ path('app_install_pdf') }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
                     
                     {% if is_granted('ROLE_CAISSIER') or  is_granted('ROLE_COMPTABLE') or  is_granted('ROLE_DAF') %}
                         <a target="_blank" href="{{ path('app_installation_facturepdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Facture</a>
