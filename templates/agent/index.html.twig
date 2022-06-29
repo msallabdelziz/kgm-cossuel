@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -39,6 +39,11 @@
                     <svg class="bi" width="28" height="28" fill="#c32424">
                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
                     </svg>
+                    <a href="{{path('app_agent_excel')}}" class="ms-1">
+                        <svg class="bi" width="28" height="28" fill="green">
+                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-xls') }}"></use>
+                        </svg>
+                    </a>
                 </div>
             </div>
             <div class="clear"></div>
@@ -59,12 +64,13 @@
                 </div>
             {% else %}
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Liste des agents ({{ les_agent|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des agents ({{ les_agent.getTotalItemCount }})</caption>
             <thead>
                 <tr>
                     <th scope="col">Matricule</th> 
                     <th scope="col">Nom</th> 
                     <th class="priority-3" scope="col">Fonction</th>
+                    <th class="priority-3" scope="col">Agence</th>
                     <th class="priority-4 text-center" scope="col">Téléphone</th> 
                     <th class="priority-5" scope="col">Adresse Email</th>
                     {# <th scope="col">Agence</th> #}
@@ -78,12 +84,13 @@
                         <td scope="row"><a href="{{ path('app_agent_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.matricule }}</a></td>
                         <td>{{ ag.nom }} {{ ag.prenom }}</td>
                         <td class="priority-3">{{ ag.profil }}</td>
+                        <td class="priority-3">{{ ag.agence }}</td>
                         <td class="priority-4">{{ ag.telephone }}</td>
                         <td class="priority-5">{{ ag.email }}</td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}
-                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                                <span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
                             {% else %}
                                 <code class="text-danger text-opacity-50">Aucun département</code>
                             {% endif %}

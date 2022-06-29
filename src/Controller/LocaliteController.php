@@ -57,17 +57,17 @@ class LocaliteController extends AbstractController
             'data' => null,
             'class' => Localite::class,
             'query_builder' => function (LocaliteRepository $er) use ($departement, $agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('l')
-                    ->where('l.departement = :val') 
-                    ->andWhere('l.agence = :val2') 
-                    ->setParameter('val', $departement)
-                    ->setParameter('val2', $agence);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('l')
+                //     ->where('l.departement = :val') 
+                //     ->andWhere('l.agence = :val2') 
+                //     ->setParameter('val', $departement)
+                //     ->setParameter('val2', $agence);
+                // } else {
                     return $er->createQueryBuilder('l')
                     ->where('l.departement = :val') 
                     ->setParameter('val', $departement);
-                }
+                // }
             },
             'choice_label' => 'nom',
             'label' => 'Localité',

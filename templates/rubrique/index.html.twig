@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -48,7 +48,7 @@
                         <td>{{ reg.libelle }}</td>
                         <td class="text-center">
                             {% if reg.rubriques.count >0 %}
-                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.rubriques.count }}</span>
+                                <span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.rubriques.count }}</span>
                             {% else %}
                                 <code class="text-danger text-opacity-50">Aucune rubrique</code>
                             {% endif %}

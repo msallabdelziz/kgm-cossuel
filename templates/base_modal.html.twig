@@ -7,6 +7,10 @@
 					<div class="container-fluid">
 		{% endif %}
 
+		{% if val_rech is defined %}
+			{% include "include/_search_listem.html.twig" %}
+		{% endif %}
+
 		{% block body %}{% endblock %}
 
 	    {% if app.user %}

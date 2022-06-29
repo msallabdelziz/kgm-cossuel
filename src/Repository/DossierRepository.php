@@ -79,6 +79,12 @@ class DossierRepository extends ServiceEntityRepository
                 if($p=="agence") {
                     $q->andWhere('l.'.$p.' = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
+                } elseif($p=="usages") {
+                    $q->andWhere('i.usages = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="passage") {
+                    $q->andWhere('d.numeroPassage = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
@@ -88,6 +94,8 @@ class DossierRepository extends ServiceEntityRepository
         }
         if($orderBy) {
             $q->orderBy('a.'.$orderBy, 'ASC');
+        } else {
+            $q->orderBy('a.created_at', 'DESC');
         }
         if($page) {
             $q
@@ -129,23 +137,32 @@ class DossierRepository extends ServiceEntityRepository
             foreach ($val_filtre as $p => $v) {
                 if($p=="etat") {
                     $restr="0=1";
+                    if($v=="Validé|Affecté") { $restr="(a.affecte = 0 or a.affecte = 1) and a.visite = 0 and a.rapport = 0 and a.attestation = 0"; }
+                    if($v=="Visite|Rapport") { $restr="a.affecte = 1 and (a.visite = 0 or a.visite = 1) and a.rapport = 0 and a.attestation = 0"; }
+                    if($v=="Attestation|Cloture") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and (a.attestation = 0 or a.attestation = 1)"; }
                     if($v=="Validé, En Attente Affectation" || $v=="En Attente Affectation" || $v=="Affectation") { $restr="a.affecte = 0 and a.visite = 0 and a.rapport = 0 and a.attestation = 0"; }
                     elseif($v=="Visite" || $v=="Affecté, En Attente Visite" || $v=="En Attente Visite") { $restr="a.affecte = 1 and a.visite = 0 and a.rapport = 0 and a.attestation = 0"; }
-                    elseif($v=="Rapport" || $v=="Visite Planifiée, En Attente de Rapport" || $v=="En Attente de Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 0 and a.attestation = 0"; }
-                    elseif($v=="Attestation" || $v=="Visite Réalisée, En Attente de Confirmation Rapport" || $v=="En Attente de Confirmation Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 0"; }
-                    elseif($v=="Cloture" || $v=="Clôture" || $v=="En Attente de Cloture" || $v=="Rapport confirmé, En Attente de Clôture" || $v=="En Attente de Clôture") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 1"; }
+                    elseif($v=="Rapport" || $v=="Attente Rapport" || $v=="Visite Planifiée, En Attente de Rapport" || $v=="En Attente de Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 0 and a.attestation = 0"; }
+                    elseif($v=="Attestation" || $v=="Attente validation rapport" || $v=="Rapport Soumis" || $v=="Visite Réalisée, En Attente de Confirmation Rapport" || $v=="En Attente de Confirmation Rapport") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 0"; }
+                    elseif($v=="Cloture" || $v=="Rapport validé, Clôturé" || $v=="Clôture" || $v=="En Attente de Cloture" || $v=="Rapport confirmé, En Attente de Clôture" || $v=="En Attente de Clôture") { $restr="a.affecte = 1 and a.visite = 1 and a.rapport = 1 and a.attestation = 1"; }
                     elseif($v=="Soumis" || $v=="Soumis, En Attente Paiement" || $v=="En Attente Paiement") { $restr="c.etat='Soumis'"; }
 //                    elseif($v=="Demande Validée" || $v=="Validé") { $restr="c.etat='Demande validée'"; }
                     elseif($v=="Paiement enregistré" || $v=="Payé, En Attente confirmation Paiement" || $v=="En Attente confirmation Paiement") { $restr="c.etat='Paiement enregistré'"; }
                     elseif($v=="Paiement confirmé" || $v=="Payé" || $v=="En Attente Validation" || $v=="Payé, En Attente Validation") { $restr="c.etat='Paiement confirmé'"; }
                     elseif($v=="Chez Controleur") { $restr="(a.affecte = 0 or a.visite = 0 or a.rapport = 0)"; }
                     elseif($v=="Chez Controleur0") { $restr="(a.affecte = 1 and (a.visite = 0 or a.rapport = 0))"; }
-                    elseif($v=="Cloture") { $restr="(a.attestation = 1 and a.dateCloture is not null and a.cloture = 1)"; }
+                    elseif($v=="Cloture" || $v=="Clôturé") { $restr="(a.attestation = 1 and a.dateCloture is not null and a.cloture = 1)"; }
                     elseif($v=="Clôturé - Conforme") { $restr="(a.cloture = 1 and a.conforme = 1)"; }
                     elseif($v=="Clôturé - Non Conforme") { $restr="(a.cloture = 1 and a.conforme = 0)"; }
                     $q->andWhere($restr);
                 } elseif($p=="agence") {
                     $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="usages") {
+                    $q->andWhere('b.usages = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="passage") {
+                    $q->andWhere('c.numeroPassage = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)
@@ -156,6 +173,8 @@ class DossierRepository extends ServiceEntityRepository
         }
         if($orderBy) {
             $q->orderBy('a.'.$orderBy, 'ASC');
+        } else {
+            $q->orderBy('a.created_at', 'DESC');
         }
         if($page) {
             $q

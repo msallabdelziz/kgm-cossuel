@@ -1,0 +1,3 @@
+#!/bin/sh
+#rsync -av ./ cossuelapp@144.91.93.102:/home/cossuelapp/www/appcossuel/ --include=public/.htaccess  --include=vendor --exclude-from=.gitignore --exclude=.git*
+rsync -av --rsh='ssh -p2287' ./ cossuel@13.38.181.240:/home/cossuel/webapp/sgcc2/ --include=public/.htaccess  --exclude-from=.gitignore --exclude=.git* --exclude=composer.* --exclude=config/* --exclude=migration/*

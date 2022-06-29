@@ -34,9 +34,9 @@
 
 {% endfor %}
 {# Etape: {{ installation.step }} - Courant: {{ curr_etat }} : Couleur: {{ coulX }} #}
-<div class="row">
+<div>
     <!-- progressbar -->
-    <ul id="progressbar">
+    <ul id="progressbar" class="row priority-3">
     {% for i in 0..5 %}
         {% set id_install = 0 %}
         {% if installation.id %}
@@ -44,7 +44,7 @@
         {% endif %}
         <li class="step {{ les_etat[i] }}">
         {% if les_link[i] %}
-            <svg onclick="location.href = '{{ path(les_link[i] , {'id': id_install}) }}'" class="pt bi" width="24" height="24" fill="{{ les_coul[i] }}" style="position:relative; left:43%; top:-48px;">
+            <svg onclick="location.href = '{{ path(les_link[i] , {'id': id_install}) }}'" class="pt bi" width="16%" height="24" fill="{{ les_coul[i] }}" style="position:relative; left:42%; top:-48px;">
                 <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#' ~ les_icon[i]) }}"></use>
             </svg>
         {% else %}

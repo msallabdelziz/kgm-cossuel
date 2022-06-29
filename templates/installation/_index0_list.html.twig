@@ -1,4 +1,4 @@
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -9,39 +9,59 @@
                             <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
                         </select>
                     </div>
+                    <div>
+                        <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
+                            <div class="col-3  fs-6">
+                                <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                                    <option value="">Toutes les Agences ...</option>
+                                    {% for obj in les_agence %}
+                                        <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-3 fs-6">
+                                <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
+                                    <option value="">Tous les Usages ...</option>
+                                    {% for obj,lib_obj in les_usage %}
+                                        <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{lib_obj}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-3 fs-6">
+                                <select name="val_passage0" id="val_passage0" class="form-select form-select-sm border-warning py-1">
+                                    <option value="">Tous les Passages ...</option>
+                                    {% for obj,lib_obj in les_passage %}
+                                        <option value="{{obj}}" {% if obj == val_passage %} selected="selected"{% endif %}>{{lib_obj}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-3 fs-6">
+                                <select name="val_statut0" id="val_statut0" class="form-select form-select-sm border-success py-1">
+                                    <option value="">Tous les statuts ...</option>
+                                    {% for obj in les_statut %}
+                                        <option value="{{obj}}" {% if obj == val_statut %} selected="selected"{% endif %}>{{obj}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <span class="divider">
                     <hr></span>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
-                <div class="col-2 offset-3 fs-6 border-bottom">
-                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Toutes les Agences ...</option>
-                        {% for obj in les_agence %}
-                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-2 fs-6 border-bottom">
-                    <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
-                        <option value="">Tous les Usages ...</option>
-                        {% for obj,lib_obj in les_usage %}
-                            <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{lib_obj}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-2 fs-6 border-bottom">
-                    <select name="val_statut0" id="val_statut0" class="form-select form-select-sm border-success py-1">
-                        <option value="">Tous les statuts ...</option>
-                        {% for obj in les_statut %}
-                            <option value="{{obj}}" {% if obj == val_statut %} selected="selected"{% endif %}>{{obj}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+            <div class="clear"></div>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; z-index:999">
+                <div class="offset-9 col-2 fs-6"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
                 <div class="col-1" align="center">
-                    <svg class="bi" width="28" height="28" fill="#c32424">
-                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
-                    </svg>
+                    {# <a href="{{path('app_installation_pdf1')}}" class="ms-1">
+                        <svg class="bi" width="28" height="28" fill="#c32424">
+                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                        </svg>
+                    </a> #}
+                    <a href="{{path('app_installation_excel')}}" class="ms-1">
+                        <svg class="bi" width="28" height="28" fill="green">
+                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-xls') }}"></use>
+                        </svg>
+                    </a>
                 </div>
             </div>
             <div class="clear"></div>
@@ -62,11 +82,12 @@
                 </div>
             {% else %}
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation.getTotalItemCount }})</caption>
             <thead>
                 <tr>
                     <th scope="col">N° demande</th> 
-                    <th scope="col">Usage</th> 
+                    <th class="priority-3">Date Demande</th> 
+                    <th class="priority-3">Usage</th> 
                     <th class="priority-4">Agence</th>
                     <th class="priority-5">Localité</th>
                     {# <th class="priority-5">Adresse</th> #}
@@ -83,15 +104,15 @@
                     {% if ag.step < 7 %}
                         {% set badge_etat = "danger" %}
                     {% endif %}
-                    {% if ag.step <= 7 %}
+                    {% if ag.step >= 7 and ag.step <9 %}
                         {% set badge_etat = "warning" %}
                     {% endif %}
-                    {% if ag.step > 7 %}
+                    {% if ag.step >= 9 %}
                         {% set badge_etat = "success" %}
                     {% endif %}
                     <tr>
                         <td scope="row">
-                            {% if ag.demandeCourante %}
+                            {% if ag.step>=7 and ag.etat!="Saisie" %}
                                 <a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">
                                     {{ ag.demandeCourante.numero }}
                                 </a>
@@ -101,7 +122,14 @@
                                 </a>
                             {% endif %}
                         </td>
-                        <td><a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">
+                        <td class="priority-3">
+                            {% if ag.step>=7 and ag.etat!="Saisie" %}
+                            <span class="badge text-secondary fs-8">{{ ag.demandeCourante.dateCreation | date("d-m-Y") }}</span>
+                            {% else %}
+                            <span class="badge text-secondary fs-8">{{ ag.createdAt | date("d-m-Y") }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="priority-3"><a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">
                             {% if ag.usages == "domestique" %}
                                 <span class="text-warning fs-8 fw-bold">Domestique</span>
                             {% elseif ag.usages == "non_domestique" %}
@@ -150,13 +178,16 @@
                                 {% set label_etat = "warning" %}
                                 {% set etat = "Soumis" %}
                                 {% set demande = ag.demandeCourante %} 
-                                {% if demande %}
+                                {% if demande and ag.etat!="Saisie" %}
                                     {% set paiement = demande.paiement %} 
                                     {% set dossier = demande.dossier %} 
                                     {% if paiement %}
                                         {% set etat = 'Paiement enregistré' %}
                                         {% if paiement.paiementEffectue %}
                                             {% set etat = 'Paiement validé' %}
+                                            {% if paiement.etatRembousement %}
+                                                {% set etat = 'Paiement validé - Remboursé' %}
+                                            {% endif %}
                                         {% endif %}
                                         {% set label_etat = 'warning' %} 
                                     {% endif %}
@@ -178,24 +209,70 @@
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
-                                <span class="fs-8 badge badge-{{label_etat}}">{{etat}}</span>
+                                
+                                {# {% if ag.demandeCourante and ag.demandeCourante.rejet %}
+                                    <span class="text-light badge bg-danger fs-8 me-0">Soumission Rejetée</span>
+                                {% else %}
+                                    {% if not demande or ag.step<7 %}
+                                        {% set etat = ag.etat %}
+                                        {% set label_etat = " text-danger p-1" %}
+                                    {% endif %}
+                                    <span class="fs-8 badge badge-{{label_etat}}">{{etat}}</span>
+                                {% endif %}                                 #}
+
+                                {% if ag.demandeCourante and ag.demandeCourante.rejet %}
+                                    <span class="text-light badge bg-danger fs-8 me-0">Soumission Rejetée</span>
+                                {% else %}
+                                    {% if ag.step>=7 and ag.etat != "Saisie" %}
+                                        {% if ag.demandeCourante and not ag.demandeCourante.dossier %}
+                                            {% set etat = ag.demandeCourante.etat %}
+                                        {% endif %}
+                                        {% if ag.demandeCourante and ag.demandeCourante.dossier %}
+                                            {% set etat = ag.demandeCourante.dossier.etat %}
+                                            {% if ag.demandeCourante.dossier.cloture == 0 %}
+                                                {% set etat = "Attente " ~ ag.demandeCourante.dossier.etat %}
+                                            {% endif %}
+                                            {% if ag.demandeCourante.dossier.cloture %}
+                                                {% if ag.demandeCourante.dossier.conforme %}
+                                                    {% set badge_etat = " bg-success" %}
+                                                {% else %}
+                                                    {% set badge_etat = " bg-danger bg-opacity-25 text-red" %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% else %}
+                                        {% set etat = ag.etat %}
+                                    {% endif %}
+                                    {% if etat == "Accepté" %} {% set etat = "Attente Paiement" %}{% endif %}
+                                    {% if etat == "Soumis" %} {% set etat = "Soumis, Attente validation" %}{% endif %}
+                                    <span class="badge badge-{{ badge_etat }} fs-8">{{ etat }}</span>
+                                {% endif %}
+
                             </a>
                         </td>
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}
-                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                                <span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
                             {% else %}
                                 <code class="text-danger text-opacity-50">Aucun département</code>
                             {% endif %}
                         </td> #}
                         <td class="text-end">
-                            {% if ag.step>7 and (ag.demandeCourante and ag.demandeCourante.paiement) %} 
-                                <a href="{{ path('app_paiement_show', {'id': ag.demandeCourante.idPaiement }) }}" class="mx-1" title="Afficher les détails">
-                                    <svg class="bi" width="16" height="16" fill="black">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
-                                    </svg>
-                                </a>
+                            {% if ag.step>7 and (ag.demandeCourante and ag.demandeCourante.paiement ) %} 
+                                {% if ag.demandeCourante.dossier %}
+                                    <a href="{{ path('app_dossier_show', {'id': ag.demandeCourante.dossier.id }) }}" class="mx-1" title="Afficher les détails">
+                                        <svg class="bi" width="16" height="16" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
+                                        </svg>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_paiement_show', {'id': ag.demandeCourante.paiement.id }) }}" class="mx-1" title="Afficher les détails">
+                                        <svg class="bi" width="16" height="16" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
+                                        </svg>
+                                    </a>
+                                {% endif %}
                             {% else %}
                                 <a href="{{ path('app_installation_show', {'id': ag.id }) }}" class="mx-1" title="Afficher les détails">
                                     <svg class="bi" width="16" height="16" fill="black">

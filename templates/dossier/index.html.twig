@@ -24,7 +24,7 @@
             $("#form_affichage_demande").submit();
         });
 
-        {% for filtre in ["agence", "controleur", "statut"] %}
+        {% for filtre in ["agence", "controleur", "statut", "referent", "usage", "passage"] %}
             $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
             $('#val_{{filtre}}0').on('change', function() {
                 optSel=$('#val_{{filtre}}0').find("option:selected");

@@ -58,12 +58,21 @@ body {
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 }
 
+.text-red { color:red; }
+.text-green { color:green; }
+.text-yellow { color:yellow; }
+.text-blue { color:blue; }
+
 .fs-7 {
     font-size: 0.9rem!important;
 }
 
 .fs-8 {
     font-size: 0.8rem!important;
+}
+
+.fs-9 {
+    font-size: 0.7rem!important;
 }
 
 form label {

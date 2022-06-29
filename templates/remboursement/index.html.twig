@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -53,11 +53,11 @@
                 </div>
             {% else %}
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Remboursements ({{ les_remboursement|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des Remboursements ({{ les_remboursement.getTotalItemCount }})</caption>
             <thead>
                 <tr>
                     <th scope="col">N° demande</th> 
-                    <th scope="col">Usage</th> 
+                    <th class="priority-3">Usage</th> 
                     <th class="priority-4">Agence</th>
                     <th class="priority-5">Date Demande</th>
                     {# <th class="priority-5">Adresse</th> #}
@@ -81,7 +81,7 @@
                                     {{ ag.paiement.demande.numero }}
                                 </a>
                         </td>
-                        <td>
+                        <td class="priority-3">
                         <a href="{{ path('app_remboursement_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">
                             {% if ag.paiement.demande.installation.usages == "domestique" %}
                                 <span class="text-warning fs-8 fw-bold">Domestique</span>
@@ -106,18 +106,21 @@
                                 {{ ag.montant }} FCFA
                         </td>
                         <td class="priority-4">
-                            {% if ag.dateValidation %}
-                                {{ ag.dateValidation }}
-                            {% else %}
-                                <span class="text-danger">-</span>
+                            {% if ag.valide %}
+                                <span class="text-success">Validé le {{ ag.dateValidation|date("d-m-Y") }}</span>
+                            {% endif %}
+                            {% if ag.rejete %}
+                                <span class="text-danger">Rejeté le {{ ag.updatedAt|date("d-m-Y") }}</span>
                             {% endif %}
                         </td>
                         <td>
                             <a  href="{{ path('app_remboursement_show', {'id': ag.id }) }}">
                                 {% if ag.valide %}
                                     <span class="badge bg-success fs-8">Validé</span>
+                                {% elseif ag.rejete %}
+                                    <span class="badge bg-danger fs-8">Rejeté</span>
                                 {% else %}
-                                    <span class="badge bg-danger fs-8">En Attente Validation</span>
+                                    <span class="badge bg-warning fs-8">En Attente Validation</span>
                                 {% endif %}
                             </a>
                         </td>

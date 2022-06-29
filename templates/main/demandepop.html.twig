@@ -9,11 +9,31 @@
 			<div class="row mt-2">
 				<div class="card">
 					<div class="d-flex align-items-center justify-content-between">
-						<h4 class="fw-bold">Demandes {{titre}} ({{ les_demande|length }})</h4>
+						<h4 class="fw-bold">Demandes {{titre}} ({{ les_demande.getTotalItemCount }}) </h4>
 						<a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
 					</div>
-					<span class="divider">
-						<hr></span>
+					<span class="divider"><hr></span>
+
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+				<div class="col-3 fs-7">
+					<div class="row">
+						<div class="col-6"><span class="fw-light fs-7">Page {{les_demande.getCurrentPageNumber}} / {{les_demande.getPageCount}}</span></div>
+						<div class="col-6">
+							{% do les_demande.setPageRange(1)%}
+								{{ knp_pagination_render(les_demande, 'paginationpop.html.twig')}}
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+                <div class="col-2 offset-6  fs-6"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rechm0" name="val_rechm0" 
+				value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" 
+				onkeydown="if (event.keyCode == 13) { $('#val_rechm').val($('#val_rechm0').val()); $('#form_rech_listm').on('submit',function(){ url='{{ path('main_demandepop', {'restr': restr ~ '|val_rech'}) }}'; url = url.replace('val_rech', $('#val_rechm').val()); $('#modal2').find('.modal-body').load(url); return false; }); $('#form_rech_listm').submit(); }"
+				/></div>
+
+            </div>
+			<div class="col-1"></div>
+            <div class="clear"></div>
             	{% if les_demande|length == 0 %}
                 <div class="row pt-20">
                     <div class="col-3"></div>
@@ -33,6 +53,7 @@
 				<thead>
 					<tr>
 						<th scope="col">N° demande</th> 
+						<th class="priority-3" scope="col">Date Demande</th> 
 						<th class="priority-3" scope="col">Usage</th> 
 						<th class="priority-4">Agence</th>
 						<th class="priority-5">Localité</th>
@@ -56,6 +77,13 @@
 						<tr>
 							<td scope="row" class="fw-bold">
 								{{ dem.numero }}
+							</td>
+							<td class="priority-3">
+								{% if ag.step>=7 and ag.etat!="Saisie" %}
+								<span class="badge text-secondary fs-8">{{ ag.demandeCourante.dateCreation | date("d-m-Y") }}</span>
+								{% else %}
+								<span class="badge text-secondary fs-8">{{ ag.createdAt | date("d-m-Y") }}</span>
+								{% endif %}
 							</td>
 							<td class="priority-3">
 								{% if ag.usages == "domestique" %}
@@ -96,6 +124,9 @@
 									{% set etat = 'Paiement enregistré' %}
 									{% if paiement.paiementEffectue %}
 										{% set etat = 'Paiement validé' %}
+										{% if paiement.etatRembousement %}
+											{% set etat = 'Paiement validé - Remboursé' %}
+										{% endif %}
 									{% endif %}
 									{% set label_etat = 'warning' %} 
 								{% endif %}
@@ -124,10 +155,9 @@
 				</tbody>
 				</table>
 
-                {% do les_demande.setPageRange(1)%}
-                {{ knp_pagination_render(les_demande, 'pagination.html.twig')}}
-
-				{% endif %}
+                {# {% do les_demande.setPageRange(1)%}
+	                {{ knp_pagination_render(les_demande, 'paginationpop.html.twig')}}
+				{% endif %} #}
 					</div>
 
 			</div>
@@ -136,3 +166,7 @@
 		</div>
 		<!-- ========== title-wrapper end ========== -->
 {% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+

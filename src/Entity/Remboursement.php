@@ -130,14 +130,14 @@ class Remboursement
         return $this;
     }
 
-    public function getRejet(): ?bool
+    public function getRejete(): ?bool
     {
-        return $this->rejet;
+        return $this->rejete;
     }
 
-    public function setRejet(bool $rejet): self
+    public function setRejete(bool $rejet): self
     {
-        $this->rejet = $rejet;
+        $this->rejete = $rejet;
 
         return $this;
     }

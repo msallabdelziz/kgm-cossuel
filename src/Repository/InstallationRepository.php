@@ -87,6 +87,7 @@ class InstallationRepository extends ServiceEntityRepository
         $q = $this->createQueryBuilder('a')
         ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = a.localite')
         ->leftjoin('App\Entity\Demande', 'b', 'WITH', 'a.id = b.installation')
+        ->leftjoin('App\Entity\Dossier', 'd', 'WITH', 'b.id = d.demande')
         ->leftjoin('App\Entity\Electricien', 'e', 'WITH', 'e.id = a.electricien')
         ->leftjoin('App\Entity\Proprietaire', 'p', 'WITH', 'p.id = a.proprietaire')
         ;
@@ -99,13 +100,30 @@ class InstallationRepository extends ServiceEntityRepository
             foreach ($val_filtre as $p => $v) {
                 if($p=="etat") {
                     $restr="a.step = 0";
-                    if($v=="Saisie") { $restr='a.step < 7'; }
-                    elseif($v=="Soumis") $restr='a.step = 7 or a.step = 8';
-                    elseif($v=="Payé") $restr='a.step = 9';
-                    elseif($v=="Validé") $restr='a.step = 10';
+                    if($v=="Saisie" or $v=="En Saisie") { $restr='a.step < 7'; }
+                    elseif($v=="SaisieSoumis") $restr='(a.step <= 7)';
+                    elseif($v=="Soumis0") $restr='(b.accepte=0 and (b.etat = 7))';
+                    elseif($v=="Soumis") $restr='((a.step = 7))';
+                    elseif($v=="Payé|Validé") $restr='a.step = 9 or (a.step = 10 and d.affecte=0)';
+                    elseif($v=="Payé" || $v=="Payé, Attente Validation") $restr='a.step = 9';
+                    elseif($v=="Validé") $restr='a.step = 10 and d.affecte=0';
+                    elseif($v=="Paiement validé") $restr='a.step = 9';
+                    elseif($v=="Validé, En Attente Affectation") $restr='a.step = 10 and d.affecte=0';
+                    elseif($v=="Paiement enregistré") $restr='a.step = 8';
+                    elseif($v=="En Attente Validation Soumission" || $v=="Soumis, Attente Validation" || $v=="En Attente Validation") $restr="a.step = 7 and b.accepte=0";
+                    elseif($v=="Attente Paiement" || $v=="Soumis, Accepté" || $v=="Soumis, Validé") $restr="a.step = 7 and b.accepte=1";
+                    elseif($v=="Soumis, Accepté, Payé") $restr="(a.step = 7 and b.accepte=1) or a.step=8";
+                    
+                    elseif($v=="Affecté, En Attente Visite") $restr="d.affecte = 1 and d.visite = 0 and d.rapport = 0 and d.attestation = 0";
+                    elseif($v=="Visite Planifiée, En Attente de Rapport") $restr="d.affecte = 1 and d.visite = 1 and d.rapport = 0 and d.attestation = 0";
+                    elseif($v=="Visite Réalisée, En Attente de Confirmation Rapport") $restr="d.affecte = 1 and d.visite = 1 and d.rapport = 1 and d.attestation = 0";
+                    elseif($v=="Rapport confirmé, Clôture") $restr="d.affecte = 1 and d.visite = 1 and d.rapport = 1 and d.attestation = 1";
                     $q->andWhere($restr);
                 } elseif($p=="agence") {
                     $q->andWhere('l.'.$p.' = :val'.$ix)
+                    ->setParameter('val'.$ix, "$v");
+                } elseif($p=="passage") {
+                    $q->andWhere('b.numeroPassage = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
                 } else {
                     $q->andWhere('a.'.$p.' = :val'.$ix)
@@ -116,6 +134,8 @@ class InstallationRepository extends ServiceEntityRepository
         }
         if($orderBy) {
             $q->orderBy('a.'.$orderBy, 'ASC');
+        } else {
+            $q->orderBy('a.created_at', 'DESC');
         }
         if($page) {
             $q

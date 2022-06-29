@@ -45,7 +45,7 @@ class Paiement
     #[ORM\ManyToOne(targetEntity: Agent::class, inversedBy: 'paiement')]
     private $comptable;
 
-    #[ORM\OneToMany(mappedBy: 'paiement_id', targetEntity: Remboursement::class)]
+    #[ORM\OneToMany(mappedBy: 'paiement', targetEntity: Remboursement::class)]
     private $remboursements;
 
     public function __construct()
@@ -182,6 +182,17 @@ class Paiement
         return $this;
     }
 
+    public function getRemboursement(): ?Remboursement
+    {
+        $res=$this->remboursements;
+        if($res->count()) {
+            return $res[0];
+        } else {
+            return null;
+        }
+    }
+
+
     public function __toString()
     {
         return "[".$this->getReference()." ".$this->getDatePaiement()->format("d/m/Y")."]";
@@ -199,7 +210,7 @@ class Paiement
     {
         if (!$this->remboursements->contains($remboursement)) {
             $this->remboursements[] = $remboursement;
-            $remboursement->setPaiementId($this);
+            $remboursement->setPaiement($this);
         }
 
         return $this;
@@ -209,8 +220,8 @@ class Paiement
     {
         if ($this->remboursements->removeElement($remboursement)) {
             // set the owning side to null (unless already changed)
-            if ($remboursement->getPaiementId() === $this) {
-                $remboursement->setPaiementId(null);
+            if ($remboursement->getPaiement() === $this) {
+                $remboursement->setPaiement(null);
             }
         }
 

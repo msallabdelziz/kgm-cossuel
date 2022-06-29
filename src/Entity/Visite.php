@@ -51,6 +51,9 @@ class Visite
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $commentaire;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $commentaire2;
+
     #[ORM\OneToMany(mappedBy: 'visite', targetEntity: DetailVerification::class)]
     private $detailVerification;
 
@@ -60,11 +63,33 @@ class Visite
     #[ORM\ManyToOne(targetEntity: Rapport::class)]
     private $rapport;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $motifRejetRapport;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $mesurePriseTerre="";
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $barrette="";
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $localNV="";
+
+    #[ORM\Column(type: 'boolean')]
+    private $rejetRapport = false;
+
+    #[ORM\OneToMany(mappedBy: 'visite', targetEntity: Signature::class)]
+    private $signatures;
+
     public function __construct()
     {
         $this->created_by = "";
+        $this->rejetRapport = false;
+        $this->motifRejetRapport = "";
+        $this->mesurePriseTerre = "0";
         $this->created_at = new \DateTimeImmutable();
         $this->detailVerification = new ArrayCollection();
+        $this->signatures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,6 +219,18 @@ class Visite
         return $this;
     }
 
+    public function getCommentaire2(): ?string
+    {
+        return $this->commentaire2;
+    }
+
+    public function setCommentaire2(?string $commentaire2): self
+    {
+        $this->commentaire2 = $commentaire2;
+
+        return $this;
+    }
+
     public function getPlanifie(): ?bool
     {
         return $this->planifie;
@@ -252,6 +289,124 @@ class Visite
         $this->atteste = $atteste;
 
         return $this;
+    }
+
+    public function getRejetRapport(): ?bool
+    {
+        return $this->rejetRapport;
+    }
+
+    public function setRejetRapport(bool $rejetRapport): self
+    {
+        $this->rejetRapport = $rejetRapport;
+
+        return $this;
+    }
+
+    public function getMotifRejetRapport(): ?string
+    {
+        return $this->motifRejetRapport;
+    }
+
+    public function setMotifRejetRapport(?string $motifRejetRapport): self
+    {
+        $this->motifRejetRapport = $motifRejetRapport;
+
+        return $this;
+    }
+
+    public function getMesurePriseTerre(): ?string
+    {
+        return $this->mesurePriseTerre;
+    }
+
+    public function setMesurePriseTerre(?string $mesurePriseTerre): self
+    {
+        $this->mesurePriseTerre = $mesurePriseTerre;
+
+        return $this;
+    }
+
+    public function getBarrette(): ?string
+    {
+        return $this->barrette;
+    }
+
+    public function setBarrette(?string $barrette): self
+    {
+        $this->barrette = $barrette;
+
+        return $this;
+    }
+
+    public function getLocalNV(): ?string
+    {
+        return $this->localNV;
+    }
+
+    public function setLocalNV(?string $localNV): self
+    {
+        $this->localNV = $localNV;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Signature>
+     */
+    public function getSignatures(): Collection
+    {
+        return $this->signatures;
+    }
+
+    public function addSignature(Signature $signature): self
+    {
+        if (!$this->signatures->contains($signature)) {
+            $this->signatures[] = $signature;
+            $signature->setVisite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSignature(Signature $signature): self
+    {
+        if ($this->signatures->removeElement($signature)) {
+            // set the owning side to null (unless already changed)
+            if ($signature->getVisite() === $this) {
+                $signature->setVisite(null);
+            }
+        }
+
+        return $this;
+    }
+    
+    public function getSignelectricien(): ?Signature
+    {
+        $les_pj = $this->signatures;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Signature Electricien") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getSigncontroleur(): ?Signature
+    {
+        $les_pj = $this->signatures;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Signature Controleur") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
     }
 
     public function __toString()

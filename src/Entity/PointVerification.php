@@ -30,9 +30,12 @@ class PointVerification
     #[ORM\ManyToOne(targetEntity: Rubrique::class, inversedBy: 'pointVerifications')]
     private $rubrique;
 
+    #[ORM\OneToMany(mappedBy: 'pointVerification', targetEntity: PointNonconf::class)]
+    private $pointNonconf;
+
     public function __construct()
     {
-
+        $this->pointNonconf = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -96,6 +99,36 @@ class PointVerification
     public function setRubrique(?Rubrique $rubrique): self
     {
         $this->rubrique = $rubrique;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PointNonconf>
+     */
+    public function getPointNonconf(): Collection
+    {
+        return $this->pointNonconf;
+    }
+
+    public function addPointNonconf(PointNonconf $pointNonconf): self
+    {
+        if (!$this->pointNonconf->contains($pointNonconf)) {
+            $this->pointNonconf[] = $pointNonconf;
+            $pointNonconf->setPointVerification($this);
+        }
+
+        return $this;
+    }
+
+    public function removePointNonconf(PointNonconf $pointNonconf): self
+    {
+        if ($this->pointNonconf->removeElement($pointNonconf)) {
+            // set the owning side to null (unless already changed)
+            if ($pointNonconf->getPointVerification() === $this) {
+                $pointNonconf->setPointVerification(null);
+            }
+        }
 
         return $this;
     }

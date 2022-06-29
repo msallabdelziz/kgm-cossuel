@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -50,7 +50,7 @@
                 </div>
             {% else %}
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Liste des utilisateurs ({{ les_utilisateur|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Liste des utilisateurs ({{ les_utilisateur.getTotalItemCount }})</caption>
             <thead>
                 <tr>
                     <th scope="col">Type</th> 
@@ -74,7 +74,7 @@
                         {# <td>{{ ag.agence }}</td> #}
                         {# <td class="text-center">
                             {% if reg.departement.count >0 %}
-                                <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                                <span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
                             {% else %}
                                 <code class="text-danger text-opacity-50">Aucun département</code>
                             {% endif %}

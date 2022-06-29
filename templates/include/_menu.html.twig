@@ -127,7 +127,19 @@
 										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
 									</svg>
 								</span>
-								<span class="text">Paiement demande</span>
+								<span class="text">Instances Paiement</span>
+							</a>
+                        </li>
+				{% endif %}
+				{% if is_granted('ROLE_CAISSIER') or is_granted('ROLE_COMPTABLE') %}
+                        <li>
+                            <a href="{{ path('app_paiement_histo') }}" class="{% if app.session.get('sousmenu') == 'histo_paiement' %}active{% endif %}"> 
+								<span class="icon">
+									<svg class="bi" width="20" height="20" fill="black">
+										<use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#cash') }}"></use>
+									</svg>
+								</span>
+								<span class="text">Historique Paiement</span>
 							</a>
                         </li>
 				{% endif %}

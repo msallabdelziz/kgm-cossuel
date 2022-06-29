@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -39,9 +39,9 @@
         {% set link_liste = app.session.get('page_liste_dossier') %}
     {% endif %}
     
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de dossiers </span>
             </a>
         </header>
@@ -66,7 +66,7 @@
         </div>
 
         <div class="row pt-4">
-            <div class="col-lg-8 mb-2">
+            <div class="col-lg-8 mb-2 priority-4">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif {% if demande and demande.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
@@ -270,7 +270,7 @@
                     {% if demande.installation.electricien %}
                     <div class="card mb-2">
                         <h2 class="fs-title titre_bloc_4">
-                            Informations sur l'électricien installateur
+                            Informations sur l'électricien
                             <div class="float-end">
                                 <a class="pt fs-7 text-warning btn_bloc_4" title="Afficher les détails">
                                 <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
@@ -376,10 +376,59 @@
                     </h2>
                     <div class="row">
                         <hr class="mb-3" />
-                        <div class="mb-3 ">
-                            <label >Date création dossier</label>
-                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >N° Dossier</label>
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-0 fw-bold fs-6" value="{{ dossier.demande.numero }}">
+                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Date création dossier</label>
+                                <input type="text" disabled readonly class=" form-control text-success form-control py-0 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" class="fs-7" >Usage</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fw-bold fs-6" value="{{ dossier.demande.installation.usages }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Puissance</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fs-6" value="{{ dossier.demande.puissance }} kW">
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Localité</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.localite.nom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Agence</label>
+                                <input type="text" disabled readonly class="form-control fw-bold text-black form-control py-0 fs-6" value="{% if dossier.demande.installation.localite.agence %} {{ dossier.demande.installation.localite.agence.code }}{% else %} - {% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="fs-7" >Adresse</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.adresse }}">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.electricien.nom }} {{ dossier.demande.installation.electricien.prenom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Tél Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control fw-bold py-0 fs-6" value="{{ dossier.demande.installation.electricien.telephone }}">
+                            </div>
+                        </div>
+                        <hr class="my-2 mb-3" />
                         <div class="mb-3 ">
                             <label >Référent chargé du dossier</label>
                             <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.referent }}">
@@ -441,7 +490,7 @@
                     </div>
                     </div>
                     <div align="right">
-                        <a href="{{ path(link_liste) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
+                        <a href="{{ path('app_dossier_show', {'id': dossier.id}) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
                         <button type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider Nouvelle Planification</button>
                     </div>                                
                     {{ form_end(dossierForm) }}

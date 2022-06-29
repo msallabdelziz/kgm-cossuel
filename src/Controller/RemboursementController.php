@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class RemboursementController extends AbstractController
 {
     #[Route('/all', name: 'app_remboursement_index')]
-    public function index(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, RemboursementRepository $remboursementRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
+    public function index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, RemboursementRepository $remboursementRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -32,7 +32,7 @@ class RemboursementController extends AbstractController
         }
         
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager();
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agence=null; $agent=null; $electricien=null;
@@ -42,9 +42,9 @@ class RemboursementController extends AbstractController
         }
 
         // Définition en session du module en cours
-        $request->getSession()->set('menu', 'remboursement');
-        $request->getSession()->set('sousmenu', 'remboursement_index');
-        $request->getSession()->set('page_liste_remboursement', 'app_remboursement_index');
+        $request->getSession()->set('menu', 'caisse');
+        $request->getSession()->set('sousmenu', 'remboursement');
+        $request->getSession()->set('page_liste_demande', 'app_remboursement_index');
         
         $affichage_demande=$request->getSession()->get('affichage_demande');
 
@@ -56,7 +56,7 @@ class RemboursementController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -149,17 +149,15 @@ class RemboursementController extends AbstractController
     }
 
     #[Route('/{id}/add2', name: 'app_remboursement_add2')]
-    public function add2(Request $request, Paiement $paiement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
+    public function add2(Request $request, Remboursement $remboursement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $remboursement = new Remboursement();
-        $paiement=$paiementRepository->find($paiement);
-
-        $form = $this->createForm(RemboursementType::class, $remboursement);
+        $form = $this->createFormBuilder($remboursement)
+        ->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -167,30 +165,72 @@ class RemboursementController extends AbstractController
             // $paiement->setE("Remboursement enregistré");
             // $paiementRepository->add($paiement);
 
-            $remboursement->setPaiement($paiement);
-            $remboursement->setCreatedby($this->getUser()->getId());
+            $remboursement->setUpdatedby($this->getUser()->getId());
+            $remboursement->setUpdatedAt(new \DateTimeImmutable());
+            $remboursement->setDateValidation(new \DateTime());
+            $remboursement->setValide(1);
             $remboursementRepository->add($remboursement);
 
+            $paiement=$paiementRepository->find($remboursement->getPaiement()->getId());
+            $paiement->setEtatRembousement('1');
             $paiementRepository->add($paiement);
-
+            
             return $this->redirectToRoute('app_remboursement_show', array('id' => $remboursement->getId())); 
         }
 
         return $this->renderForm('remboursement/add2.html.twig', [
-            'paiement' => $paiement,
+            'remboursement' => $remboursement,
+            'remboursementForm' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/rejet', name: 'app_remboursement_rejet')]
+    public function rejet(Request $request, Remboursement $remboursement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $form = $this->createFormBuilder($remboursement)
+        ->add('motifRejet', TextareaType::class, [
+            'attr' => [
+                'class' => 'form-control'
+            ],
+            'required' => true,
+            'label' => 'Motif du rejet'
+        ])
+        ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // $paiement->setE("Remboursement enregistré");
+            // $paiementRepository->add($paiement);
+
+            $remboursement->setRejete(1);
+            $remboursement->setUpdatedby($this->getUser()->getId());
+            $remboursement->setUpdatedAt(new \DateTimeImmutable());
+            $remboursementRepository->add($remboursement);
+
+            return $this->redirectToRoute('app_remboursement_show', array('id' => $remboursement->getId())); 
+        }
+
+        return $this->renderForm('remboursement/rejet.html.twig', [
+            'remboursement' => $remboursement,
             'remboursementForm' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_remboursement_show', methods: ['GET'])]
-    public function show(Remboursement $remboursement, ManagerRegistry $doctrine): Response
+    public function show(Remboursement $remboursement, Tools $tools, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager();
         return $this->render('remboursement/show.html.twig', [
             'remboursement' => $remboursement,
 
@@ -199,14 +239,14 @@ class RemboursementController extends AbstractController
     }
 
     #[Route('/pop/{id}', name: 'app_remboursement_showpop', methods: ['GET'])]
-    public function showpop(Remboursement $remboursement, ManagerRegistry $doctrine): Response
+    public function showpop(Remboursement $remboursement, Tools $tools, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         return $this->render('remboursement/showpop.html.twig', [
             'remboursement' => $remboursement,
 

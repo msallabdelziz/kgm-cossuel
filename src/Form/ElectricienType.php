@@ -54,6 +54,7 @@ class ElectricienType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
+            'data'=>'',
             'required' => false,
             'label' => 'Adresse'
         ])
@@ -66,9 +67,9 @@ class ElectricienType extends AbstractType
                 new Callback(function($object, ExecutionContextInterface $context) {
                     $v = $object;
                     if($object) {
-                        if (strlen($object) >15) {
+                        if (strlen($object) !=9) {
                             $context
-                                ->buildViolation('Trop de chiffres saisis pour un numéro de téléphone ! Au max 15')
+                                ->buildViolation('Le nombre de chiffres saisis pour un numéro de téléphone incorrect !')
                                 ->addViolation();
                         }
                     }

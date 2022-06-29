@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Soumission de demandes </span>
             </a>
         </header>
@@ -12,7 +12,7 @@
         {% set offset="offset-md-1" %}            
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
 
-                <div class="container">
+                <div class="">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
                             <div class="navbar-brand mb-0 fs-4 fw-400 row col">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </nav>
-                    <div class="container">
+                    <div class="">
                         {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
                                 <!-- progressbar -->
@@ -71,7 +71,7 @@
                                         </div>
                                         <div class="col-lg-8">
                                             {{ form_row(installationForm.habitation) }}<br>
-                                        </div> #}
+                                        </div>
                                         {#                                         
                                         <div class="col-lg-2">
                                             {{ form_row(installationForm.lattitude) }}<br>

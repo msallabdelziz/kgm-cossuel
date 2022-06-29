@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -27,9 +27,9 @@
         {% set link_liste = app.session.get('page_liste_demande') %}
     {% endif %}
 
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de demandes </span>
             </a>
         </header>
@@ -43,7 +43,7 @@
         {% endif %}
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
 
-                <div class="container">
+                <div class="">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
                             <div class="navbar-brand mb-0 fs-4 fw-400 row col">
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </nav>
-                    <div class="container">
+                    <div class="">
                             <div class="row">
                             	<fieldset id="synthese_demande">
                                     {% if tools.getUtilisateur(installation.createdBy) %}
@@ -79,15 +79,26 @@
                                             {% if installation.step > 1 %}
                                                 {% set link_edit = 'app_installation_add' ~ installation.step %}
                                             {% endif %}
-                                            {% if is_granted('ROLE_PUBLIC') %}
+                                            {% if is_granted('ROLE_PUBLIC') or is_granted('ROLE_RFO') %}
                                                 {% if tools.gdroit_de(app.user.id, 'installation', installation.id ) %}
                                                 <a href="{{ path(link_edit, {'id': installation.id}) }}" class="next action-button btn btn-success btn my-3">Finaliser la saisie</a>
                                                 {% endif %}
                                             {% endif %}
                                         {% else %}
-                                            <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
-                                            {% if installation.step==7 and (is_granted('ROLE_CAISSIER') or is_granted("ROLE_COMPTABLE")) %}
-                                                <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Enregistrer Paiement</a>
+                                            <a target="_blank" href="{{ path('app_installation_showpdf', {'id': installation.id}) }}" class="next action-button btn btn-outline-warning btn my-2">PDF Demande</a>
+                                            {% if installation.step>=7 and installation.demandeCourante.accepte and (is_granted('ROLE_ACCUEIL') or  is_granted('ROLE_RFO') or is_granted('ROLE_CAISSIER') or  is_granted('ROLE_COMPTABLE') or  is_granted('ROLE_DAF')) %}
+                                                <a target="_blank" href="{{ path('app_installation_facturepdf', {'id': installation.demandeCourante.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">PDF Facture</a>
+                                            {% endif %}
+                                            {% if installation.step==7 and not installation.demandeCourante.accepte and not installation.demandeCourante.rejet and (is_granted('ROLE_RFO')) %}
+                                                <a href="{{ path('app_installation_accepte0', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-danger btn my-2 ms-5">Rejeter Demande soumise</a>
+                                                <a href="{{ path('app_installation_accepte1', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-2 ms-2">Valider Demande soumise</a>
+                                                {# {% elseif installation.step==8 %}
+                                                <a href="{{ path('app_paiement_add2', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Confirmer Paiement</a>
+                                                {% elseif installation.step==9 %}
+                                                <a href="#" class="next action-button btn btn-success btn my-3 ms-5">Valider la demande</a> #}
+                                            {% endif %}
+                                            {% if installation.step==7 and installation.demandeCourante.accepte and (is_granted('ROLE_CAISSIER') or is_granted("ROLE_COMPTABLE")) %}
+                                                <a href="{{ path('app_paiement_add', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-2 ms-5">Enregistrer Paiement</a>
                                                 {# {% elseif installation.step==8 %}
                                                 <a href="{{ path('app_paiement_add2', {'id': installation.demandeCourante.id}) }}" class="next action-button btn btn-success btn my-3 ms-5">Confirmer Paiement</a>
                                                 {% elseif installation.step==9 %}
@@ -97,8 +108,19 @@
                                         <a href="{{ path(link_liste) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                                     </div>                                
                                 {% if installation.demandeCourante %}
+                                    {% if installation.demandeCourante.rejet %}
+                                        <div class="alert alert-danger py-2 fs-6"><span class="text-danger">Demande rejetée:  </span> <span class="fs-7">{{installation.demandeCourante.motifRejet}}</span></div>
+                                    {% endif %}
                                     <div class="card mb-2">
-                                        <h2 class="fs-title">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
+                                        <h2 class="fs-title">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}
+                                            {% if installation.step>=7 and installation.demandeCourante.numeroPassage==1 and (is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO')) %}
+                                                <a href="{{ path('app_installation_clone', {'id': installation.id}) }}" class="next action-button btn btn-warning py-0 border-dark btn ms-5 float-end">
+                                                <svg class="bi" width="16" height="16" fill="black">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#files') }}"></use>
+                                                </svg>
+                                                Cloner la Demande</a>
+                                            {% endif %}
+                                        </h2>
                                         <div class="row">
                                             <hr class="mb-3" />
                                             <div class="col-lg-3">
@@ -252,7 +274,7 @@
                                 {# BLOC 4 #}
                                 {% if installation.electricien %}
                                 <div class="card mb-2">
-                                    <h2 class="fs-title">Informations sur l'électricien installateur</h2>
+                                    <h2 class="fs-title">Informations sur l'électricien</h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-3">
@@ -287,6 +309,19 @@
                                             <label >Numéro Pièce</label>
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.electricien.numPiece }}">
                                         </div>
+
+                                        <div class="col-lg-4 mt-2">
+                                        <label >Scan CNI Electricien</label><br />
+                                        {% if installation.PJElectricien %}
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'electricien'})}}')" class="text-success pt fs-7">{{installation.PJElectricien.fichier}} </span>
+                                        {% else %}
+                                                <span class="text-danger pt fs-8">N/D</span>
+                                        {% endif %}
+                                        </div>
+
                                     </div>
                                 </div>
                                 {% endif %}                                
@@ -329,6 +364,31 @@
                                             <label >Numéro Pièce</label>
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.numPiece }}">
                                         </div>
+
+                                        <div class="col-lg-4 mt-2">
+                                            <label >Scan CNI Propriétaire</label><br />
+                                        {% if installation.PJProprietaire %}
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'proprietaire'})}}')" class="text-success pt fs-7">{{installation.PJProprietaire.fichier}} </span>
+                                        {% else %}
+                                                <span class="text-danger pt fs-8">N/D</span>
+                                        {% endif %}
+                                        </div>
+
+                                        <div class="col-lg-4 mt-2">
+                                        <label >{% if installation.usages!='erp_ert' %}Titre de propriété{% else %}Documents Techniques{% endif %}</label><br />
+                                        {% if installation.PJDossierTechnique %}
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'dosstech'})}}')" class="text-success pt fs-7">{{installation.PJDossierTechnique.fichier}} </span>
+                                        {% else %}
+                                                <span class="text-danger pt fs-8">N/D</span>
+                                        {% endif %}
+                                        </div>
+
                                     </div>
                                 {% endif %}
                                 </div>

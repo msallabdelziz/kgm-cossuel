@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -63,9 +63,9 @@
     
     {% set link_liste = 'app_dossier_show' %}
 
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de dossiers </span>
             </a>
         </header>
@@ -81,7 +81,14 @@
                                 Détails du dossier
                             </div>
                             <div class="col" align="right">
-                                <span class="text-success">[En attente de {{ dossier.Etat }}]</span>
+                                <span class="text-success">[
+                                {% if not dossier.attestation %}
+                                    En attente de 
+                                {% endif %}
+                                {% if not dossier.Etat == "Affectation" and not dossier.Etat == "Attestation" %}
+                                    En attente d' 
+                                {% endif %}
+                                {{ dossier.Etat }} ]</span>
                             </div>
                         </div>
 
@@ -97,12 +104,17 @@
                 </div>
                 <div align="right">
                 {% if dossier.rapport and not dossier.attestation %}
+                    {% if is_granted('ROLE_REFERENT') %}
                     <a href="{{ path('app_dossier_rejetrapport', {'id': dossier.id }) }}" class="next action-button btn btn-danger btn my-3">Rejeter le rapport</a>
-                    <a href="{{ path(link_action, {'id': dossier.id }) }}" class="next action-button btn btn-primary btn my-3">{{ libelle_action }}</a>
+                    <a href="{{ path('app_dossier_show', {'id': dossier.id }) }}" class="next action-button btn btn-primary btn my-3">{{ libelle_action }}</a>
+                    {% endif %}
                 {% endif %}
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Rapport</a>
+                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">PDF Rapport</a>
                 </div>
                 <fieldset id="synthese_demande">
+                    {% if dossier.visite and dossier.visiteCourante.rejetRapport %}
+                        <div class="alert alert-danger py-2 fs-6"><span class="text-danger">Rapport rejeté:  </span> <span class="fs-7">{{dossier.visiteCourante.motifRejetRapport}}</span></div>
+                    {% endif %}
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
                         <div class="row bloc_0">
@@ -148,26 +160,157 @@
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
                                         </svg> {{ pt.pointVerification.objetVerification }}
                                         <div class="float-end fw-bold">
-                                        {% if pt.conclusion %}
-                                                <svg class="bi" width="32" height="32" fill="green">
-                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                        {% if pt.sansobjet %}
+                                                <svg class="bi" width="32" height="32" fill="black">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-octagon-fill') }}"></use>
                                                 </svg>
-                                                <span class="text-success">{{ pt.pointVerification.libelleConclusion1 }}</span>
+                                                Sans Objet
                                         {% else %}
-                                                <svg class="bi" width="32" height="32" fill="red">
-                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
-                                                </svg>
-                                                <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                            {% if pt.conclusion %}
+                                                    <svg class="bi" width="32" height="32" fill="green">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                                    </svg>
+                                                    <span class="text-success">{{ pt.pointVerification.libelleConclusion1 }}</span>
+                                            {% else %}
+                                                    <svg class="bi" width="32" height="32" fill="red">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                                    </svg>
+                                                    <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                            {% endif %}
                                         {% endif %}
                                         </div>
                                     </div>
-                                        {% if not pt.conclusion %}
+                                        {% if not pt.conclusion and not pt.sansobjet %}
                                                 <div class="fw-light ms-4 fs-8">
                                                 Commentaire: <span class="text-danger">{{pt.commentaire}}</span>
                                                 </div>
                                         {% endif %}
                                 </div>
                             {% endfor %}
+
+                                <div>
+                                    <h5 class="p-2 bg-dark text-light shadow border-bottom">Tableau 2: Mesures des prises de terre </h5>
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Mesures des prises de terre
+                                                <div class="float-end fw-bold">
+                                                </div>
+                                            </div>
+                                            <div class="fw-light ms-4 fs-7">
+                                                <span class="text-dark">{{dossier.visiteCourante.mesurePriseTerre}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Barrette
+                                                <div class="float-end fw-bold">
+                                                </div>
+                                            </div>
+                                            <div class="fw-light ms-4 fs-7">
+                                                <span class="text-dark">{{dossier.visiteCourante.barrette}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 class="p-2 bg-dark text-light shadow border-bottom">Autres observations </h5>
+                                    <div class="shadow p-4 pt-2 mb-3">
+                                        <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                            <svg class="bi" width="20" height="20" fill="#333">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                            </svg> Commentaire sur l'inspection
+                                            <div class="float-end fw-bold">
+                                            </div>
+                                        </div>
+                                        <div class="fw-light ms-4 fs-8">
+                                            <span class="text-danger">{{dossier.visiteCourante.commentaire2}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 1
+                                                <div class="">
+                                                {% if installation.PJPhoto1 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto1.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 2
+                                                <div class="">
+                                                {% if installation.PJPhoto2 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto2.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 3
+                                                <div class="">
+                                                {% if installation.PJPhoto3 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto3.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 4
+                                                <div class="">
+                                                {% if installation.PJPhoto4 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto4.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Signature Controleur
+                                                <div class="">
+                                                {% if dossier.visiteCourante.signcontroleur %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ dossier.visiteCourante.signcontroleur.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Signature Electricien
+                                                <div class="">
+                                                {% if dossier.visiteCourante.signelectricien %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ dossier.visiteCourante.signelectricien.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -175,7 +318,7 @@
                 </fieldset>
             </div>
 
-            <div class="col-lg-4 mb-2" id="paiement_demande">
+            <div class="col-lg-4 mb-2 priority-3" id="paiement_demande">
                 <div align="right">
                     <a href="{{ path(link_liste, {'id': dossier.id}) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour</a>
                 </div>                                
@@ -189,10 +332,59 @@
                     </h2>
                     <div class="row">
                         <hr class="mb-3" />
-                        <div class="mb-3 ">
-                            <label >Date création dossier</label>
-                            <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >N° Dossier</label>
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-0 fw-bold fs-6" value="{{ dossier.demande.numero }}">
+                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Date création dossier</label>
+                                <input type="text" disabled readonly class=" form-control text-success form-control py-0 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" class="fs-7" >Usage</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fw-bold fs-6" value="{{ dossier.demande.installation.usages }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Puissance</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fs-6" value="{{ dossier.demande.puissance }} kW">
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Localité</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.localite.nom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Agence</label>
+                                <input type="text" disabled readonly class="form-control fw-bold text-black form-control py-0 fs-6" value="{% if dossier.demande.installation.localite.agence %} {{ dossier.demande.installation.localite.agence.code }}{% else %} - {% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="fs-7" >Adresse</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.adresse }}">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.electricien.nom }} {{ dossier.demande.installation.electricien.prenom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Tél Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control fw-bold py-0 fs-6" value="{{ dossier.demande.installation.electricien.telephone }}">
+                            </div>
+                        </div>
+                        <hr class="my-2 mb-3" />
                         <div class="mb-3 ">
                             <label >Référent chargé du dossier</label>
                             <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="{{ dossier.referent }}">
@@ -209,11 +401,11 @@
                             <label >Visite du site pour inspection</label>
                             {% if dossier.visite %}
                                 <div class="row">
-                                    <div class="col-7">
-                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
-                                    </div>
                                     <div class="col-5">
-                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y') }}">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Planifiée">
+                                    </div>
+                                    <div class="col-7">
+                                        <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y à H:i') }}">
                                     </div>
                                     <div class="col-12">
                                         Modèle Rapport d'inspection

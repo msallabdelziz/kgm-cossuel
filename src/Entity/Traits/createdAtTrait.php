@@ -27,12 +27,12 @@
             return $this;
         }
 
-        public function getUpdatedAt(): ?\DateTime
+        public function getUpdatedAt(): ?\DateTimeImmutable
         {
             return $this->updated_at;
         }
 
-        public function setUpdatedAt(\DateTime $updated_at): self
+        public function setUpdatedAt(\DateTimeImmutable $updated_at): self
         {
             $this->created_at = $updated_at;
             return $this;

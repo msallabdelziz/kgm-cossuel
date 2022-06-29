@@ -38,19 +38,19 @@ security:
     access_control:
         - { path: ^/main, roles: [IS_AUTHENTICATED_FULLY, ROLE_USER] }
         - { path: ^/region, roles: [ROLE_ADMIN] }
-        - { path: ^/departement, roles: [ROLE_ACCUEIL] }
-        - { path: ^/localite, roles: [ROLE_ACCUEIL] }
+        - { path: ^/departement, roles: [ROLE_ACCUEIL, ROLE_RFO] }
+        - { path: ^/localite, roles: [ROLE_ACCUEIL, ROLE_RFO] }
         - { path: ^/agence, roles: [ROLE_ADMIN] }
         - { path: ^/agent, roles: [ROLE_ADMIN] }
-        - { path: ^/electricien, roles: [ROLE_ACCUEIL] }
-        - { path: ^/proprietaire, roles: [ROLE_ACCUEIL] }
+        - { path: ^/electricien, roles: [ROLE_ACCUEIL, ROLE_RFO] }
+        - { path: ^/proprietaire, roles: [ROLE_ACCUEIL, ROLE_RFO] }
         - { path: ^/installation/soumission, roles: [ROLE_PUBLIC, ROLE_RFO] }
         - { path: ^/installation/paiement, roles: [ROLE_CAISSIER, ROLE_COMPTABLE] }
         - { path: ^/installation/validation, roles: [ROLE_RFO] }
         - { path: ^/dossier/affectation, roles: [ROLE_REFERENT] }
         - { path: ^/dossier/visite, roles: [ROLE_CONTROLEUR] }
         - { path: ^/dossier/rapport, roles: [ROLE_CONTROLEUR] }
-        - { path: ^/utilisateur, roles: [ROLE_ADMIN] }
+        - { path: ^/utilisateur, roles: [ROLE_USER] }
 
     role_hierarchy:
             ROLE_ADMIN: ROLE_DAF, ROLE_REFERENT, ROLE_RFO, ROLE_CONTROLEUR, ROLE_ACCUEIL

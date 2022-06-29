@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/agent" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des agents</span>
@@ -96,4 +96,26 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        $("#agent_telephone").keydown(function(e) {
+            val_num=$("#agent_telephone").val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=9
+            var test = /[0-9\b]/; //regex
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>=nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+    });
+</script>
 {% endblock %}

@@ -12,7 +12,7 @@
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-3 rounded m-0 p-0 float-end" style="" align="center">
-				{% if app.session.get('agence') and app.session.get("menu")!="statistiques" %}
+				{% if app.user.roles[0] and (app.user.roles[0]=="ROLE_CAISSIER" or app.user.roles[0]=="ROLE_COMPTABLE" or app.user.roles[0]=="ROLE_CONTROLEUR" or app.user.roles[0]=="ROLE_CONTROLEUR") and app.session.get('agence') and app.session.get("menu")!="statistiques" %}
 					<label class="badge bg-warning border shadow text-dark fs-5">AGENCE</label><label class="badge bg-dark border shadow text-warning fs-5">{{app.session.get('agence').nom}}</label>
 				{% endif %}
 			</div>

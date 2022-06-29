@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -17,6 +17,15 @@
         font-weight:normal;
     }
 
+    #synthese_demande .text-danger label  {
+        color: #dd3444;
+        font-weight:normal;
+    }
+
+    #synthese_demande .text-danger select  {
+        border-color: #dd3444;
+    }
+
     .latlong {
         width: 100px;
         padding: 1px;
@@ -24,6 +33,16 @@
         background-color: #fff0cc;
         color:red;
         font-weight: bold;
+        border:1px inset #000;
+    }
+
+    .adresse {
+        padding: 2px;
+        font-size:13px;
+        min-height: 12px;
+        background-color: #fff0cc;
+        color:red;
+        border:1px inset #000;
     }
 
     #paiement_demande .card {
@@ -36,7 +55,18 @@
         box-shadow: 0 0 0 2px white, 0 0 0 3px #000
     }
     
+    .kbw-signature { width: 400px; height: 200px;}
+    #signelectricien canvas{
+        width: 100% !important;
+        height: auto;
+    }
+
+    #signcontroleur canvas{
+        width: 100% !important;
+        height: auto;
+    }
     </style>
+    {% set link_show = 'app_dossier_show' %}
     {% if not dossier.affecte %}
         {% set action_demande = "Affectation" %}
         {% set link_liste = 'app_dossier_affectation' %}
@@ -65,9 +95,9 @@
         {% set link_liste = app.session.get('page_liste_dossier') %}
     {% endif %}
 
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de dossiers </span>
             </a>
         </header>
@@ -96,7 +126,7 @@
                 {{ form_start(dossierForm) }}
                 
                 <div align="right">
-                    <a href="{{ path(link_liste, {'id' : dossier.id }) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
+                    <a href="{{ path(link_show, {'id' : dossier.id }) }}" class="next action-button btn btn-secondary btn my-3">Annuler</a>
                     <button id="btn_submit" type="submit" class="next action-button btn btn-success btn my-3 ms-2">Valider le rapport</button>
                 </div>
                 <fieldset id="synthese_demande">
@@ -113,8 +143,8 @@
                         </h2>
                     </div>
                     <hr class="mb-3" />
-                        <div class="row mb-2" align="right">
-                                    <div class="border p-2">
+                        <div class="row mb-2 border shadow border-dark rounded" align="right">
+                                    <div class="p-2">
                                         <label class="me-4 text-dark fs-6 ">Localisation du Site de l'installation</label>
                                         {{ form_label(dossierForm.latitude) }}
                                         {{ form_widget(dossierForm.latitude) }}
@@ -125,6 +155,16 @@
                                         {{ form_errors(dossierForm.longitude) }}
     
                                         <button id="find_btn" class="ms-4 btn btn-sm btn-secondary action fs-7">Géolocaliser...</button>
+                                    </div>
+                                    <div class="p-2 row" id="z_habitation">
+                                        <div class="col-6">
+                                            <label class="me-4 text-dark fs-6 ">Adresse exacte de l'installation</label>
+                                        </div>
+                                        <div class="col-6">
+                                            {{ form_widget(dossierForm.habitation) }}
+                                            {{ form_errors(dossierForm.habitation) }}
+                                        </div>
+    
                                     </div>
                         </div>
                     <div class="">
@@ -142,35 +182,54 @@
                                 {% set rub = pt.pointverification.rubrique.id %}
                                 {% set ix = ix + 1 %}
                             {% endif %}
-                            <div class="shadow p-4 pt-2 mb-3">
+                            <div class="shadow p-4 pb-1 pt-2 mb-1">
+                                {% set inp0 = attribute(dossierForm, 'sansobjet_'~pt.id) %}
                                 {% set inp1 = attribute(dossierForm, 'conclusion_'~pt.id) %}
                                 {% set inp2 = attribute(dossierForm, 'comment_'~pt.id) %}
+                                {% set inp3 = attribute(dossierForm, 'pnc_'~pt.id) %}
                                 <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
                                     <svg class="bi" width="20" height="20" fill="#333">
                                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
-                                    </svg> {{ pt.pointVerification.objetVerification }}
+                                    </svg> <span id="code_pv_{{ pt.id }}">[{{ pt.pointVerification.numero }}]</span>- {{ pt.pointVerification.objetVerification }}
                                     <div class="float-end">
                                         <span class="text-danger fs-8 fw-light pt" id="btn_unactive_{{ pt.id }}">Effacer</span>
                                     </div>
                                 </div>
                                 <div class="ps-4">
                                     <div class="row fw-light">
-                                        <div class="col-5 shadow p-2">
-                                            <svg class="bi" width="24" height="24" fill="green">
-                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
-                                            </svg>
-                                            {{ pt.pointVerification.libelleConclusion1 }}
+                                        <div class="col-md-3 shadow border border-dark p-1 mb-0 me-4">
+                                            <div class="pt float-start" id="label_chk2_{{ pt.id }}">
+                                                <svg class="bi" width="24" height="24" fill="black">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-octagon-fill') }}"></use>
+                                                </svg>
+                                                Sans Objet
+                                            </div>
+                                            <div class="float-end">
+                                                <svg class="bi" width="24" height="24" fill="gray" id="chk2_{{ pt.id }}">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 shadow border border-success p-1 mb-0 ms-2">
+                                            <div class="pt float-start" id="label_chk0_{{ pt.id }}">
+                                                <svg class="bi" width="24" height="24" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                                </svg>
+                                                {{ pt.pointVerification.libelleConclusion1 }}
+                                            </div>
                                             <div class="float-end">
                                                 <svg class="bi" width="24" height="24" fill="gray" id="chk0_{{ pt.id }}">
                                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
                                                 </svg>
                                             </div>
                                         </div>
-                                        <div class="col-5 offset-1 shadow p-2">
-                                            <svg class="bi" width="24" height="24" fill="red">
-                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
-                                            </svg>
-                                            {{ pt.pointVerification.libelleConclusion2 }}
+                                        <div class="col-md-4 shadow border border-danger p-1 mb-0 ms-2">
+                                            <div class="pt float-start" id="label_chk1_{{ pt.id }}">
+                                                <svg class="bi" width="24" height="24" fill="red">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                                </svg>
+                                                {{ pt.pointVerification.libelleConclusion2 }}
+                                            </div>
                                             <div class="float-end">
                                                 <svg class="bi" width="24" height="24" fill="gray" id="chk1_{{ pt.id }}">
                                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
@@ -180,7 +239,14 @@
                                     </div>
                                     <div class="row">
                                         <div class="mt-1">
+                                            {{ form_row(inp0) }}
                                             {{ form_row(inp1) }}
+                                        </div>
+                                        <div class="mt-1 row">
+                                            <div class="offset-6 col-6 text-danger" align="left" id="z_{{inp3.vars['id']}}">
+                                                {{ form_label(inp3) }}
+                                                {{ form_widget(inp3) }}
+                                            </div>
                                         </div>
                                         <div class="mt-1">
                                             {{ form_widget(inp2) }}
@@ -189,9 +255,169 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        {% if step == 2 %}
+                            <div class="shadow p-4 pt-2 mb-3">
+                                <div class="row mt-1 pt-2">
+                                    <div>
+                                        Tableau 2: Mesures des prises de terre
+                                        <hr class="mt-2" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form_row(dossierForm.mesurePriseTerre) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form_row(dossierForm.barrette) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="shadow p-4 pt-2 mb-3">
+                                <div class="row mt-1 pt-2">
+                                    <div>
+                                        Autres observations
+                                        <hr class="mt-2" />
+                                    </div>
+                                    <div class="row">
+                                            {{ form_row(dossierForm.commentaire2) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="shadow p-4 pt-2 mb-3">
+                                <div class="row mt-1 pt-2">
+                                    <div>
+                                        Photos Installation
+                                        <hr class="mt-2" />
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="">Photo 1</label>
+                                        {% if installation.PJPhoto1 %}
+                                            <div class="form-control">
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span class="text-success pt fs-8">{{installation.PJPhoto1.fichier | slice(0, 10)}} ... </span>
+                                                <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj1').show()">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-control">
+                                                <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 z_pj1">
+                                        {{ form_row(dossierForm.pj1) }}
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <label for="">Photo 2</label>
+                                        {% if installation.PJPhoto2 %}
+                                            <div class="form-control">
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span class="text-success pt fs-8">{{installation.PJPhoto2.fichier | slice(0, 10)}} ... </span>
+                                                <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj2').show()">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-control">
+                                                <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 z_pj2">
+                                        {{ form_row(dossierForm.pj2) }}
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <label for="">Photo 3</label>
+                                        {% if installation.PJPhoto3 %}
+                                            <div class="form-control">
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span class="text-success pt fs-8">{{installation.PJPhoto3.fichier | slice(0, 10)}} ... </span>
+                                                <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj3').show()">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-control">
+                                                <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 z_pj3">
+                                        {{ form_row(dossierForm.pj3) }}
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <label for="">Photo 4</label>
+                                        {% if installation.PJPhoto4 %}
+                                            <div class="form-control">
+                                                <svg class="bi" width="24" height="24" fill="gray">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                </svg>
+                                                <span class="text-success pt fs-8">{{installation.PJPhoto4.fichier | slice(0, 10)}} ... </span>
+                                                <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj4').show()">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                </svg>
+                                            </div>
+                                        {% else %}
+                                            <div class="form-control">
+                                                <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-3 z_pj4">
+                                        {{ form_row(dossierForm.pj4) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="shadow p-4 pt-2 mb-3">
+                                <div class="row mt-1 pt-2">
+                                    <div>
+                                        Signature du rapport d'inspection
+                                        <hr class="mt-2" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div><label class="" for="">Signature Controleur:</label><span class="fw-light text-dark">{{dossier.controleur.nomComplet}}</span></div>
+                                            <div class="border border-secondary shadow" id="signcontroleur"></div>
+                                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="clear1">Effacer Signature</button>
+                                            {{ form_widget(dossierForm.sign_controleur) }}
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div><label class="" for="">Signature Electricien:</label><span class="fw-light text-dark">{{installation.electricien.nomComplet}}</span></div>
+                                            <div class="border border-secondary shadow" id="signelectricien"></div>
+                                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="clear2">Effacer Signature</button>
+                                            {{ form_widget(dossierForm.sign_electricien) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% else %}
+                            <div class="" style="display:none">
+                            {{ form_widget(dossierForm.mesurePriseTerre) }}
+                            {{ form_widget(dossierForm.barrette) }}
+                            {{ form_row(dossierForm.pj1) }}
+                            {{ form_row(dossierForm.pj2) }}
+                            {{ form_row(dossierForm.pj3) }}
+                            {{ form_row(dossierForm.pj4) }}
+                            {{ form_row(dossierForm.commentaire2) }}
+                            {{ form_row(dossierForm.sign_electricien) }}
+                            {{ form_row(dossierForm.sign_controleur) }}
+                            </div>
+                        {% endif %}
                         </div>
                         <div align="right">
-                            {% if step > 0 %}
+                            {% if step == 2 %}
                             <button id="prev_rub" class="next action-button btn btn-secondary btn my-3">
                                 <svg class="bi" width="16" height="16" fill="white">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-left-fill') }}"></use>
@@ -204,7 +430,7 @@
                                 </svg> Précédent
                             </button>
                             {% endif %}
-                            {% if step < (les_rubrique.count - 1) %}
+                            {% if step == 1 %}
                             <button id="next_rub" class="next action-button btn btn-warning btn my-3">
                                 Suivant <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right-fill') }}"></use>
@@ -228,7 +454,7 @@
 
             <div class="col-lg-4 mb-2 priority-5" id="paiement_demande">
                 <div align="right">
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">Générer PDF Demande</a>
+                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">PDF Demande</a>
                     <a href="{{ path(link_liste, {'id' : dossier.id }) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour à la liste</a>
                 </div>                                
                 <div class="card mb-2 pb-0">
@@ -241,17 +467,57 @@
                     </h2>
                     <div class="row">
                         <hr class="mb-3" />
-                        <div class="mb-3 ">
-                            <label >Numéro Demande</label>
-                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.numero }}">
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >N° Dossier</label>
+                                <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-dark form-control py-0 fw-bold fs-6" value="{{ dossier.demande.numero }}">
+                            </div>
                         </div>
-                        <div class="mb-3 col-lg-6">
-                            <label >Date Demande</label>
-                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.dateCreation | date('d-m-Y') }}">
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Date création dossier</label>
+                                <input type="text" disabled readonly class=" form-control text-success form-control py-0 fw-bold fs-6" value="{{ dossier.dateCreation | date('d-m-Y') }}">
+                            </div>
                         </div>
-                        <div class="mb-3 col-lg-6">
-                            <label >Puissance</label>
-                            <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.puissance }} kW">
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" class="fs-7" >Usage</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fw-bold fs-6" value="{{ dossier.demande.installation.usages }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-1 ">
+                                <label class="fs-7" >Puissance</label>
+                                <input type="text" disabled readonly class=" form-control text-black form-control py-0 fs-6" value="{{ dossier.demande.puissance }} kW">
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Localité</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.localite.nom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Agence</label>
+                                <input type="text" disabled readonly class="form-control fw-bold text-black form-control py-0 fs-6" value="{% if dossier.demande.installation.localite.agence %} {{ dossier.demande.installation.localite.agence.code }}{% else %} - {% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <label class="fs-7" >Adresse</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.adresse }}">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="mb-1">
+                                <label class="fs-7" >Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control py-0 fs-6" value="{{ dossier.demande.installation.electricien.nom }} {{ dossier.demande.installation.electricien.prenom }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-1">
+                                <label class="fs-7" >Tél Electricien</label>
+                                <input type="text" disabled readonly class=" form-control text-dark form-control fw-bold py-0 fs-6" value="{{ dossier.demande.installation.electricien.telephone }}">
+                            </div>
                         </div>
                         <hr class="mb-3" />
                         <div class="mb-3 ">
@@ -274,11 +540,11 @@
                             <label >Visite du site pour inspection</label>
                             {% if dossier.visite %}
                             <div class="row">
-                                <div class="col-7">
-                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Visite Planifiée">
-                                </div>
                                 <div class="col-5">
-                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y') }}">
+                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-black form-control py-1 fw-bold fs-6" value="Planifiée">
+                                </div>
+                                <div class="col-7">
+                                    <input type="text" disabled readonly class="bg-warning bg-opacity-25 form-control text-success form-control py-1 fw-bold fs-6" value="{{ dossier.visiteCourante.datePlanifie | date('d-m-Y à H:i') }}">
                                 </div>
                                 <div class="col-12">
                                     Modèle Rapport d'inspection
@@ -297,7 +563,7 @@
                                 <input type="text" disabled readonly class="bg-light border-light bg-opacity-25 form-control text-danger form-control py-1 fw-bold fs-6" value="Non finalisé">
                                 {% set nb_nok = 0 %}
                                 {% for pt in les_detailverif %}
-                                    {% if pt.conclusion is null %}
+                                    {% if pt.conclusion is null and not pt.sansobjet %}
                                         {% set nb_nok = nb_nok+1 %}
                                     {% endif %}
                                 {% endfor %}
@@ -328,49 +594,105 @@
 
 <script>
     $(document).ready(function() {
-        
         for(i=0; i<{{ les_rubrique.count }}; i++) {
             $("#zrub_"+i).hide();
         }
-        $("#zrub_"+({{ step }})).show();
+        {% if step == 1 %}
+            for(i=0; i<4; i++) { $("#zrub_"+i).show(); }
+            for(i=4; i<{{ les_rubrique.count }}; i++) { $("#zrub_"+i).hide(); }
+        {% else %}
+            for(i=0; i<4; i++) { $("#zrub_"+i).hide(); }
+            for(i=4; i<{{ les_rubrique.count }}; i++) { $("#zrub_"+i).show(); }
+        {% endif %}
+
+        $("#form_longitude").attr("required", "required");
+        $("#form_latitude").attr("required", "required");
+
+        {# 
+            $("#form_longitude").attr("disabled", "disabled");
+            $("#form_latitude").attr("disabled", "disabled"); 
+        #}
+
+        $("#form_longitude").addClass("bg-warning bg-opacity-25 text-danger fw-bold");
+        $("#form_latitude").addClass("bg-warning bg-opacity-25 text-danger fw-bold");
+
+        $("#z_habitation").hide();
+
+        
 
         $("#next_rub").on('click', function() { $("#form_stay").val(1); $("#form_step").val(({{step}}+1)); });  
         $("#prev_rub").on('click', function() { $("#form_stay").val(1); $("#form_step").val(({{step}}-1)); });  
-        $("#btn_save").on('click', function() { $("#form_stay").val(0); $("#form_step").val(0); });  
+        $("#btn_save").on('click', function() { $("#form_stay").val(0); $("#form_step").val(1); });  
         $("#btn_submit").on('click', function() { 
-            $("#form_stay").val(0); $("#form_step").val(0); 
-            ok_valid=1; 
+
+            var data1 = signelectricien.jSignature('getData', 'image');
+            var data2 = signcontroleur.jSignature('getData', 'image');
+
+            // Storing in textarea
+            $('#form_sign_controleur').val(data2);
+            $('#form_sign_electricien').val(data1);
+
+            $("#form_stay").val(0); $("#form_step").val(1); 
+            ok_valid=1; nb_non_conclusion=0; mess_nok="";
             $('.vconclusion').each(function(){
                 if($(this).val()=="") {
-                    ok_valid=0; 
+                    t_idd=$(this).attr("id").split("_"); 
+                    idd=t_idd[2];
+                    v_so=$("#form_sansobjet_"+idd).val();
+                    if(v_so=="0") {
+                        ok_valid=0; mess_nok+=" "+$("#code_pv_"+idd).html();
+                    }
                 }
             });
             if(ok_valid=="0") {
-                alert("Tous les points de vérification n'ont pas été renseignés !");
+                alert("Tous les points de vérification n'ont pas été renseignés ! Revoir les points: "+mess_nok);
                 return false;
             } else {
                 $("#form_valid").val(1);
             }
+
         });  
 
         {% for pt in les_detailverif %}
+            $("#label_chk2_{{ pt.id }}").on('click', function(){ $("#chk2_{{ pt.id }}").click(); });  
+            $("#label_chk1_{{ pt.id }}").on('click', function(){ $("#chk1_{{ pt.id }}").click(); });  
+            $("#label_chk0_{{ pt.id }}").on('click', function(){ $("#chk0_{{ pt.id }}").click(); });  
+
+            $("#chk2_{{ pt.id }}").on('click', function(){ active_chk({{ pt.id }}, 2); });  
             $("#chk0_{{ pt.id }}").on('click', function(){ active_chk({{ pt.id }}, 0); });  
             $("#chk1_{{ pt.id }}").on('click', function(){ active_chk({{ pt.id }}, 1); });  
             $("#btn_unactive_{{ pt.id }}").on('click', function(){ unactive_chk({{ pt.id }}); });  
             
             val_inp = $("#form_conclusion_{{ pt.id }}"); 
+            val_so = $("#form_sansobjet_{{ pt.id }}"); 
             comment_inp = $("#form_comment_{{ pt.id }}"); 
+            pnc_inp = $("#form_pnc_{{ pt.id }}"); 
+            z_pnc_inp = $("#z_form_pnc_{{ pt.id }}"); 
             
+            $("#form_pnc_{{ pt.id }}").hide();
+            $("#z_form_pnc_{{ pt.id }}").hide();
             $("#form_comment_{{ pt.id }}").hide();
             $("#btn_unactive_{{ pt.id }}").hide();
 
+            {% if pt.sansobjet %} 
+                comment_inp.hide(); pnc_inp.hide(); 
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
+                $("#btn_unactive_{{ pt.id }}").show();
+
+                $("#chk2_{{ pt.id }}").attr("fill", "green");
+                $("#chk2_{{ pt.id }}").html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
+                pnc_inp.hide(); comment_inp.hide(); val_inp.val(""); val_so.val("1");
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
+            {% endif %}
             {% if pt.conclusion == '1' %} 
-                comment_inp.hide();
+                comment_inp.hide(); pnc_inp.hide(); 
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
                 $("#btn_unactive_{{ pt.id }}").show();
 
                 $("#chk0_{{ pt.id }}").attr("fill", "green");
                 $("#chk0_{{ pt.id }}").html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
-                comment_inp.hide(); val_inp.val("1");
+                pnc_inp.hide(); comment_inp.hide(); val_inp.val("1"); val_so.val("0");
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
             {% endif %}
             {% if pt.conclusion == '0' %} 
                 $("#form_comment_{{ pt.id }}").show();
@@ -378,16 +700,23 @@
 
                 $("#chk1_{{ pt.id }}").attr("fill", "green");
                 $("#chk1_{{ pt.id }}").html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
-                comment_inp.show(); val_inp.val("0");
+                pnc_inp.show();comment_inp.show(); val_inp.val("0"); val_so.val("0");
+                z_pnc_inp.show(); pnc_inp.attr("required", "required");
             {% endif %}
             
         {% endfor %}
 
         function active_chk(id, val) {
             val_inp = $("#form_conclusion_"+id); 
+            val_so = $("#form_sansobjet_"+id); 
             comment_inp = $("#form_comment_"+id); 
+            pnc_inp = $("#form_pnc_"+id); 
+            z_pnc_inp = $("#z_form_pnc_"+id); 
             el=$("#chk"+val+"_"+id);
             
+            $("#chk2_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk2_"+id).attr("fill", "gray");
+
             $("#chk0_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
             $("#chk0_"+id).attr("fill", "gray");
 
@@ -397,8 +726,24 @@
 
             el.attr("fill", "green");
             el.html('<use xlink:href="/assets/img/bootstrap-icons.svg#check-square-fill"></use>');
-            if(val==0) { comment_inp.hide(); comment_inp.val(""); } else { comment_inp.show(); }
-            if(val==0) { val_inp.val(1); } else { val_inp.val(0); }
+            if(val==2) { 
+                comment_inp.hide(); comment_inp.val(""); 
+                pnc_inp.hide(); pnc_inp.val(""); 
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
+            } 
+            if(val==0) { 
+                comment_inp.hide(); comment_inp.val(""); 
+                pnc_inp.hide(); pnc_inp.val(""); 
+                z_pnc_inp.hide(); pnc_inp.attr("required", false);
+            } 
+            if(val==1) { 
+                comment_inp.show(); 
+                pnc_inp.show(); 
+                z_pnc_inp.show(); pnc_inp.attr("required", "required");                
+            }
+            if(val==0) { val_inp.val(1); val_so.val(0); } 
+            if(val==1) { val_inp.val(0); val_so.val(0); }
+            if(val==2) { val_inp.val(""); val_so.val(1); }
             
 
 
@@ -406,6 +751,9 @@
         }
 
         function unactive_chk(id) {
+            $("#chk2_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
+            $("#chk2_"+id).attr("fill", "gray");
+
             $("#chk0_"+id).html('<use xlink:href="/assets/img/bootstrap-icons.svg#square"></use>');
             $("#chk0_"+id).attr("fill", "gray");
 
@@ -413,13 +761,20 @@
             $("#chk1_"+id).attr("fill", "gray");
 
             val_inp = $("#form_conclusion_"+id); 
-            val_inp.val("");
+            val_so = $("#form_sansobjet_"+id); 
+            val_inp.val(""); val_so.val(0);
 
             $("#btn_unactive_"+id).hide();
 
             val_inp = $("#form_conclusion_"+id); 
+            val_so = $("#form_sansobjet_"+id); 
+            pnc_inp = $("#form_pnc_"+id); 
+            z_pnc_inp = $("#z_form_pnc_"+id); 
             comment_inp = $("#form_comment_"+id); 
-            val_inp.val(""); comment_inp.val(""); comment_inp.hide();
+            pnc_inp = $("#form_pnc_"+id); 
+            val_so.val("0"); val_inp.val(""); comment_inp.val(""); comment_inp.hide();
+            pnc_inp.val(""); pnc_inp.hide();
+            z_pnc_inp.hide(); pnc_inp.attr("required", false);
         }
 
         
@@ -436,6 +791,29 @@
             return false;
         });
 
+        $('.z_pj1').hide(); $('.z_pj2').hide(); $('.z_pj3').hide(); $('.z_pj4').hide(); 
+
+        {% if not installation.PJPhoto1 %} $('.z_pj1').show(); {% endif %}
+        {% if not installation.PJPhoto2 %} $('.z_pj2').show(); {% endif %}
+        {% if not installation.PJPhoto3 %} $('.z_pj3').show(); {% endif %}
+        {% if not installation.PJPhoto4 %} $('.z_pj4').show(); {% endif %}
+
+    {% if step == 2 %}
+
+        var signelectricien = $('#signelectricien').jSignature();
+        var signcontroleur = $('#signcontroleur').jSignature();
+
+        $("#form_sign_electricien").hide(); $("#form_sign_controleur").hide();
+            $('#clear2').click(function() {
+                signelectricien.jSignature('reset');
+                $("#form_sign_electricien").val('');
+            });
+            $('#clear1').click(function() {
+                signcontroleur.jSignature('reset');
+                $("#form_sign_controleur").val('');
+            });
+
+    {% endif %}
     });
 </script>
 {% endblock %}

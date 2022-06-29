@@ -24,12 +24,12 @@ class MainController extends AbstractController
     /**
      * @Route("/", name="main")
      */
-    public function index(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
+    public function index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
     {
         if($this->getUser() == null) {
             return $this->redirectToRoute('app_logout');
         }
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $idConn=$userConn->getId();
@@ -62,10 +62,16 @@ class MainController extends AbstractController
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'main');
         $request->getSession()->set('sousmenu', '');
+        $request->getSession()->set('page_liste_dossier', 'main');
+        $request->getSession()->set('page_liste_demande', 'main');
 
         $restr_dem=array(); $restr_dos=array();
-        if($agence) {
+        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT"))) {
             $restr_dem=array("agence"=>$idAgence);
+        }
+
+        if(in_array($role, array("ROLE_CAISSIER", "ROLE_COMPTABLE"))) {
+            $restr_dem["paiement_by"]=$userConn->getId();
         }
 
         if($request->query->count() && $request->query->get("dash_page")) {
@@ -89,7 +95,7 @@ class MainController extends AbstractController
             $les_install = $em->getRepository(Installation::class)->findByEtat("Saisie");
             $les_install = $pgn->paginate($les_install, $request->query->getInt('page', 1), 20);
     
-            } 
+        } 
         $les_demande = $em->getRepository(Demande::class)->findBy2($restr_dem);
 
         $stat_paiement=array(
@@ -327,21 +333,22 @@ class MainController extends AbstractController
     }
 
     #[Route('/demandepop/{restr}', name: 'main_demandepop', methods: ['GET', 'POST'])]
-    public function demandepop(String $restr, Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
+    public function demandepop(String $restr, Tools $tools, Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
-        
-        $val_filtre = array(); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $idConn=$userConn->getId();
         $role=$userConn->getRoles()[0];
         $agent=null; $idAgent=null; $electricien=null; $agence=null;
         if($request->getSession()->get('agence')) {
             $agence=$request->getSession()->get('agence');
+        }
+        if($request->getSession()->get('agent')) {
             $agent=$request->getSession()->get('agent');
             if($agent) { $idAgent=$agent->getId(); }
         }
@@ -351,9 +358,14 @@ class MainController extends AbstractController
         $request->getSession()->set('sousmenu', '');
 
         if($role=="ROLE_PUBLIC") { $val_filtre["a.created_by"]=$userConn->getId(); }
-        if($agent && $agence) { $val_filtre["l.agence"]=$agence->getId(); }
+        if($role=="ROLE_CAISSIER") { $val_filtre["paiement_by"]=$userConn->getId(); }
 
+        if($agent && $agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT"))) { 
+            $val_filtre["l.agence"]=$agence->getId(); 
+        }
         $val_filtre["i.etat"]="Soumis";
+        $val_filtre["a.soumis"]="1";
+        // $val_filtre["a.rejet"]="0"; $val_filtre["a.accepte"]="1";
 
         $les_restr = [
             "All"=>array(), 
@@ -370,15 +382,34 @@ class MainController extends AbstractController
             "Dossier affecté"=>array('d.affecte'=>'1', 'd.visite'=>'0', 'd.rapport'=>'0', 'd.attestation'=>'0', ),
             "Visite planifiée"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'0', 'd.attestation'=>'0', ),
             "Visite réalisée"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'1', 'd.attestation'=>'0', ),
+            "Rapport élaboré"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'1', 'd.attestation'=>'0', ),
             "Rapport validé"=>array('d.affecte'=>'1', 'd.visite'=>'1', 'd.rapport'=>'1', 'd.attestation'=>'1', ),
         ];
         
-        $restr2="";
+        $restr2=""; $restr3="";
+        $restr0=$restr;
         if(strstr($restr,";")) {
             $t_restr=explode(";", $restr);
             $restr=$t_restr[0];
-            $restr2=$t_restr[1];
+            $restr_=$t_restr[1];
+            if(strstr($restr_,"|")) {
+                $t_restr=explode("|", $restr_);
+                $restr2=$t_restr[0];
+                $restr3=$t_restr[1];
+            } else {
+                $restr2=$restr_;
+            }
+        } else {
+            if(strstr($restr,"|")) {
+                $t_restr=explode("|", $restr);
+                $restr=$t_restr[0];
+                $restr3=$t_restr[1];
+            }
         }
+        $restr0=$restr; 
+        if($restr2) { $restr0.=";$restr2"; }
+        // if($restr3) { $restr0.="|$restr3"; }
+
         if(isset($les_restr[$restr])) {
             $val_filtre=array_merge($val_filtre, $les_restr[$restr]);
             if(isset($restr2) && $restr2) {
@@ -455,7 +486,12 @@ class MainController extends AbstractController
         }
     // dd($val_filtre);
 
-        $les_demande = $em->getRepository(Demande::class)->findByRestr2($val_filtre, $orderBy, $page);
+        $val_rech=$restr3;
+        // if($request->request->count()) {
+        //     $val_rech = $request->request->get("val_rech");
+        // }
+        
+        $les_demande = $em->getRepository(Demande::class)->findByRestr2($val_rech, $val_filtre, $orderBy, $page);
         $list=$les_demande;
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
 
@@ -465,21 +501,23 @@ class MainController extends AbstractController
         return $this->render('main/demandepop.html.twig', [
             'les_demande' => $list,
             'titre'=> $restr,
+            'val_rech' => $val_rech,
+            'restr' => $restr0,
 
             'tools'=> $tools,
         ]);
     }    
 
     #[Route('/statistiques', name: 'stat', methods: ['GET', 'POST'])]
-    public function stat_demande(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
+    public function stat_demande(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $val_rech=""; $val_filtre = array("etat"=>"AllSoumis"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agent=null; $electricien=null; $agence=null;
@@ -491,6 +529,8 @@ class MainController extends AbstractController
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'main');
         $request->getSession()->set('sousmenu', '');
+        $request->getSession()->set('page_liste_dossier', 'stat');
+        $request->getSession()->set('page_liste_demande', 'stat');
 
         $restr_dem=array(); $restr_dos=array();
 
@@ -498,20 +538,54 @@ class MainController extends AbstractController
             $restr_dem=array("created_by"=>$userConn->getId());
         }
 
+        if($role=="ROLE_CAISSIER") {
+            $restr_dem=array("paiement_by"=>$userConn->getId());
+        }
+
         $val_agence=""; $restr_agence=0;
+        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT"))) { 
+            $val_agence=$agence->getId(); $val_filtre["agence"] = $val_agence;
+        }
         $les_agence = $em->getRepository(Agence::class)->findBy(array(), array("nom"=>"asc", ));
 
         $val_usage=""; 
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
         $val_statut=""; 
-        $les_statut = array("Soumis");
+        $les_statut = array("Paiement enregistré", "Paiement validé", "En Attente Validation Soumission", "Validé, En Attente Affectation", "Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de Confirmation Rapport", "Rapport confirmé, Clôture",);
+
+        $val_controleur = $request->request->get("val_controleur");
+        if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+        
+        $val_referent = $request->request->get("val_referent");
+        if($val_referent) { $val_filtre["referent"] = $val_referent; }
+        
+        $val_passage = $request->request->get("val_passage");
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
+        
+        $val_controleur=""; 
+        $les_controleur = $em->getRepository(Agent::class)->findByProfil("controleur");
+
+        $val_referent=""; 
+        $les_referent = $em->getRepository(Agent::class)->findByProfil("referent");
+
+        $val_passage=""; 
+        $les_passage = array("1"=>"1ère visite", "2"=>"2e visite");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
             
             $val_agence = $request->request->get("val_agence");
             if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_controleur = $request->request->get("val_controleur");
+            if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+            
+            $val_referent = $request->request->get("val_referent");
+            if($val_referent) { $val_filtre["referent"] = $val_referent; }
+            
+            $val_passage = $request->request->get("val_passage");
+            if($val_passage) { $val_filtre["passage"] = $val_passage; }
             
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
@@ -572,6 +646,16 @@ class MainController extends AbstractController
 
             'les_agence'=> $les_agence,
             'val_agence'=> $val_agence,
+
+            'les_controleur'=> $les_controleur,
+            'val_controleur'=> $val_controleur,
+
+            'les_referent'=> $les_referent,
+            'val_referent'=> $val_referent,
+
+            'les_passage'=> $les_passage,
+            'val_passage'=> $val_passage,
+
 
             'tools'=> $tools,
         ]);

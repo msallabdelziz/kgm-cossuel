@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Soumission de demandes </span>
             </a>
         </header>
@@ -12,7 +12,7 @@
         {% set offset="offset-md-1" %}            
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
 
-                <div class="container">
+                <div class="">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
                             <div class="navbar-brand mb-0 fs-4 fw-400 row col">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </nav>
-                    <div class="container">
+                    <div class="">
                         {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
                             {% set curr_etat = 2 %}
@@ -80,7 +80,6 @@
 {% block javascripts %}
 <script>
     $(document).ready(function () {
-
         $('#form_typeConstruction').prop('required',true);
     
         $('.collectif0').show(); $('.collectif1').hide();
@@ -111,14 +110,19 @@
         valSel=optSel.text();
         if (valSel == "Maison" || valSel == "IGH (Immeuble de Grande Hauteur)") {
             $('.typeConstruction1').show(); 
-            $('#form_niveau').prop('required',true);
+            $('#form_niveau').prop('required',true); 
+            {% if installation.usages != "erp_ert" %}
+                $('#form_niveau').prop('max', 4);
+            {% else %}
+                $('#form_niveau').prop('min', 5);
+            {% endif %}
             $('#form_priece').prop('required',true);
         }
         else if (valSel == "Appartement" || valSel == "Foyer Logement" || valSel == "Dépendance") {
             $('.typeConstruction2').show();
             $('#form_priece').prop('required',true);
         }
-        else if (valSel == "Etablissement Public") {
+        else if (valSel == "Etablissement Recevant du Public (ERP)" || valSel == "Etablissement Recevant des Travailleurs (ERT)") {
             $('.typeConstruction3').show(); 
             $('#form_activite').prop('required',true);
         }
@@ -132,14 +136,19 @@
             $('#form_activite').prop('required',false);
             if (valSel == "Maison" || valSel == "IGH (Immeuble de Grande Hauteur)") {
                 $('.typeConstruction1').show(); 
-                $('#form_niveau').prop('required',true);
+                $('#form_niveau').prop('required',true); 
+                {% if installation.usages != "erp_ert" %}
+                    $('#form_niveau').prop('max', 4);
+                {% else %}
+                    $('#form_niveau').prop('min', 5);
+                {% endif %}
                 $('#form_priece').prop('required',true);
             }
             else if (valSel == "Appartement" || valSel == "Foyer Logement" || valSel == "Dépendance") {
                 $('.typeConstruction2').show();
                 $('#form_priece').prop('required',true);
             }
-            else if (valSel == "Etablissement Public") {
+            else if (valSel == "Etablissement Recevant du Public (ERP)" || valSel == "Etablissement Recevant des Travailleurs (ERT)") {
                 $('.typeConstruction3').show(); 
                 $('#form_activite').prop('required',true);
             }

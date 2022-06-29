@@ -1,4 +1,4 @@
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             {% else %}
-            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</div>
+            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation.getTotalItemCount }})</div>
 
             {# Affichage des demandes en format card #}
 
@@ -92,7 +92,7 @@
                                     </a>
                                 {% else %}
                                     <a class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
-                                        <span class="{{text_usage}}">Saisie [{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
+                                        <span class="{{text_usage}}">Saisie [{{ ag.createdAt|date("d/m/y_H:i:s") }}]</span>
                                     </a>
                                 {% endif %}
                             </h5>
@@ -111,7 +111,7 @@
                                 </h6>
                                 <p class="card-text fs-7">
                                     {% if ag.electricien %}
-                                    <div class="mb-2 border-0 text-muted" title="Electricien installateur">
+                                    <div class="mb-2 border-0 text-muted" title="Electricien">
                                         <svg class="bi pt" width="22" height="22" fill="#036">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
                                         </svg>
@@ -169,14 +169,21 @@
                                             {% if ag.step > 1 %}
                                                 {% set link_edit = 'app_installation_add' ~ ag.step %}
                                             {% endif %}
-                                            {% if is_granted('ROLE_PUBLIC') %}
+                                            {% if is_granted('ROLE_PUBLIC') or is_granted('ROLE_RFO') %}
                                                 {% if tools.gdroit_de(app.user.id, 'installation', ag.id ) %}
                                                 <a href="{{ path(link_edit, {'id': ag.id}) }}" class="next action-button btn btn-success btn-sm">Finaliser la saisie</a>
                                                 {% endif %}
                                             {% endif %}
                                         {% else %}
+                                            {% if is_granted('ROLE_RFO') %}
+                                                {% if ag.step==7 and not ag.demandeCourante.accepte %}
+                                                <a href="{{ path('app_installation_accepte0', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-danger btn-sm">Rejeter</a>
+                                                <a href="{{ path('app_installation_accepte1', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm ms-1">Valider Demande</a>
+                                                {% endif %}
+                                            {% endif %}
+
                                             {% if is_granted('ROLE_CAISSIER') or is_granted("ROLE_COMPTABLE") %}
-                                                {% if ag.step==7 %}
+                                                {% if ag.step==7 and ag.demandeCourante.accepte %}
                                                 <a href="{{ path('app_paiement_add', {'id': ag.demandeCourante.id}) }}" class="next action-button btn btn-success btn-sm">Enregistrer Paiement</a>
                                                 {% endif %}
                                                 {% if ag.step==8 %}

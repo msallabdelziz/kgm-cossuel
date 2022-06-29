@@ -11,11 +11,13 @@ use App\Repository\AgenceRepository;
 use App\Entity\Agence;
 use App\Entity\Localite;
 use App\Form\AgenceType;
+use App\PDF\ListePDF;
 use App\Repository\LocaliteRepository;
 use App\Services\Tools;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Notifier\Message\SmsMessage;
-use Symfony\Component\Notifier\TexterInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 #[Route('/agence', name: 'app_agence_')]
 class AgenceController extends AbstractController
@@ -46,6 +48,125 @@ class AgenceController extends AbstractController
             'les_agence'=> $ag,
             'val_rech'=> $val_rech,
         ]);
+    }
+
+    #[Route('/pdf', name: 'pdf')]
+    public function pdf(AgenceRepository $agenceRepository)
+    {
+        // On active la classe une fois pour toutes les pages suivantes
+        // Format portrait (>P) ou paysage (>L), en mm (ou en points > pts), A4 (ou A5, etc.)
+        $pdf = new ListePDF('P','mm','A4');
+
+        // Nouvelle page A4 (incluant ici logo, titre et pied de page)
+        $pdf->AddPage();
+        // Polices par défaut : Helvetica taille 9
+        $pdf->SetFont('Helvetica','B',9);
+        // Couleur par défaut : noir
+        $pdf->SetTextColor(0);
+        // Compteur de pages {nb}
+        $pdf->AliasNbPages();
+
+        // Titre gras (B) police Helbetica de 11
+        $pdf->SetFont('Helvetica','B',11);
+        // fond de couleur gris (valeurs en RGB)
+        $pdf->setFillColor(255,255,255);
+        // position du coin supérieur gauche par rapport à la marge gauche (mm)
+        $pdf->SetX(70);
+        // Texte : 60 >largeur ligne, 8 >hauteur ligne. Premier 0 >pas de bordure, 1 >retour à la ligneensuite, C >centrer texte, 1> couleur de fond ok  
+        $pdf->Cell(60,8,'LISTE DES AGENCES COSSUEL',0,1,'C',1);
+        // Saut de ligne 10 mm
+        $pdf->Ln(5);    
+
+        // AFFICHAGE EN-TÊTE DU TABLEAU
+        // Position ordonnée de l'entête en valeur absolue par rapport au sommet de la page (70 mm)
+        $position_entete = 60;
+        // police des caractères
+        $pdf->SetFont('Helvetica','',14);
+        $pdf->SetTextColor(0);
+        // on affiche les en-têtes du tableau
+        $pdf->SetDrawColor(255,215,0); // Couleur du fond RVB
+        $pdf->SetFillColor(255,215,0); // Couleur des filets RVB
+        $pdf->SetTextColor(0); // Couleur du texte noir
+        $pdf->SetY($position_entete);
+        // position de colonne 1 (10mm à gauche)  
+        $pdf->SetX(10);
+        $pdf->Cell(60,8,'Code',1,0,'C',1);  // 60 >largeur colonne, 8 >hauteur colonne
+        // position de la colonne 2 (70 = 10+60)
+        $pdf->SetX(70); 
+        $pdf->Cell(60,8,'Nom',1,0,'C',1);
+        // position de la colonne 3 (130 = 70+60)
+        $pdf->SetX(130); 
+        $pdf->Cell(60,8,'Adresse',1,0,'C',1);
+
+        $pdf->Ln(); // Retour à la ligne
+
+        $position_detail = 68; // Position ordonnée = $position_entete+hauteur de la cellule d'en-tête (60+8)
+
+        $result2 = $agenceRepository->findBy([],['code'=>'asc']);
+
+        for ($i=0; $i<count($result2);$i++) {
+            // position abcisse de la colonne 1 (10mm du bord)
+            $pdf->SetY($position_detail);
+            $pdf->SetX(10);
+            $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getCode()),1,'C');
+                // position abcisse de la colonne 2 (70 = 10 + 60)  
+            $pdf->SetY($position_detail);
+            $pdf->SetX(70); 
+            $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getNom()),1,'C');
+            // position abcisse de la colonne 3 (130 = 70+ 60)
+            $pdf->SetY($position_detail);
+            $pdf->SetX(130); 
+            $pdf->MultiCell(60,8,$result2[$i]->getAdresse(),1,'C');
+
+            // on incrémente la position ordonnée de la ligne suivante (+8mm = hauteur des cellules)  
+            $position_detail += 8; 
+        }
+
+        // $pdf->Output('agence.pdf','I');
+        return new Response($pdf->Output('liste_agence.pdf','I'), 200, array(
+            'Content-Type' => 'application/pdf'));
+
+    }
+
+    #[Route('/agence_excel', name:'excel')]
+    public function genExcel(ManagerRegistry $doctrine, array $headers = [], $fileName = 'liste.xlsx'): Response
+    {
+        // {#-----------Generation de fichiers Excel-------------#} 
+        $spreadsheet = new Spreadsheet();
+
+        $lib="Agence"; $fileName='liste_'.$lib;
+        $i=2;
+        /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A'.$i, 'CODE ');
+        $sheet->setCellValue('B'.$i, 'NOM ');
+        $sheet->setCellValue('C'.$i, 'TELEPHONE ');
+        $sheet->setCellValue('D'.$i, 'ADRESS ');
+        $sheet->setTitle("Liste des Agences");
+
+        $em = $doctrine->getManager();
+        $list = $em->getRepository(Agence::class)->findAll();
+
+        $i = 3;
+        foreach ($list as $u ) {
+            $sheet->setCellValue('A'.$i , $u->getCode());
+            $sheet->setCellValue('B'.$i ,  $u->getNom());
+            $sheet->setCellValue('C'.$i ,  $u->getTelephone());
+            $sheet->setCellValue('D'.$i ,  $u->getAdresse());
+            $i++;
+        }
+        // Create your Office 2007 Excel (XLSX Format)
+        $writer = new Xlsx($spreadsheet);
+
+        // Create a Temporary file in the system
+        $fileName = 'Liste des '.$lib.'.xlsx';
+        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+
+        // Create the excel file in the tmp directory of the system
+        $writer->save($temp_file);
+
+        // Return the excel file as an attachment
+        return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
     #[Route('/add', name: 'add')]
@@ -86,10 +207,6 @@ class AgenceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $agenceRepository->add($agence);
-
-
-           $tools->notifSMS('221773799200', 'MaJ Agence réussie !');
-
             return $this->redirectToRoute("app_agence_show", ['id'=>$agence->getId()]);
         }
 
@@ -214,5 +331,8 @@ class AgenceController extends AbstractController
         $entityManager->flush();
         return new Response('Suppression effectué!');
     }
+
+
+
 
 }

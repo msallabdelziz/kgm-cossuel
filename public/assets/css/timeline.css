@@ -66,6 +66,10 @@ body {
     font-size: 0.8rem!important;
 }
 
+.fs-9 {
+    font-size: 0.7rem!important;
+}
+
 form label {
     font-size: 0.9rem!important;
     font-weight: 300!important;

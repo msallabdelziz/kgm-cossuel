@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -27,10 +27,13 @@
     {% set installation = demande.installation %}
     {% set action_demande = "Remboursement" %}
     {% set link_liste = 'app_installation_index2' %}
+    {% if app.session.get('page_liste_demande') is defined and app.session.get('page_liste_demande') %}
+        {% set link_liste = app.session.get('page_liste_demande') %}
+    {% endif %}
 
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} sur demande </span>
             </a>
         </header>
@@ -46,7 +49,7 @@
                             Enregistrement de la demande de remboursement
                         </div>
                         <div class="col" align="right">
-                            <span class="text-success">[{{ demande.etat }}]</span>
+                            {# <span class="text-success">[{{ demande.etat }}]</span> #}
                         </div>
                     </div>
                 </div>
@@ -82,7 +85,7 @@
                 {# BLOC 4 #}
                     {% if demande.installation.electricien %}
                     <div class="card mb-2">
-                        <h2 class="fs-title">Informations sur l'électricien installateur</h2>
+                        <h2 class="fs-title">Informations sur l'électricien</h2>
                         <div class="row">
                             <hr class="mb-3" />
                             <div class="col-lg-3">

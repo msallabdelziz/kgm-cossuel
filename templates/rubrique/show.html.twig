@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/rapport" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des rubriques</span>
@@ -126,13 +126,13 @@
                         <tbody>
                             {% for loc in rubrique.pointverification %}
                                 <tr>
-                                    <td scope="row"><a href="" class="text-dark text-decoration-none fw-bold">{{ loc.numero }}</a></td>
-                                    <td scope="row"><a href="" class="text-dark text-decoration-none">{{ loc.objetVerification }}</a></td>
-                                    <td>
+                                    <td scope="row"><a href="{{ path('app_pointverification_show', {'id': loc.id }) }}" class="text-dark text-decoration-none fw-bold">{{ loc.numero }}</a></td>
+                                    <td scope="row"><a href="{{ path('app_pointverification_show', {'id': loc.id }) }}" class="text-dark text-decoration-none">{{ loc.objetVerification }}</a></td>
+                                    <td align="right">
                                         {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('app_pointverification_edit', {'id': loc.id }) }}" class="mx-1" title="Modifier">
+                                        <a href="{{ path('app_pointverification_show', {'id': loc.id }) }}" class="mx-1" title="Détails">
                                             <svg class="bi" width="12" height="12" fill="black">
-                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
                                             </svg>
                                         </a>
                                         {% endif %}

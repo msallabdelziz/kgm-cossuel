@@ -18,6 +18,8 @@ use App\Entity\Utilisateur;
 use App\Form\ElectricienType;
 use App\Form\ProprietaireType;
 use App\Form\InstallationType;
+use App\PDF\ListePDF;
+use App\PDF\DetailPDF;
 use App\Repository\AgenceRepository;
 use App\Repository\DemandeRepository;
 use App\Repository\DepartementRepository;
@@ -37,6 +39,8 @@ use Dompdf\Options;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -44,10 +48,12 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType as TypeIntegerType;
 use Symfony\Component\Form\Extension\Core\Type\RadioType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +61,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -66,7 +73,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class InstallationController extends AbstractController
 {
     #[Route('/all', name: 'app_installation_index0', methods: ['GET', 'POST'])]
-    public function index0(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index0(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -74,7 +81,7 @@ class InstallationController extends AbstractController
         }
         
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agence=null; $agent=null; $electricien=null;
@@ -87,6 +94,7 @@ class InstallationController extends AbstractController
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_all');
         $request->getSession()->set('page_liste_demande', 'app_installation_index0');
+        $request->getSession()->set('page_liste_dossier', 'app_installation_index0');
 
         $affichage_demande=$request->getSession()->get('affichage_demande');
         if($request->request->get('affichage_demande')) {
@@ -97,36 +105,64 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
             $les_agence = $agenceRepository->findBy(array("id"=>$agence->getId()), array("nom"=>"asc", ));
-            if(! in_array($role, array("ROLE_ADMIN", "ROLE_PUBLIC", "ROLE_ACCUEIL"))) {
+            if(! in_array($role, array("ROLE_ADMIN", "ROLE_PUBLIC", "ROLE_ACCUEIL", "ROLE_RFO"))) {
                 $val_filtre["etat"] = "Soumis";
             }
         } else {
             $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
         }
 
-        $val_usage=""; 
+        // Fixer les variables de session pour PAGE, FILTRE ET RECH
+        $pref_sess=$request->getSession()->get('sousmenu');
+        $les_varsess=array("agence", "passage", "usage", "statut", "rech");
+        foreach ($les_varsess as $varssess) {
+            if(!$request->getSession()->get($pref_sess.'_'.$varssess)) { 
+                $request->getSession()->set($pref_sess.'_'.$varssess, "");
+                // if($varssess=="statut") {
+                //     $request->getSession()->set($pref_sess.'_'.$varssess, "Attestation|Cloture");
+                // }
+            }
+        }
+
+        $val_rech=$request->getSession()->get($pref_sess.'_rech'); 
+
+        $val_agence=$request->getSession()->get($pref_sess.'_agence');
+        
+        $val_passage=$request->getSession()->get($pref_sess.'_passage');
+        $les_passage = array("1"=>"1ère visite", "2"=>"2e visite");
+
+        $val_usage=$request->getSession()->get($pref_sess.'_usage');
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
 
-        $val_statut=""; 
-        $les_statut = array("Soumis");
+        $val_statut=$request->getSession()->get($pref_sess.'_statut');
+        $les_statut = array("En Attente Validation Soumission", "Paiement enregistré", "Paiement validé", "Validé, En Attente Affectation", "Affecté, En Attente Visite", "Visite Planifiée, En Attente de Rapport", "Visite Réalisée, En Attente de Confirmation Rapport", "Rapport confirmé, Clôture",);
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
             
             $val_agence = $request->request->get("val_agence");
-            if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_passage = $request->request->get("val_passage");
             
             $val_usage = $request->request->get("val_usage");
-            if($val_usage) { $val_filtre["usages"] = $val_usage; }
             
             $val_statut = $request->request->get("val_statut");
-            if($val_statut) { $val_filtre["etat"] = $val_statut; }
+
+            foreach ($les_varsess as $varssess) {
+                $le_val='val_'.$varssess;
+                $request->getSession()->set($pref_sess.'_'.$varssess, $$le_val);
+            }
+            $request->query->set('page', 1);
         }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
 
         $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
@@ -146,20 +182,23 @@ class InstallationController extends AbstractController
             'les_agence'=> $les_agence,
             'val_agence'=> $val_agence,
 
+            'les_passage'=> $les_passage,
+            'val_passage'=> $val_passage,
+
             'tools'=> $tools,
         ]);
     }
 
     #[Route('/soumission', name: 'app_installation_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $val_rech=""; $val_filtre = array("etat"=>"Saisie"); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $val_rech=""; $val_filtre = array("etat"=>"SaisieSoumis"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agent=null; $electricien=null; $agence=null;
@@ -168,6 +207,10 @@ class InstallationController extends AbstractController
             $agent=$request->getSession()->get('agent');
         }
         
+        // if(in_array($role, array("ROLE_RFO", "ROLE_ADMIN"))) {
+        //     $val_filtre=array("etat"=>"SaisieSoumis");
+        // }
+
         // Définition en session du module en cours
         $request->getSession()->set('menu', 'demande');
         $request->getSession()->set('sousmenu', 'demande_soumission');
@@ -182,7 +225,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -191,20 +234,54 @@ class InstallationController extends AbstractController
             $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
         }
 
-        if($role=="ROLE_USER" || $role=="ROLE_CLIENT" || $role=="ROLE_PUBLIC") {
-            $val_filtre["created_by"] = $userConn->getId();
+        // Fixer les variables de session pour PAGE, FILTRE ET RECH
+        $pref_sess=$request->getSession()->get('sousmenu');
+        $les_varsess=array("agence", "passage", "usage", "statut", "rech");
+        foreach ($les_varsess as $varssess) {
+            if(!$request->getSession()->get($pref_sess.'_'.$varssess)) { 
+                $request->getSession()->set($pref_sess.'_'.$varssess, "");
+                if($varssess=="statut") {
+                    $request->getSession()->set($pref_sess.'_'.$varssess, "SaisieSoumis");
+                }
+            }
         }
-        $val_usage=""; 
+        $val_rech=$request->getSession()->get($pref_sess.'_rech'); 
+
+        $val_agence=$request->getSession()->get($pref_sess.'_agence');
+        
+        $val_passage=$request->getSession()->get($pref_sess.'_passage');
+        $les_passage = array("1"=>"1ère visite", "2"=>"2e visite");
+
+        $val_usage=$request->getSession()->get($pref_sess.'_usage');
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
+
+        $val_statut=$request->getSession()->get($pref_sess.'_statut');
+        $les_statut = array("Saisie", "Soumis, Attente Validation", "Soumis, Validé");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
-
+            
             $val_agence = $request->request->get("val_agence");
-            if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_passage = $request->request->get("val_passage");
             
             $val_usage = $request->request->get("val_usage");
-            if($val_usage) { $val_filtre["usages"] = $val_usage; }
+            
+            $val_statut = $request->request->get("val_statut");
+
+            foreach ($les_varsess as $varssess) {
+                $le_val='val_'.$varssess;
+                $request->getSession()->set($pref_sess.'_'.$varssess, $$le_val);
+            }
+            $request->query->set('page', 1);
+        }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
+
+        if($role=="ROLE_USER" || $role=="ROLE_CLIENT" || $role=="ROLE_ACCUEIL" || $role=="ROLE_RFO" || $role=="ROLE_PUBLIC") {
+            $val_filtre["created_by"] = $userConn->getId();
         }
 
         $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
@@ -218,26 +295,32 @@ class InstallationController extends AbstractController
             'etatDemande' => "en soumission",
             'val_rech' => $val_rech,
 
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
             'les_agence'=> $les_agence,
             'val_agence'=> $val_agence,
 
+            'les_passage'=> $les_passage,
+            'val_passage'=> $val_passage,
+
             'tools'=> $tools,
         ]);
     }
 
     #[Route('/paiement', name: 'app_installation_index2', methods: ['GET', 'POST'])]
-    public function index2(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index2(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $val_rech=""; $val_filtre = array("etat"=>"Soumis"); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $val_rech=""; $val_filtre = array("etat"=>"Soumis, Accepté, Payé"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agent=null; $electricien=null; $agence=null;
@@ -260,7 +343,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -269,18 +352,52 @@ class InstallationController extends AbstractController
             $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
         }
 
-        $val_usage=""; 
+        // Fixer les variables de session pour PAGE, FILTRE ET RECH
+        $pref_sess=$request->getSession()->get('sousmenu');
+        $les_varsess=array("agence", "passage", "usage", "statut", "rech");
+        foreach ($les_varsess as $varssess) {
+            if(!$request->getSession()->get($pref_sess.'_'.$varssess)) { 
+                $request->getSession()->set($pref_sess.'_'.$varssess, "");
+                // if($varssess=="statut") {
+                //     $request->getSession()->set($pref_sess.'_'.$varssess, "SaisieSoumis");
+                // }
+            }
+        }
+        $val_rech=$request->getSession()->get($pref_sess.'_rech'); 
+
+        $val_agence=$request->getSession()->get($pref_sess.'_agence');
+        
+        $val_passage=$request->getSession()->get($pref_sess.'_passage');
+        $les_passage = array("1"=>"1ère visite", "2"=>"2e visite");
+
+        $val_usage=$request->getSession()->get($pref_sess.'_usage');
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
+
+        $val_statut=$request->getSession()->get($pref_sess.'_statut');
+        $les_statut = array("Attente Paiement", "Paiement enregistré", "Paiement validé");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
-
+            
             $val_agence = $request->request->get("val_agence");
-            if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_passage = $request->request->get("val_passage");
             
             $val_usage = $request->request->get("val_usage");
-            if($val_usage) { $val_filtre["usages"] = $val_usage; }
+            
+            $val_statut = $request->request->get("val_statut");
+
+            foreach ($les_varsess as $varssess) {
+                $le_val='val_'.$varssess;
+                $request->getSession()->set($pref_sess.'_'.$varssess, $$le_val);
+            }
+            $request->query->set('page', 1);
         }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
+
 
         $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
@@ -293,26 +410,32 @@ class InstallationController extends AbstractController
             'etatDemande' => "en attente de paiement",
             'val_rech' => $val_rech,
 
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
             'les_usage'=> $les_usage,
             'val_usage'=> $val_usage,
 
             'les_agence'=> $les_agence,
             'val_agence'=> $val_agence,
 
+            'les_passage'=> $les_passage,
+            'val_passage'=> $val_passage,
+
             'tools'=> $tools,
         ]);
     }
 
     #[Route('/validation', name: 'app_installation_index3', methods: ['GET', 'POST'])]
-    public function index3(Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    public function index3(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $val_rech=""; $val_filtre = array("etat"=>"Payé"); $page = 0; $orderBy = "";
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $val_rech=""; $val_filtre = array("etat"=>"Payé|Validé"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agent=null; $electricien=null; $agence=null;
@@ -335,7 +458,7 @@ class InstallationController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_RFO', 'ROLE_ACCUEIL', 'ROLE_COMPTABLE', 'ROLE_CAISSIER', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -344,18 +467,51 @@ class InstallationController extends AbstractController
             $les_agence = $agenceRepository->findBy(array(), array("nom"=>"asc", ));
         }
 
-        $val_usage=""; 
+        // Fixer les variables de session pour PAGE, FILTRE ET RECH
+        $pref_sess=$request->getSession()->get('sousmenu');
+        $les_varsess=array("agence", "passage", "usage", "statut", "rech");
+        foreach ($les_varsess as $varssess) {
+            if(!$request->getSession()->get($pref_sess.'_'.$varssess)) { 
+                $request->getSession()->set($pref_sess.'_'.$varssess, "");
+                // if($varssess=="statut") {
+                //     $request->getSession()->set($pref_sess.'_'.$varssess, "SaisieSoumis");
+                // }
+            }
+        }
+        $val_rech=$request->getSession()->get($pref_sess.'_rech'); 
+
+        $val_agence=$request->getSession()->get($pref_sess.'_agence');
+        
+        $val_passage=$request->getSession()->get($pref_sess.'_passage');
+        $les_passage = array("1"=>"1ère visite", "2"=>"2e visite");
+
+        $val_usage=$request->getSession()->get($pref_sess.'_usage');
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
+
+        $val_statut=$request->getSession()->get($pref_sess.'_statut');
+        $les_statut = array("Payé, Attente Validation", "Validé");
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
-
+            
             $val_agence = $request->request->get("val_agence");
-            if($val_agence) { $val_filtre["agence"] = $val_agence; }
+            
+            $val_passage = $request->request->get("val_passage");
             
             $val_usage = $request->request->get("val_usage");
-            if($val_usage) { $val_filtre["usages"] = $val_usage; }
+            
+            $val_statut = $request->request->get("val_statut");
+
+            foreach ($les_varsess as $varssess) {
+                $le_val='val_'.$varssess;
+                $request->getSession()->set($pref_sess.'_'.$varssess, $$le_val);
+            }
+            $request->query->set('page', 1);
         }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
 
         $list=$installationRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
@@ -374,10 +530,398 @@ class InstallationController extends AbstractController
             'les_agence'=> $les_agence,
             'val_agence'=> $val_agence,
 
+            'les_statut'=> $les_statut,
+            'val_statut'=> $val_statut,
+
+            'les_passage'=> $les_passage,
+            'val_passage'=> $val_passage,
+
             'tools'=> $tools,
         ]);
     }
 
+
+    #[Route('/{id}/pdf', name: 'app_installation_showpdf', methods: ['GET', 'POST'])]
+    public function pdf(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $type_usage=$installation->getUsages(); 
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='DEMANDE_'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+        $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",5,10,80);
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','B',16);
+        $pdf->Cell(180,5,htmlspecialchars_decode('DEMANDE D\'ATTESTATION DE'),0,0,'R');
+        $pdf->SetFont('Arial','B',14);
+        $pdf->Ln(5);
+        $pdf->Cell(270,10,'CONFORMITE',0,0,'C');
+        $pdf->SetLineWidth(0.5);
+        $pdf->SetDrawColor($couleur1,$couleur2, $couleur3);
+        $pdf->Line(110,30,190,30);
+        $pdf->Line(110,40,190,40);
+        $pdf->Ln(15);
+        $pdf->SetFont('Arial','I',13);
+        $pdf->Cell(174,5,utf8_decode('Installation à usage '.strtolower($type_usage)),0,0,'R');
+        
+        
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,'Agence:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(65,5,$installation->getLocalite()->getAgence(),0,0);
+        
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,utf8_decode('Demande N° :'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,5,$installation->getDemandeCourante()->getNumero(),0,0);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(10,5,'Du :',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,5,$installation->getDemandeCourante()->getDateCreation()->format("d-m-Y"),0,0);
+        
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INFORMATIONS INSTALLEUR',0,2,'C',true);
+        $pdf->Cell(190,43,'',1,0);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,'Nom du contact:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(120,5,utf8_decode($installation->getElectricien()->getNomComplet()),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,'Adresse:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(120,5,utf8_decode($installation->getElectricien()->getAdresse()),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,'Ville:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(120,5,utf8_decode($installation->getElectricien()->getLocalite()),0,0);
+        
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Téléphone'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getTelephone(),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(14,5,'E-Mail:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(65,5,utf8_decode($installation->getElectricien()->getEmail()),0,0,'R');
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Type Pièce'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getTypePiece(),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,utf8_decode('Numéro Pièce'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(54,5,$installation->getElectricien()->getNumPiece(),0,0,'R');
+        
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INSTALLATION ELECTRIQUE',0,2,'C',true);
+        $pdf->Cell(190,58,'',1,0);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(40,5,utf8_decode('Etat Installation:'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,($installation->getAlimente()==1?"":"Non").utf8_decode("Alimentée"),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(37,5,'Num Compteur Voisin:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,utf8_decode($installation->getCompteur()),0,0,'R');
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Propriètaire Installation'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getNomComplet()),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Type Pièce'),0,0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(70,5,$installation->getProprietaire()->getTypePiece(),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(37,5,'Num Piece:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getNumPiece(),0,0,'R');
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Type Batiment'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getNatureBatiment()),0,0);
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Adresse'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,utf8_decode($installation->getAdresse()),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(37,5,utf8_decode('Téléphone'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getTelephone(),0,0,'R');
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Ville'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getLocalite()),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,'G.P.S.               Latitude:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getLattitude(),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,'Longitude:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(50,5,$installation->getLongitude(),0,0);
+        
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'TYPE DE CONSTRUCTION A USAGE '.strtoupper($type_usage),0,2,'C',true);
+        $pdf->Cell(190,17,'',1,0);
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Type de Construction'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(80,5,utf8_decode($installation->getTypeConstruction()),0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(50,5,utf8_decode('Nombre de pièces principales'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(15,5,$installation->getPriece(),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Type Opération'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(80,5,($installation->getCollectif()==1?"":"Non ")."Collectif",0,0);
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'TRAVAUX',0,2,'C',true);
+        $pdf->Cell(190,17,'',1,0);
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Nature Travaux'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getNatureTravaux()),0,1);
+        
+        $pdf->Ln(13);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(130,8,'TARIFICATION',0,2,'C',true);
+        $pdf->Cell(130,17,'',1,0);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Info Visite'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,$installation->getDemandeCourante()->getNumeroPassage().utf8_decode('e Vistite'),0,0);
+        
+        $pdf->Ln(8);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(40,5,utf8_decode('Puissance Demandée'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(35,5,$installation->getDemandeCourante()->getPuissance().' Kw',0,0);
+        
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(20,5,utf8_decode('Tarif'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,5,number_format($installation->getDemandeCourante()->getCout(), 0, ""," ")." FCFA",0,0,'R');
+        
+        $pdf->Ln(-19);
+        $pdf->SetFont('Arial','BUI',12);
+        $pdf->Cell(320,5,utf8_decode('Signature'),0,0,'C');
+        
+        
+        
+        $y=-35;
+        $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),'T',0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+    }
+
+    #[Route('/liste_excel', name:'app_installation_excel')]
+    public function genExcel(Request $request, ManagerRegistry $doctrine, array $headers = [], $fileName = 'liste.xlsx'): Response
+    {
+        $em = $doctrine->getManager();
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+        $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
+
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+            $val_agence=$agence->getId();
+            $val_filtre["agence"] = $val_agence;
+        }
+
+        // {#-----------Generation de fichiers Excel-------------#} 
+        $spreadsheet = new Spreadsheet();
+
+        $lib="Demande"; $fileName='liste_'.$lib;
+        $i=2;
+        /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $spreadsheet->getActiveSheet();
+        $entete=array(
+            'N° Demande',
+            'Date Demande ',
+            'Usage',
+            'Agence',
+            'Localité',
+            'Type Construction',
+            'Electricien',
+            'Statut Demande',
+        );
+        $id_col="A";
+        foreach ($entete as $col) {
+            $sheet->setCellValue($id_col.$i, $col);
+            $id_col++;
+        }
+        $sm = $request->getSession()->get('sousmenu');
+        switch ($sm) {
+            case 'demande_all':
+                if(! in_array($role, array("ROLE_ADMIN", "ROLE_PUBLIC", "ROLE_ACCUEIL", "ROLE_RFO"))) {
+                    $val_filtre["etat"] = "Soumis";
+                }
+            break;
+            
+            case 'demande_soumission':
+                $val_filtre = array("etat"=>"SaisieSoumis");
+                if($role=="ROLE_USER" || $role=="ROLE_CLIENT" || $role=="ROLE_PUBLIC") {
+                    $val_filtre["created_by"] = $userConn->getId();
+                }
+            break;
+            
+            case 'demande_paiement':
+                $val_filtre = array("etat"=>"Soumis, Accepté, Payé");
+            break;
+            
+            case 'demande_validation':
+                $val_filtre = array("etat"=>"Payé|Validé");
+            break;
+            
+            default:
+                if(! in_array($role, array("ROLE_ADMIN", "ROLE_PUBLIC", "ROLE_ACCUEIL", "ROLE_RFO"))) {
+                    $val_filtre["etat"] = "Soumis";
+                }
+            break;
+        }
+        $list0=$em->getRepository(Installation::class)->findByRestr($val_rech, $val_filtre, "", 0);
+        $list = array();
+        foreach ($list0 as $val) {
+            $dateD=$val->getCreatedAt(); 
+            $numD='['.$val->getCreatedAt()->format("d/m/y_H:i:s").']';
+            $etatD=$val->getEtat();
+            if($val->getDemandeCourante()) { 
+                $numD=$val->getDemandeCourante()->getNumero(); 
+                $dateD=$val->getDemandeCourante()->getDateCreation(); 
+                $etatD=$val->getDemandeCourante()->getEtat();
+            }
+            $list[]=array(
+                $numD,
+                $dateD,
+                $val->getUsages(),
+                $val->getLocalite()->getAgence(),
+                $val->getLocalite(),
+                $val->getTypeConstruction(),
+                $val->getElectricien(),
+                $etatD,
+            );
+        }
+
+        $i = 3; $id_col="A";
+        foreach ($list as $u ) {
+            $id_col="A"; $ix=0;
+            foreach ($entete as $col) {
+                $sheet->setCellValue($id_col.$i, $u[$ix]);
+                $id_col++; $ix++;
+            }
+            $i++;
+        }
+        // Create your Office 2007 Excel (XLSX Format)
+        $writer = new Xlsx($spreadsheet);
+
+        // Create a Temporary file in the system
+        $fileName = 'Liste des '.$lib.'.xlsx';
+        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+
+        // Create the excel file in the tmp directory of the system
+        $writer->save($temp_file);
+
+        // Return the excel file as an attachment
+        return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    
     #[Route('/{id}/renew', name: 'app_installation_renew', methods: ['GET', 'POST'])]
     public function addrenew(Request $request, Installation $installation = null, InstallationRepository $installationRepository, DemandeRepository $demandeRepo): Response
     {
@@ -405,6 +949,8 @@ class InstallationController extends AbstractController
         $demande->setCreatedby($this->getUser()->getId());
         $demande->setDemandeParente($old_demande->getId());
         $demande->setNumeroPassage(2);
+        $demande->setSoumis(0);
+        $demande->setAccepte(0);
         $demandeRepo->add($demande);
         $demande->setNumero($old_demande->getNumero());
         $demandeRepo->add($demande);
@@ -471,14 +1017,14 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}/add', name: 'app_installation_add', methods: ['GET', 'POST'])]
-    public function new(Request $request, ManagerRegistry $doctrine, Installation $installation = null, InstallationRepository $installationRepository, DepartementRepository $departRepo, RegionRepository $regionRepo, LocaliteRepository $localiteRepo): Response
+    public function new(Request $request, Tools $tools, ManagerRegistry $doctrine, Installation $installation = null, InstallationRepository $installationRepository, DepartementRepository $departRepo, RegionRepository $regionRepo, LocaliteRepository $localiteRepo): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
         $agence=null; $agent=null; $electricien=null;
@@ -514,15 +1060,15 @@ class InstallationController extends AbstractController
             'mapped' => false,
             'class' => Region::class,
             'query_builder' => function (RegionRepository $er) use ($agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('r')
-                    ->leftJoin('App\Entity\Departement', 'd', 'WITH', 'd.region = r.id') 
-                    ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
-                    ->where('l.agence = :val') 
-                    ->setParameter('val', $agence);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('r')
+                //     ->leftJoin('App\Entity\Departement', 'd', 'WITH', 'd.region = r.id') 
+                //     ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
+                //     ->where('l.agence = :val') 
+                //     ->setParameter('val', $agence);
+                // } else {
                     return $er->createQueryBuilder('r');
-                }
+                // }
             },
             'choice_label' => 'nom',
             'data' => $o_region,
@@ -537,18 +1083,18 @@ class InstallationController extends AbstractController
             'class' => Departement::class,
             'data' => $o_departement,
             'query_builder' => function (DepartementRepository $er) use ($o_region, $agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('d')
-                    ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
-                    ->where('l.agence = :val') 
-                    ->andWhere('d.region = :val2') 
-                    ->setParameter('val', $agence)
-                    ->setParameter('val2', $o_region!=null?$o_region:null);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('d')
+                //     ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
+                //     ->where('l.agence = :val') 
+                //     ->andWhere('d.region = :val2') 
+                //     ->setParameter('val', $agence)
+                //     ->setParameter('val2', $o_region!=null?$o_region:null);
+                // } else {
                     return $er->createQueryBuilder('d')
                     ->where('d.region = :val') 
                     ->setParameter('val', $o_region!=null?$o_region:null);
-                }
+                // }
             },
             'choice_label' => 'nom',
             'label' => 'Département',
@@ -561,17 +1107,17 @@ class InstallationController extends AbstractController
             'class' => Localite::class,
             'data' => $o_localite,
             'query_builder' => function (LocaliteRepository $er) use ($o_departement, $agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('l')
-                    ->where('l.departement = :val') 
-                    ->andWhere('l.agence = :val2') 
-                    ->setParameter('val', $o_departement!=null?$o_departement:null)
-                    ->setParameter('val2', $agence);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('l')
+                //     ->where('l.departement = :val') 
+                //     ->andWhere('l.agence = :val2') 
+                //     ->setParameter('val', $o_departement!=null?$o_departement:null)
+                //     ->setParameter('val2', $agence);
+                // } else {
                     return $er->createQueryBuilder('l')
                     ->where('l.departement = :val') 
                     ->setParameter('val', $o_departement!=null?$o_departement:null);
-                }
+                // }
             },
             'choice_label' => 'nom',
             'label' => 'Localité',
@@ -588,8 +1134,9 @@ class InstallationController extends AbstractController
             'attr' => [
                 'class' => 'form-control'
             ],
-            'required' => false,
-            'label' => 'Complément Adresse'
+            'required' => true,
+            // 'label' => 'Complément Adresse'
+            'label' => 'Ancien Numéro Dossier'
         ])
 /*
         ->add('lattitude', TextType::class, [
@@ -761,7 +1308,7 @@ class InstallationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            echo $form->get('localite')->getData()."=VAL";
+            $form->get('localite')->getData()."=VAL";
             $localite=$form->get('localite')->getData();
             $localite=$localiteRepo->find($localite);
             $installation->setLocalite($localite);
@@ -822,7 +1369,8 @@ class InstallationController extends AbstractController
             ])
             ->add('logement', TypeIntegerType::class, [
                 'attr' => [
-                    'class' => 'form-control on_collectif1'
+                    'class' => 'form-control on_collectif1',
+                    'min' => 1
                 ],
                 'required' => false,
                 'label' => 'Nbre Logements'
@@ -911,42 +1459,42 @@ class InstallationController extends AbstractController
 
             ->add('neuf15', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'Neuf_15'
             ])
             ->add('existant15', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'Existant_15'
             ])
             ->add('neuf25', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'Neuf_25'
             ])
             ->add('existant25', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'Existant_25'
             ])
             ->add('neufAutre', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'NeufAutre'
             ])
             ->add('existantAutre', TextType::class, [
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control py-1 my-1 nt1'
                 ],
                 'required' => false,
                 'label' => 'Existant_Autre'
@@ -1060,11 +1608,34 @@ class InstallationController extends AbstractController
                     ])
                 ],
             ]);
+        $form->remove('localite');
+        $form->add('localite', EntityType::class, [
+            'mapped' => true,
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'class' => Localite::class,
+            'query_builder' => function (LocaliteRepository $er) use ($installation) {
+                if($installation->getLocalite()->getDepartement()->getRegion()) {
+                    return $er->createQueryBuilder('r')
+                    ->leftJoin('App\Entity\Departement', 'd', 'WITH', 'd.id = r.departement') 
+                    ->where('d.region = :val') 
+                    ->setParameter('val', $installation->getLocalite()->getDepartement()->getRegion()->getId());
+                } else {
+                    return $er->createQueryBuilder('r');
+                }
+            },
+            'choice_label' => 'nom',
+            'label' => 'Localité',
+            'group_by' => 'departement',
+            'required' => false
+            ]
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $pj=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Electricien'));
+            $pj=$pjRepository->findOneBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Electricien'));
             if($pj==null) {
                 $pj=new PieceJointe();
                 $pj->setInstallation($installation);
@@ -1084,6 +1655,7 @@ class InstallationController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
+                    $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
                 
                 $pj->setFichier($newFilename);
@@ -1136,6 +1708,31 @@ class InstallationController extends AbstractController
             }
         }
         $form = $this->createForm(ProprietaireType::class, $proprietaire);
+
+        $form->remove('localite');
+        $form->add('localite', EntityType::class, [
+            'mapped' => true,
+            'attr' => [
+                'class' => 'form-select'
+            ],
+            'class' => Localite::class,
+            'query_builder' => function (LocaliteRepository $er) use ($installation) {
+                if($installation->getLocalite()->getDepartement()->getRegion()) {
+                    return $er->createQueryBuilder('r')
+                    ->leftJoin('App\Entity\Departement', 'd', 'WITH', 'd.id = r.departement') 
+                    ->where('d.region = :val') 
+                    ->setParameter('val', $installation->getLocalite()->getDepartement()->getRegion()->getId());
+                } else {
+                    return $er->createQueryBuilder('r');
+                }
+            },
+            'choice_label' => 'nom',
+            'label' => 'Localité',
+            'group_by' => 'departement',
+            'required' => false
+            ]
+        );
+
         $form
             ->add('pj1', FileType::class,[
                 'attr' => [
@@ -1177,8 +1774,8 @@ class InstallationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $pj1=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Propriétaire'));
-            $pj2=$pjRepository->findBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Dossier Technique'));
+            $pj1=$pjRepository->findOneBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Propriétaire'));
+            $pj2=$pjRepository->findOneBy(array('installation'=>$installation->getId(), 'libelle'=>'PJ Dossier Technique'));
             if($pj1==null) {
                 $pj1=new PieceJointe();
                 $pj1->setInstallation($installation);
@@ -1205,6 +1802,7 @@ class InstallationController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
+                    $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
                 
                 $pj1->setFichier($newFilename);
@@ -1222,6 +1820,7 @@ class InstallationController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
+                    $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
                 
                 $pj2->setFichier($newFilename);
@@ -1248,14 +1847,14 @@ class InstallationController extends AbstractController
 
 
     #[Route('/{id}/add6', name: 'app_installation_add6', methods: ['GET', 'POST'])]
-    public function new6(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository, MailerInterface $mailer): Response
+    public function new6(Request $request, Tools $tools, ManagerRegistry $doctrine, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository, MailerInterface $mailer): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $demande = new Demande();
+        $demande = new Demande(); $demande->setSoumis(0);
         $installation=$installationRepository->find($installation);
 
         if($installation->getDemandeCourante()) { 
@@ -1280,8 +1879,6 @@ class InstallationController extends AbstractController
             if($installation->getStep()<$step) { 
                 $installation->setStep($step); 
                 $installation->setEtat("Soumis"); 
-                // Notification à faire au client
-                // ...
             }
             $demande->setInstallation($installation);
             $demande->setCreatedby($this->getUser()->getId());
@@ -1307,31 +1904,31 @@ class InstallationController extends AbstractController
             }
             $demande->setCout($result);
             $demande->setNumero($numD);
+            $demande->setRejet(0);
             $demandeRepository->add($demande);
             $installationRepository->add($installation);
             $this->addFlash("success", "La demande a été soumise sous le numero $numD ! Le montant à payer est de ".number_format($demande->getCout(), 0, ""," ")." FCFA");
-            
-            if($installation->getElectricien()->getEmail() || $installation->getElectricien()->getEmail()) {
-                // generate an email 
-                $email = (new Email())
-                // ->from('alert@cossuel.sn');
-                ->from('yatamala.net@gmail.com');
-                if($installation->getElectricien()->getEmail()) {
-                    $email->to($installation->getElectricien()->getEmail());
-                }
-                if($installation->getProprietaire()->getEmail()) {
-                    $email->cc($installation->getProprietaire()->getEmail());
-                }
-                //->bcc('bcc@example.com')
-                //->replyTo('fabien@example.com')
-                //->priority(Email::PRIORITY_HIGH)
-                $email
-                ->subject('Demande COSSUEL soumise !')
-                ->text('Votre demande a été enregistrée et soumise à COSSUEL !')
-                ->html('<p>Votre demande a été enregistrée et soumise à COSSUEL !</p><p>Numéro: '.$demande->getNumero().'</p> </p><p>Montant à payer: '.number_format($demande->getCout(), 0, ""," ").' FCFA</p>');
 
-                // $mailer->send($email);
+            // Notification à faire au client
+            // -----------------------------------------------------------------------------------------------
+            $em=$doctrine->getManager(); 
+            $mess_sms='Demande de conformité numéro '.$demande->getNumero().' soumise pour traitement. Nous vous informerons si elle est validée.';
+            if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
+                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
             }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
+                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+            }
+            
+            $sujet_mail='Demande COSSUEL soumise !';
+            $mess_mail='Demande de conformité numéro '.$demande->getNumero().' soumise pour traitement. Nous vous informerons si elle est validée.';
+            if($installation->getElectricien() && $installation->getElectricien()->getEmail()) {
+                $tools->notifMail($installation->getElectricien()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getEmail()) {
+                $tools->notifMail($installation->getProprietaire()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            // -----------------------------------------------------------------------------------------------
         
             return $this->redirectToRoute('app_installation_show', array('id' => $installation->getId())); 
         }
@@ -1343,21 +1940,21 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_installation_show', methods: ['GET'])]
-    public function show(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
+    public function show(Installation $installation, Tools $tools, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         if($installation->getStep()<=7 || !$installation->getDemandeCourante()->getPaiement()) {
             return $this->render('installation/show.html.twig', [
                 'installation' => $installation,
 
                 'tools'=> $tools,
             ]);
-        } elseif($installation->getDemandeCourante()) {
+        } elseif($installation->getDemandeCourante() && $installation->getDemandeCourante()->getAccepte()) {
             $paiement = $installation->getDemandeCourante()->getPaiement();
             return $this->render('paiement/show.html.twig', [
                 'paiement' => $paiement,
@@ -1368,14 +1965,14 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/pop/{id}', name: 'app_installation_showpop', methods: ['GET'])]
-    public function showpop(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
+    public function showpop(Installation $installation, Tools $tools, ManagerRegistry $doctrine, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         if($installation->getStep()<=7 || !$installation->getDemandeCourante()->getPaiement()) {
             return $this->render('installation/showpop.html.twig', [
                 'installation' => $installation,
@@ -1388,6 +1985,117 @@ class InstallationController extends AbstractController
                 'tools'=> $tools,
             ]);
         }
+    }
+
+    #[Route('/{id}/accepte0', name: 'app_installation_accepte0', methods: ['GET', 'POST'])]
+    public function accepte0(Request $request, Tools $tools, ManagerRegistry $doctrine, Demande $demande, DemandeRepository $demandeRepository, InstallationRepository $installationRepository): Response
+    {
+        $em = $doctrine->getManager(); 
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+
+        $form = $this->createFormBuilder($demande)
+            ->add('motifRejet', TextareaType::class, [
+                'attr' => [
+                    'class' => 'form-control fs-5 py-2 fw-bold ',
+                ],
+                'required' => true,
+                'label' => 'Motif de rejet'
+            ])
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $demande->setSoumis(0);
+            $demande->setEtat("Rejeté");
+            $demande->setRejet(1);
+            $installation=$demande->getInstallation();
+            $installation->setEtat("En Saisie 6/6");
+            $installation->setStep(6);
+            $installationRepository->add($installation);
+            $demandeRepository->add($demande);
+
+            // Notification à faire au client
+            // -----------------------------------------------------------------------------------------------
+            $em=$doctrine->getManager(); 
+            $mess_sms='Votre demande '.$demande->getNumero().' a été renvoyée, veuillez remplir correctement en rajoutant les bonnes pièces jointes';
+            if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
+                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+            }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
+                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+            }
+            
+            $sujet_mail='Demande COSSUEL non acceptée ! Modifications requises';
+            $mess_mail='Votre demande '.$demande->getNumero().' a été renvoyée, veuillez remplir correctement en rajoutant les bonnes pièces jointes';
+            if($installation->getElectricien() && $installation->getElectricien()->getEmail()) {
+                $tools->notifMail($installation->getElectricien()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getEmail()) {
+                $tools->notifMail($installation->getProprietaire()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            // -----------------------------------------------------------------------------------------------
+
+            return $this->redirectToRoute('app_installation_show', array('id' => $demande->getInstallation()->getId())); 
+        }
+
+        return $this->renderForm('installation/accepte0.html.twig', [
+            'demande' => $demande,
+            'demandeForm' => $form,
+
+            'tools' => $tools,
+        ]);
+    }
+
+    #[Route('/{id}/accepte1', name: 'app_installation_accepte1', methods: ['GET', 'POST'])]
+    public function accepte1(Request $request, Tools $tools, ManagerRegistry $doctrine, Demande $demande, DemandeRepository $demandeRepository): Response
+    {
+        $em = $doctrine->getManager(); 
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+
+        $form = $this->createFormBuilder($demande)
+            ->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $demande->setSoumis(1);
+            $demande->setEtat("Accepté");
+            $demande->setRejet(0);
+            $demande->setAccepte(1);
+            $demandeRepository->add($demande);
+
+            $installation=$demande->getInstallation();
+            // Notification à faire au client
+            // -----------------------------------------------------------------------------------------------
+            $em=$doctrine->getManager(); 
+            $mess_sms='Votre demande numéro '.$demande->getNumero().' est validée ! Elle en cours de traitement. '.number_format($demande->getCout(), 0, ""," ").' FCFA à payer';
+            if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
+                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+            }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
+                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+            }
+            
+            $sujet_mail='Demande COSSUEL acceptée ! Traitement en cours ...';
+            $mess_mail='Votre demande numéro '.$demande->getNumero().' est validée ! Elle en cours de traitement. '.number_format($demande->getCout(), 0, ""," ").' FCFA à payer';
+            if($installation->getElectricien() && $installation->getElectricien()->getEmail()) {
+                $tools->notifMail($installation->getElectricien()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            if($installation->getProprietaire() && $installation->getProprietaire()->getEmail()) {
+                $tools->notifMail($installation->getProprietaire()->getEmail(), $mess_mail, $sujet_mail);
+            }
+            // -----------------------------------------------------------------------------------------------
+
+            return $this->redirectToRoute('app_installation_show', array('id' => $demande->getInstallation()->getId())); 
+        }
+
+        return $this->renderForm('installation/accepte1.html.twig', [
+            'demande' => $demande,
+            'demandeForm' => $form,
+
+            'tools' => $tools,
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_installation_edit', methods: ['GET', 'POST'])]
@@ -1408,7 +2116,7 @@ class InstallationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_installation_delete', methods: ['POST'])]
-    public function delete(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository): Response
+    public function delete(Request $request, Installation $installation, InstallationRepository $installationRepository, DemandeRepository $demandeRepository, PieceJointeRepository $pjRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -1424,6 +2132,10 @@ class InstallationController extends AbstractController
                     $demande=$demandeRepository->find($installation->getDemandeCourante()->getId());
                     $demandeRepository->remove($demande);
                 }                
+                $les_pj=$pjRepository->findBy(array("installation"=>$installation->getId()));
+                foreach($les_pj as $pj) {
+                    $pjRepository->remove($pj);
+                }
                 $installationRepository->remove($installation);
             }
         }
@@ -1484,7 +2196,7 @@ class InstallationController extends AbstractController
 
     }
 
-    #[Route('/{id}/showpdf', name: 'app_installation_showpdf', methods: ['GET'])]
+    #[Route('/{id}/showpdf', name: 'app_installation_showpdf1', methods: ['GET'])]
     public function showpdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
         // Redirection vers page login si session inexistante !!!
@@ -1504,11 +2216,38 @@ class InstallationController extends AbstractController
         $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
 
         if(!file_exists($fich)) {
+
+            // $filetemp = $this->getParameter('pdf_directory').'/'.'temphtml_'.$installation->getDemandeCourante()->getNumero().'-'.date("dmyhis").'.html';
+            // \file_put_contents($filetemp, $html);
+
+            // $process = new Process(['/usr/local/bin/wkhtmltopdf', $filetemp, $this->getParameter('pdf_directory').'/'.$filename.'.pdf']);
+            // $process->run();
+
+
             $knpSnappyPdf
             ->setOption('no-outline', true)
             ->setOption('encoding', 'UTF-8')
             ->setOption('page-size','LETTER')
+            ->setOption('lowquality',true)
             ->generateFromHtml($html, $fich);
+            
+            // $knpSnappyPdf->generateFromHtml($html, $fich, [
+            // 'page-size' => 'A4',
+            // 'viewport-size' => '1280x1024',
+            // 'margin-top' => 1,
+            // 'margin-right' => 1,
+            // 'margin-bottom' => 1,
+            // 'margin-left' => 1,
+            // 'enable-javascript' => true,
+            // 'no-stop-slow-scripts' => true,
+            // 'lowquality' => true,
+            // 'encoding' => 'utf-8',
+            // 'images' => true,
+            // 'cookie' => array(),
+            // 'dpi' => 75,
+            // 'enable-external-links' => true,
+            // 'enable-internal-links' => true
+            // ]);
         }
     
         
@@ -1529,8 +2268,8 @@ class InstallationController extends AbstractController
         // );
     }
 
-    #[Route('/{id}/facturepdf', name: 'app_installation_facturepdf', methods: ['GET'])]
-    public function facturepdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
+    #[Route('/{id}/facturepdf0', name: 'app_installation_facturepdf0', methods: ['GET'])]
+    public function facturepdf0(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -1571,8 +2310,171 @@ class InstallationController extends AbstractController
         // );
     }
 
-    #[Route('/{id}/recupdf', name: 'app_installation_recupdf', methods: ['GET'])]
-    public function recupdf(Request $request, Installation $installation, Pdf $knpSnappyPdf)
+    #[Route('/{id}/facturepdf', name: 'app_installation_facturepdf', methods: ['GET', 'POST'])]
+    public function facturepdf(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $type_usage=$installation->getUsages(); 
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='FACTURE_'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+        
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+        $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",5,10,80);
+        $pdf->Ln(3);
+
+        $pdf->SetFont('Arial','BIU',14);
+        $pdf->Cell(180,5,htmlspecialchars_decode('Demande d\'attestation de'),0,0,'R');
+        $pdf->SetFont('Arial','BIU',14);
+        $pdf->Ln(5);
+        $pdf->Cell(297,10,utf8_decode('conformité'),0,0,'C');
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','BIU',13);
+        $pdf->Cell(169,5,utf8_decode('à usage '.$type_usage),0,0,'R');
+        $pdf->SetLineWidth(1);
+        $pdf->SetDrawColor($couleur1, $couleur2, $couleur3);
+
+        $pdf->Line(10,45,200,45);
+        $pdf->Line(10,53,200,53);
+        $pdf->Ln(20);
+        $pdf->SetFont('Arial','BI',13);
+        $pdf->Cell(175,3,utf8_decode('FACTURE N°: '.$installation->getDemandeCourante()->getNumero()),0,0,'C');
+
+        $pdf->SetLineWidth(0.25);
+        $pdf->SetDrawColor(0,0,0);
+
+        $pdf->Ln(15);
+
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(95,8,'CLIENT / INSTALLEUR',1,0,'C');
+
+
+
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(95,8,'PROPRIETAIRE',1,0,'C');
+
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'Nom:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getNomComplet(),0,0);
+
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'Nom:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getProprietaire()->getNomComplet(),0,0);
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'Adresse:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getAdresse(),0,0);
+
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'Adresse:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getProprietaire()->getAdresse(),0,0);
+
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,utf8_decode('Téléphone'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getTelephone(),0,0);
+
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,utf8_decode('Téléphone'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getProprietaire()->getTelephone(),0,0);
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'E-Mail:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getElectricien()->getEmail(),0,0);
+
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(25,5,'E-Mail:',0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(70,5,$installation->getProprietaire()->getEmail(),0,0);
+
+
+        $pdf->Ln(20);
+        $pdf->SetFont('Arial','I',12);
+        $pdf->Cell(95,10,utf8_decode('Puissande Demandée'),1,0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(95,10,$installation->getDemandeCourante()->getPuissance().' Kw',1,0,'C');
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',12);
+        $pdf->Cell(95,10,utf8_decode('Type de Visite'),1,0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(95,10,utf8_decode($installation->getDemandeCourante()->getNumeroPassage().'e Vistite'),1,0,'C');
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',12);
+        $pdf->Cell(95,10,utf8_decode('Montant à Payer'),1,0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(95,10,number_format($installation->getDemandeCourante()->getCout(),0,","," "),1,0,'C');
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','I',12);
+        //$pdf->Cell(100,5,utf8_decode('Paiement validé à la date du: '. datefr($resultInfoDem['DatePaiement']).' par '.$resultInfoDem['MatriculeAgent']),0,0);
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','BI',10);
+        $pdf->Cell(320,5,utf8_decode('Fait à Dakar le: '. $installation->getDemandeCourante()->getDateCreation()->format('d-m-Y')),0,0,'C');
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','BUI',12);
+        $pdf->Cell(320,5,'Le Comptable',0,0,'C');
+
+        $pdf->Image("assets/img/visa_compta.jpg",150,182,40);
+
+        $pdf->SetY(-35);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),0,0,'C');
+        $pdf->SetY(-32);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+        $pdf->SetY(-29);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+        $pdf->SetY(-26);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+    }
+
+
+    #[Route('/{id}/recupdf0', name: 'app_installation_recupdf0', methods: ['GET'])]
+    public function recupdf0(Request $request, Installation $installation, Pdf $knpSnappyPdf)
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -1584,18 +2486,17 @@ class InstallationController extends AbstractController
             'installation' => $installation,
             'title' => "Recu de paiement de demande COSSUEL"
         ]);
-        // echo $html;
-        $filename = 'PaiementDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero();
+        echo $html; exit;
+        $filename = 'PaiementDemandeCOSSUEL'.$installation->getDemandeCourante()->getNumero().'_'.date("dmyhis");
         $fich = $this->getParameter('pdf_directory').'/'.$filename.'.pdf';
 
-        if(!file_exists($fich)) {
+        if(!file_exists($fich) || 1) {
             $knpSnappyPdf
             ->setOption('no-outline', true)
             ->setOption('encoding', 'UTF-8')
             ->setOption('page-size','LETTER')
             ->generateFromHtml($html, $fich);
         }
-        
         // display the file contents in the browser instead of downloading it
         return $this->file($fich, 'fich_temp_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
 
@@ -1612,4 +2513,212 @@ class InstallationController extends AbstractController
         //     )
         // );
     }
+
+    #[Route('/{id}/recupdf', name: 'app_installation_recupdf', methods: ['GET', 'POST'])]
+    public function recupdf(Installation $installation, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, InstallationRepository $installationRepository, AgenceRepository $agenceRepository): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $type_usage=$installation->getUsages(); 
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='RECU_'.$installation->getDemandeCourante()->getNumero();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+
+        $y=5;
+        for($ix=0;$ix<=1; $ix++) {
+            $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",5,$y,70);
+            $y+=5;
+            $pdf->setY($y);
+            $pdf->SetFont('Arial','BIU',12);
+            $pdf->Cell(180,5,utf8_decode('Demande d\'attestation de conformité'),0,0,'R');
+            $pdf->Ln(7);
+            $pdf->SetFont('Arial','BIU',12);
+            $pdf->Cell(170,5,utf8_decode('installation à usage '.$type_usage),0,0,'R');
+            $pdf->SetLineWidth(1);
+            $pdf->SetDrawColor($couleur1, $couleur2, $couleur3);
+
+            $y=$pdf->getY()+12;
+            $pdf->Line(10,$y,200,$y); $y+=8;
+            $pdf->Line(10,$y,200,$y);
+            $pdf->SetFont('Arial','BI',13);
+            $pdf->setY($y-5);
+            $pdf->Cell(175,3,utf8_decode('RECU DE PAIEMENT N°: '.$installation->getDemandeCourante()->getNumero()),0,0,'C');
+
+            $pdf->SetLineWidth(0.25);
+            $pdf->SetDrawColor(0,0,0);
+
+            $pdf->Ln(10);
+
+            $pdf->SetFont('Arial','B',11);
+            $pdf->Cell(95,6,'CLIENT / INSTALLEUR',1,0,'C');
+            $pdf->SetFont('Arial','B',11);
+            $pdf->Cell(95,6,'PROPRIETAIRE',1,0,'C');
+
+
+            $pdf->Ln(7);
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'Nom:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getElectricien()->getNomComplet(),0,0);
+
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'Nom:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getProprietaire()->getNomComplet(),0,0);
+
+            $pdf->Ln(5);
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'Adresse:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getElectricien()->getAdresse(),0,0);
+
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'Adresse:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getProprietaire()->getAdresse(),0,0);
+
+
+            $pdf->Ln(5);
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,utf8_decode('Téléphone'),0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getElectricien()->getTelephone(),0,0);
+
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,utf8_decode('Téléphone'),0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getProprietaire()->getTelephone(),0,0);
+
+            $pdf->Ln(5);
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'E-Mail:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getElectricien()->getEmail(),0,0);
+
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(25,5,'E-Mail:',0,0);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->Cell(70,5,$installation->getProprietaire()->getEmail(),0,0);
+
+
+            $pdf->Ln(10); $yy=$pdf->getY();
+            $pdf->SetFont('Arial','I',11);
+            $pdf->Cell(45,8,utf8_decode('Puissande Demandée'),1,0);
+            $pdf->SetFont('Arial','B',11);
+            $pdf->Cell(45,8,$installation->getDemandeCourante()->getPuissance().' Kw',1,0,'C');
+
+            $pdf->Ln(9);
+            $pdf->SetFont('Arial','I',11);
+            $pdf->Cell(45,8,utf8_decode('Type de Visite'),1,0);
+            $pdf->SetFont('Arial','B',11);
+            $pdf->Cell(45,8,utf8_decode($installation->getDemandeCourante()->getNumeroPassage().'e Vistite'),1,0,'C');
+
+            $pdf->Ln(9);
+            $pdf->SetFont('Arial','I',11);
+            $pdf->Cell(45,8,utf8_decode('Montant Payé'),1,0);
+            $pdf->SetFont('Arial','B',12);
+            $pdf->Cell(45,8,number_format($installation->getDemandeCourante()->getCout(),0,","," ").' FCFA',1,0,'C');
+
+            $pdf->Ln(9);
+            $pdf->SetFont('Arial','I',11);
+            $pdf->Cell(45,8,utf8_decode('Mode Paiement'),1,0);
+            $pdf->SetFont('Arial','B',12);
+            $pdf->Cell(45,8,utf8_decode($installation->getDemandeCourante()->getPaiement()->getMode()),1,0,'C');
+
+            $pdf->Ln(9);
+            $pdf->SetFont('Arial','I',11);
+            $pdf->Cell(45,8,utf8_decode('Référence Paiement'),1,0);
+            $pdf->SetFont('Arial','B',12);
+            $pdf->Cell(45,8,$installation->getDemandeCourante()->getPaiement()->getReference(),1,0,'C');
+
+            $pdf->Ln(10);
+
+            $pdf->setY($yy+5);
+            $pdf->SetFont('Arial','I',10);
+            $pdf->Cell(300,5,utf8_decode('Fait à Dakar le: '. $installation->getDemandeCourante()->getDateCreation()->format('d-m-Y')),0,0,'C');
+
+            $pdf->Ln(5);
+            $pdf->SetFont('Arial','BUI',11);
+            $pdf->Cell(300,5,'Le Comptable',0,0,'C');
+            $pdf->Ln(7);
+            $y=$pdf->getY();
+
+            $pdf->Image("assets/img/visa_compta.jpg",145,$y,35);
+            $pdf->Ln(27);
+            $y=$pdf->getY()+4;
+            $pdf->Line(20,$y,190,$y);
+
+            $pdf->SetY($y);
+            $pdf->SetFont('Arial','I',8);
+            $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),0,0,'C');
+            $y+=3; $pdf->SetY($y);
+            $pdf->SetFont('Arial','I',8);
+            $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+            $y+=3; $pdf->SetY($y);
+            $pdf->SetFont('Arial','I',8);
+            $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+            $y+=3; $pdf->SetY($y);
+            $pdf->SetFont('Arial','I',8);
+            $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+            
+            $y+=11;
+            if($ix==0) {
+                $pdf->Line(0,$y,220,$y);
+            }
+        }
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    /**
+     * @Route("/download", name="download_file")
+    **/
+    #[Route('/{id}/downloadpj/{type}', name: 'app_installation_downloadpj', methods: ['GET'])]
+    public function downloadFileAction(Request $request, Installation $installation, String $type) {
+        $fich="";
+        if($type=="electricien") {
+            if($installation->getPJElectricien()) {
+                $fich=$this->getParameter('photo_directory').'/'.$installation->getPJElectricien()->getFichier();
+            }
+        }
+        if($type=="proprietaire") {
+            if($installation->getPJProprietaire()) {
+                $fich=$this->getParameter('photo_directory').'/'.$installation->getPJProprietaire()->getFichier();
+            }
+        }
+        if($type=="dosstech") {
+            if($installation->getPJDossierTechnique()) {
+                $fich=$this->getParameter('photo_directory').'/'.$installation->getPJDossierTechnique()->getFichier();
+            }
+        }
+        if($fich) {
+            $response = new BinaryFileResponse($fich);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,'pdf.pdf');
+            return $response;
+        } else {
+            return false;
+        }
+    }    
 }

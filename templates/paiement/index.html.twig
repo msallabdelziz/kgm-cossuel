@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -11,14 +11,23 @@
                 </div>
                 <span class="divider">
                     <hr></span>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
-                <div class="col-5 fs-6 border-bottom">
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+                <div class="col-5 fs-6 border-bottom py-1">
                     <span class="float-start fs-6 me-2">Période du </span> <input type="date" name="val_deb0" id="val_deb0" style="width:160px;" class="form-control float-start border-warning p-1 fs-7" value="{{val_deb}}" />
                     <input type="date" name="val_fin0" max="{{ 'now'|date('Y-m-d') }}" id="val_fin0" style="width:160px;" class="form-control float-start border-warning p-1 fs-7 ms-2" value="{{val_fin}}" />
                 </div>
+                <div class="col-7 fs-6 border-bottom py-1">
+                    <span class="float-start fs-6 me-2">Situation de </span>
+                    <button id="perio_all" class="btn btn-outline-primary btn-sm me-2 px-4 pt">Tout</button>
+                    <button id="perio_demb" class="btn btn-outline-primary btn-sm me-2 px-4 pt">Hier</button>
+                    <button id="perio_tey" class="btn btn-outline-primary btn-sm me-2 pt">Aujourd'hui</button>
+                    <button id="perio_week" class="btn btn-outline-primary btn-sm me-2 pt">Cette semaine</button>
+                    <button id="perio_mois0" class="btn btn-outline-primary btn-sm me-2 pt">Mois passé</button>
+                    <button id="perio_mois" class="btn btn-outline-primary btn-sm me-2 pt">Ce mois</button>
+                </div>
             </div>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
-                <div class="clear my-4"></div>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+                <div class="clear my-1"></div>
                 <div class="col-2 offset-3 fs-6 border-bottom">
                     <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Toutes les Agences ...</option>
@@ -52,8 +61,8 @@
             </div>
             <div class="clear"></div>
             {% if les_demande|length == 0 %}
-                <br />
-                <div class="row pt-20">
+                <div class="clear pt-2"></div>
+                <div class="row pt-2">
                     <div class="col-3"></div>
                     <div class="col-6">
                         <div class="alert alert-warning d-flex align-items-center" role="alert">
@@ -67,32 +76,37 @@
                     </div>
                 </div>
             {% else %}
-            <div class="clear my-4"></div>
-            <div class="container mt-40">
-                <div class="offset-4 col-4 border py-2 bg-success shadow bg-opacity-25">
+            <div class="container mt-20">
+                <div class="offset-8 text-dark fs-6 col-3 py-2">
                     <div class="row">
-                        <div class="col-md-6">
-                            <label class="fw-light fs-7">Total Payé</label> <span class="badge bg-info bg-opacity-50 text-dark fs-6 p-1">{{tot_paye|number_format(0, ',', ' ')}} FCFA</span>
+                        <div class="bg-success bg-opacity-25 mt-2" align="right">
+                            <label class="fw-light">Total Encaissé</label> <span class="badge text-success fs-6 p-1">{{tot_paye|number_format(0, ',', ' ')}} FCFA</span>
                         </div>
-                        <div class="col-md-6">
-                            <label class="fw-light fs-7">Total Remboursé</label> <span class="badge bg-warning bg-opacity-50 text-dark fs-6 p-1">{{tot_remb|number_format(0, ',', ' ')}} FCFA</span>
+                        <div class="bg-danger bg-opacity-25 mt-2" align="right">
+                            <label class=" fw-light">Total Remboursé</label> <span class="badge text-danger fs-6 p-1">{{tot_remb|number_format(0, ',', ' ')}} FCFA</span>
                         </div>
+                        {% if tot_remb %}
+                        <div class="bg-success mt-2" align="right">
+                            <label class="text-light">Total Recette</label> <span class="badge fw-bold text-light fs-6 p-1">{{(tot_paye-tot_remb)|number_format(0, ',', ' ')}} FCFA</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             <table class="table table-striped table-hover table-sm pt-0 mt-0">
-            <caption align="top" class="fs-5 mt-0 pt-0">Journal des paiements ({{ les_demande|length }})</caption>
+            <caption align="top" class="fs-5 mt-0 pt-0">Journal des paiements ({{ les_demande.getTotalItemCount }})</caption>
             <thead>
                 <tr>
                     <th scope="col">N° demande</th> 
-                    <th scope="col">Usage</th> 
+                    <th class="priority-3">Usage</th> 
                     <th class="priority-5">Agence</th>
                     <th class="priority-4">Date Paiement</th>
                     <th class="priority-3">Montant Payé</th>
                     <th class="priority-4">Mode Paiement</th>
                     <th class="priority-5">Ref Paiement</th>
+                    <th class="priority-5">Validé par</th>
                     <th class="priority-3">Remboursé ?</th>
-                    <th>Statut demande</th>
+                    <th>Statut Paiement</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
                     <th scope="col"></th>
@@ -141,13 +155,35 @@
                         <td class="priority-5">
                                 {{ ag.paiement.reference }}
                         </td>
+                        <td class="priority-5">
+                                {% if ag.paiement.updatedBy %}
+                                    {% if tools.getUtilisateur(ag.paiement.updatedBy) %}
+                                        {% set creator = tools.getUtilisateur(ag.paiement.updatedBy) %}
+                                        <span class="text-danger fs-8">{{creator.nomComplet}}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                        </td>
                         <td class="priority-3">
-                                {{ ag.paiement.etatRembousement }}
+                                {% if ag.paiement and ag.paiement.etatRembousement %}
+                                    <span class="text-danger fs-8">*</span>
+                                    <span class="badge bg-danger bg-opacity-25 fs-8 text-red p-1">{{ ag.cout|number_format(0, ',', ' ') }} FCFA</span>
+                                {% else %} -
+                                {% endif %}
                         </td>
                         <td>
+                            <a  href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}">
+                                {% if ag.installation.step == 8 %}
+                                    <span class="badge badge-success fs-8">{{ag.etat}}</span>
+                                {% else %}
+                                    <span class="badge bg-green fs-8">Paiement validé</span>
+                                {% endif %}
+                            </a>
+{# 
                             <a  href="{{ path('app_demande_show', {'id': ag.id }) }}">
                                     <span class="badge bg-success fs-8">{{ag.etat}}</span>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="text-end">
                                 <a href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}" class="mx-1" title="Afficher les détails">
@@ -196,6 +232,68 @@
                 $('#val_fin').val(valSel);
                 $('#form_rech_list').submit();
             });
+
+            var val_deb=$('#val_deb').val();
+            var val_fin=$('#val_fin').val();
+
+            var date = new Date();
+            var tey = date.setDate(date.getDate());
+            var demb = date.setDate(date.getDate() - 1);
+
+            var sem1 = new Date(date.setDate(date.getDate()-6)).toUTCString();
+            var sem2 = new Date(date.setDate(date.getDate()+7)).toUTCString();
+
+            var mois1 = new Date(date.getFullYear(), date.getMonth(), 1);
+            var mois2 = new Date(date.getFullYear(), date.getMonth()+1, 0);
+
+            var mois01 = new Date(date.getFullYear(), date.getMonth()-1, 1);
+            var mois02 = new Date(date.getFullYear(), date.getMonth(), 0);
+
+            perio_demb=$("#perio_demb"); perio_tey=$("#perio_tey");
+            perio_week=$("#perio_week"); perio_mois=$("#perio_mois");
+            perio_mois0=$("#perio_mois0"); perio_all=$("#perio_all");
+
+            perio_all.on('click', function() {
+                $('#val_deb').val("");
+                $('#val_fin').val(convert_date(tey));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb=="" && val_fin==convert_date(tey)) { perio_all.removeClass("btn-outline-primary"); perio_all.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_demb.on('click', function() {
+                $('#val_deb').val(convert_date(demb));
+                $('#val_fin').val(convert_date(demb));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(demb) && val_fin==convert_date(demb)) { perio_demb.removeClass("btn-outline-primary"); perio_demb.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_tey.on('click', function() {
+                $('#val_deb').val(convert_date(tey));
+                $('#val_fin').val(convert_date(tey));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(tey) && val_fin==convert_date(tey)) { perio_tey.removeClass("btn-outline-primary"); perio_tey.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_week.on('click', function() {
+                $('#val_deb').val(convert_date(sem1));
+                $('#val_fin').val(convert_date(sem2));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(sem1) && val_fin==convert_date(sem2)) { perio_week.removeClass("btn-outline-primary"); perio_week.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_mois.on('click', function() {
+                $('#val_deb').val(convert_date(mois1));
+                $('#val_fin').val(convert_date(mois2));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(mois1) && val_fin==convert_date(mois2)) { perio_mois.removeClass("btn-outline-primary"); perio_mois.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_mois0.on('click', function() {
+                $('#val_deb').val(convert_date(mois01));
+                $('#val_fin').val(convert_date(mois02));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(mois01) && val_fin==convert_date(mois02)) { perio_mois0.removeClass("btn-outline-primary"); perio_mois0.addClass("btn-outline-dark fw-bold btn-warning"); }
 
     });
 

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <div class="row-fluid">
         <ul class="nav nav-pills mb-4 pb-2 border-bottom border-dark">
@@ -12,7 +12,7 @@
             </li>
         </ul>
     </div>
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/electricien" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des Electriciens</span>
@@ -134,7 +134,7 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h4 class="fw-bold">Demandes initiées ({{ les_install|length }})</h4>
                                 </div>
-                                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL')) %}
+                                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO')) %}
                                     <div class="float-end" align="right">
                                             <a class="btn btn-small py-0 px-1 fs-7 btn-warning me-2" href="{{ path('app_installation_addfromE', {'id': 0, 'idE': electricien.getId()}) }}" title="Nouvelle demande">
                                                 <svg class="bi pt" width="16" height="16" fill="black"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#plus") }}"></use></svg>
@@ -162,8 +162,8 @@
                         <thead>
                             <tr>
                                 <th scope="col">N° demande</th> 
-                                <th scope="col">Usage</th> 
-                                <th>Date Demande</th>
+                                <th class="priority-3">Usage</th> 
+                                <th class="priority-3">Date Demande</th>
                                 <th>Statut demande</th>
                                 <th width="60"></th>
                                 {# <th scope="col">Agence</th> #}
@@ -183,10 +183,10 @@
                                         {% if ag.demandeCourante %}
                                                 {{ ag.demandeCourante.numero }}
                                         {% else %}
-                                                <span>[{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
+                                                <span>[{{ ag.createdAt|date("d/m/y_H:i:s") }}]</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ ag.usages }}</td>
+                                    <td class="priority-3">{{ ag.usages }}</td>
                                     <td>
                                             <span class="badge badge-warning fs-8">{{ ag.createdAt | date("d-m-Y") }}</span>
                                     </td>
@@ -234,7 +234,7 @@
                                         <a class="" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('app_installation_showpop', {'id': ag.id}) }}" title="Détails de la demande">
                                             <svg class="bi pt" width="16" height="16" fill="black"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#search") }}"></use></svg>
                                         </a>
-                                        {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL')) and renew %}
+                                        {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO')) and renew %}
                                         <a class="me-2" href="{{ path('app_installation_renew', {'id': ag.id}) }}" title="Nouvelle demande">
                                             <svg class="bi pt" width="16" height="16" fill="black"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#plus") }}"></use></svg>
                                         </a>
@@ -247,7 +247,7 @@
                                     {# <td>{{ ag.agence }}</td> #}
                                     {# <td class="text-center">
                                         {% if reg.departement.count >0 %}
-                                            <span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+                                            <span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
                                         {% else %}
                                             <code class="text-danger text-opacity-50">Aucun département</code>
                                         {% endif %}

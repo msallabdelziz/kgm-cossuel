@@ -73,20 +73,20 @@ class DepartementController extends AbstractController
             'mapped' => false,
             'class' => Departement::class,
             'query_builder' => function (DepartementRepository $er) use ($region, $agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('d')
-                    ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
-                    ->where('d.region = :val') 
-                    ->andWhere('l.agence = :val2') 
-                    ->setParameter('val', $region)
-                    ->setParameter('val2', $agence);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('d')
+                //     ->leftJoin('App\Entity\Localite', 'l', 'WITH', 'l.departement = d.id') 
+                //     ->where('d.region = :val') 
+                //     ->andWhere('l.agence = :val2') 
+                //     ->setParameter('val', $region)
+                //     ->setParameter('val2', $agence);
+                // } else {
                     return $er->createQueryBuilder('d')
                     ->where('d.region = :val') 
                     ->setParameter('val', $region);
-                }
+                // }
             },
-            'data' => null,
+            // 'data' => null,
             'choice_label' => 'nom',
             'label' => 'Département',
             'required' => true
@@ -97,21 +97,21 @@ class DepartementController extends AbstractController
             ],
             'mapped' => false,
             'class' => Localite::class,
-            'data' => null,
+            // 'data' => null,
             'query_builder' => function (LocaliteRepository $er) use ($region, $agence) {
-                if($agence) {
-                    return $er->createQueryBuilder('l')
-                    ->join('App\Entity\Departement', 'd', 'WITH', 'd.id = l.departement')
-                    ->where('d.region = :val') 
-                    ->andWhere('l.agence = :val2') 
-                    ->setParameter('val', $region)
-                    ->setParameter('val2', $agence);
-                } else {
+                // if($agence) {
+                //     return $er->createQueryBuilder('l')
+                //     ->join('App\Entity\Departement', 'd', 'WITH', 'd.id = l.departement')
+                //     ->where('d.region = :val') 
+                //     ->andWhere('l.agence = :val2') 
+                //     ->setParameter('val', $region)
+                //     ->setParameter('val2', $agence);
+                // } else {
                     return $er->createQueryBuilder('l')
                     ->join('App\Entity\Departement', 'd', 'WITH', 'd.id = l.departement')
                     ->where('d.region = :val') 
                     ->setParameter('val', $region);
-                }
+                // }
             },
             'choice_label' => 'nom',
             'label' => 'Localité',

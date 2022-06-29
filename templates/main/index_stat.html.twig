@@ -221,12 +221,12 @@
 				</div>
 			</div>
 
-			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+			{% if is_granted('ROLE_ADMIN') %}
 			<div class="row mt-50">
 				<div class="offset-1 col-md-10">
 					<div class="card">
 						<div class="d-flex align-items-center justify-content-between">
-							<h4 class="fw-bold">Demandes en préparation ({{ les_install|length }})</h4>
+							<h4 class="fw-bold">Demandes en préparation ({{ les_install.getTotalItemCount }})</h4>
 						</div>
 						<span class="divider">
 							<hr></span>
@@ -249,7 +249,7 @@
 				<thead>
 					<tr>
 						<th scope="col">N° demande</th> 
-						<th scope="col">Usage</th> 
+						<th class="priority-3">Usage</th> 
 						<th>Localité</th>
 						<th>Type Construction</th>
 						<th>Statut demande</th>
@@ -270,7 +270,7 @@
 								{% if ag.demandeCourante %}
 										{{ ag.demandeCourante.numero }}
 								{% else %}
-										<span>[{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
+										<span>[{{ ag.createdAt|date("d/m/y_H:i:s") }}]</span>
 								{% endif %}
 							</td>
 							<td>
@@ -302,7 +302,7 @@
 							{# <td>{{ ag.agence }}</td> #}
 							{# <td class="text-center">
 								{% if reg.departement.count >0 %}
-									<span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+									<span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
 								{% else %}
 									<code class="text-danger text-opacity-50">Aucun département</code>
 								{% endif %}

@@ -3,12 +3,25 @@
 		<!-- JavaScript: Bootstrap Bundle with Popper -->
 		<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}" defer></script>
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
+		{# <script src="{{ asset('assets/js/jquery.validate.min.js') }}"></script> #}
 		<script src="{{ asset('assets/js/main.js') }}"></script>
 		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
 
 		<script src="{{ asset('assets/js/d3.min.js') }}"></script>
 		<script src="{{ asset('assets/js/d3Pie.min.js') }}"></script>
 		<script src="{{ asset('assets/js/c3.min.js') }}"></script>
+		{# <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
+		<script src="{{ asset('assets/js/jquery.signature.js') }}"></script>
+		<script src="{{ asset('assets/js/jquery.ui.touch-punch.min.js') }}"></script> #}
+
+        <!-- jSignature -->
+        <script src="{{ asset('assets/js/jSignature.min.js') }}"></script>
+        <script src="{{ asset('assets/js/modernizr.js') }}"></script>
+
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="{{ asset('flashcanvas.js') }}"></script>
+        <![endif]-->
+
 
 		<script>
 
@@ -38,6 +51,7 @@
 				var link = $(e.relatedTarget); 
 				$(this).find(".modal-body").load(link.attr("href"));
 				$(".modal-backdrop").remove();
+
 			});	
 
 			// Fill modal with content from link href
@@ -45,8 +59,28 @@
 				var link = $(e.relatedTarget); 
 				$(this).find(".modal-body").load(link.attr("href"));
 				$(".modal-backdrop").remove();
+
 			});	
 
 
 		});
+
+		function convert_date(today) {
+			today=new Date(today)
+			var dd = today.getDate();
+
+			var mm = today.getMonth()+1; 
+			var yyyy = today.getFullYear();
+			if(dd<10) 
+			{
+				dd='0'+dd;
+			} 
+
+			if(mm<10) 
+			{
+				mm='0'+mm;
+			} 
+			today = yyyy+'-'+mm+'-'+dd;	
+			return today;	
+		}
 		</script>

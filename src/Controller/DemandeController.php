@@ -26,14 +26,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class DemandeController extends AbstractController
 {
     #[Route('/{id}', name: 'app_demande_show', methods: ['GET'])]
-    public function show(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    public function show(Demande $demande, Tools $tools, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
         return $this->render('demande/show.html.twig', [
@@ -44,14 +44,14 @@ class DemandeController extends AbstractController
     }
 
     #[Route('/pop/{id}', name: 'app_demande_showpop', methods: ['GET'])]
-    public function showpop(Demande $demande, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    public function showpop(Demande $demande, Tools $tools, ManagerRegistry $doctrine, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); $tools = new Tools($em);
+        $em = $doctrine->getManager(); 
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
         return $this->render('demande/showpop.html.twig', [
@@ -62,7 +62,7 @@ class DemandeController extends AbstractController
     }
 
     #[Route('/{id}/histo', name: 'app_demande_histo', methods: ['GET'])]
-    public function showtime(Demande $demande, EntityManagerInterface $em, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
+    public function showtime(Demande $demande, Tools $tools, EntityManagerInterface $em, DemandeRepository $demandeRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
         if(!$this->getUser()) {
@@ -71,7 +71,6 @@ class DemandeController extends AbstractController
         
         $demande=$demandeRepository->find($demande);
         $paiement=$demande->getPaiement();
-        $tools = new Tools($em);
         if($paiement) {
             return $this->render('dossier/showtime.html.twig', [
                 'demande' => $demande,
@@ -104,13 +103,14 @@ class DemandeController extends AbstractController
         ->add('referent', EntityType::class, [
             'mapped' => false,
             'attr' => [
-                'class' => 'form-select'
+                'class' => 'form-select',
+                'size' => '5'
             ],
             'query_builder' => function (AgentRepository $er) use ($localite) {
                 return $er->createQueryBuilder('agt')
                 ->select('agt')
-                ->join('App\Entity\Localite', 'loc', 'WITH', 'agt.id_agence = loc.agence')
                 ->join('App\Entity\Profil', 'prof', 'WITH', 'agt.profil = prof.id')
+                ->leftJoin('App\Entity\Localite', 'loc', 'WITH', 'agt.id_agence = loc.agence or agt.id_agence is null')
                 ->where('loc.id = :val')
                 ->andWhere('prof.code = :val2')
                 ->setParameter('val', $localite->getId())
@@ -120,7 +120,7 @@ class DemandeController extends AbstractController
             'class' => Agent::class,
             'label' => 'Désignation du Référent chargé du dossier',
             'choice_label' => function ($agent) {
-                return "[".$agent->getMatricule()."] ".$agent->getPrenom()." ".$agent->getNom();
+                return "[".$agent->getMatricule()."] ".$agent->getPrenom()." ".$agent->getNom()." - ".$agent->getAgence();
             },
             'required' => true
         ])
@@ -135,6 +135,7 @@ class DemandeController extends AbstractController
             $installationRepository->add($installation);
 
             $demande->setEtat("Demande validée");
+            $demande->setValide(1);
             $demandeRepository->add($demande);
 
             $id_agent=$form->get('referent')->getData();
@@ -150,7 +151,7 @@ class DemandeController extends AbstractController
             $demandeRepository->add($demande);
 
             $this->addFlash("success", "La demande a été validée. Le dossier est créé et affecté au référent ".$dossier->getReferent()." !");
-            return $this->redirectToRoute('app_demande_show', array('id' => $demande->getId())); 
+            return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
         }
 
         return $this->renderForm('demande/valid.html.twig', [
@@ -159,7 +160,5 @@ class DemandeController extends AbstractController
             'dossierForm' => $form,
         ]);
     }
-
-    
 
 }

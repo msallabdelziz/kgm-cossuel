@@ -59,9 +59,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isActif = true;
+
     public function __construct()
     {
         $this->demande = new ArrayCollection();
+        $this->isActif = true;
         $this->created_by = "";
         $this->adresse = "";
         $this->created_at = new \DateTimeImmutable();
@@ -275,6 +279,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function isActif(): bool
+    {
+        return $this->isActif;
+    }
+
+    public function setIsActif(bool $isActif): self
+    {
+        $this->isActif = $isActif;
 
         return $this;
     }

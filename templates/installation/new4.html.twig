@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Soumission de demandes </span>
             </a>
             <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Demandes</a>
@@ -13,7 +13,7 @@
         {% set offset="offset-md-1" %}            
             <div class="{{ offset }} col-lg-10 mb-2  p-3">
 
-                <div class="container">
+                <div class="">
                     <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
                         <div class="container-fluid ps-4">
                             <div class="navbar-brand mb-0 fs-4 fw-400 row col">
@@ -30,7 +30,7 @@
                         </div>
                     </nav>
                     {% include "installation/_search_electricien.html.twig" %}
-                    <div class="container">
+                    <div class="">
                         {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
                             <div class="row">
                                 <!-- progressbar -->
@@ -41,7 +41,7 @@
                                 <div class="card">
                                     <div class="row">
                                         <div class="col-8">
-                                            <h2 class="fs-title">Informations sur l'électricien installateur</h2>
+                                            <h2 class="fs-title">Informations sur l'électricien</h2>
                                         </div>
                                         <div class="col-4" align="right">
                                             <div class="input-group input-group-sm mb-2">
@@ -125,18 +125,28 @@
         $("#electricien_typePiece").prop('required',true);
         $('.z_pj').hide();
 
+        {% if not installation.PJElectricien %}
+            $('.z_pj').show();
+            $("#electricien_pj").prop('required',true);
+        {% endif %}
+
+        $("#electricien_typePiece").change(function(e) {
+            $("#electricien_numPiece").focus();
+            $("#electricien_numPiece").css('borderColor', '#ced4da')
+            $("#electricien_numPiece").css('borderLeft', '2px solid red')
+        });
 
         $("#electricien_numPiece").keydown(function(e) {
             type_p=$("#electricien_typePiece option:selected").val();
-            val_num=$("#electricien_numPiece").val().replace(/ /g,'').length;
+            val_num=$(this).val().replace(/ /g,'').length;
             var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
             var test0 = /[\b]/; //regex
-            nb_max=15
+            nb_max=15;
             if(type_p=="CNI") {
                 var test = /[0-9\b]/; //regex
-                $("#electricien_numPiece").val($("#electricien_numPiece").val().replace(/[a-zA-Z]/g,''));
-                val_num=$("#electricien_numPiece").val().replace(/ /g,'').length;
-                nb_max=13
+                $(this).val($(this).val().replace(/[a-zA-Z]/g,''));
+                val_num=$(this).val().replace(/ /g,'').length;
+                nb_max=13;
             } else {
                 var test = /[a-zA-Z0-9\b]/; //regex
             }
@@ -149,6 +159,55 @@
             }    
 
         });
+
+        $('#electricien_numPiece').focusout(function(){
+            type_p=$("#electricien_typePiece option:selected").val();
+            if(type_p=="CNI") {
+                var max1 = 13; var max2 = 14;
+                var len = $(this).val().length;
+
+                if((len != max1 && len != max2) && len){
+                    $(this).css('border', '1px solid red')
+                    $(this).css('borderLeft', '2px solid red')
+                    $(this).select();
+                    $(this).focus();
+                } else {
+                    $(this).css('borderColor', '#ced4da')
+                    $(this).css('borderLeft', '2px solid red')
+                }
+            }
+        });        
+
+        $("#electricien_telephone").keydown(function(e) {
+            val_num=$("#electricien_telephone").val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=9
+            var test = /[0-9\b]/; //regex
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>=nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+
+        $('#electricien_telephone').focusout(function(){
+            var max = 9;
+            var len = $(this).val().length;
+
+            if(len != max && len){
+                $(this).css('border', '1px solid red')
+                $(this).css('borderLeft', '2px solid red')
+                $(this).select();
+                $(this).focus();
+            } else {
+                $(this).css('borderColor', '#ced4da')
+                $(this).css('borderLeft', '2px solid red')
+            }
+        });        
 
         $("#telephone_electricien").keydown(function(event){
             if(event.keyCode == 13) {

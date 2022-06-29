@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/utilisateur" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des utilisateurs</span>
@@ -100,6 +100,27 @@
                         </div>
                     </div>
                     <div class="col pt-2" align="right">
+                            {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_utilisateur_resetpass', {'id': utilisateur.id }) }}" class="mx-2 float-start btn btn-secondary btn-sm" title="Reset mot de passe">
+                                <svg class="bi" width="16" height="16" fill="white">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-clockwise') }}"></use>
+                                </svg> Réinitialiser mot de passe
+                            </a>
+                                {% if utilisateur.id != app.user.id %}
+                                <a href="{{ path('app_utilisateur_activer', {'id': utilisateur.id }) }}" class="mx-2 float-start btn btn-danger btn-sm" title="Activer/Désavtiver le compte">
+                                    <svg class="bi" width="16" height="16" fill="white">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                    </svg> 
+                                    {% if not utilisateur.isActif %}
+                                        Activer le compte
+                                    {% else %}
+                                        Désactiver le compte
+                                    {% endif %}
+                                    
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
                             <a href="{{ path('app_utilisateur_index') }}" class="mx-2" title="Retour">
                                 <svg class="bi" width="16" height="16" fill="black">
                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-return-left') }}"></use>

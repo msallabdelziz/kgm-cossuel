@@ -48,6 +48,24 @@ class Demande
     #[ORM\Column(type: 'integer', nullable:true)]
     private $id_paiement;
 
+    #[ORM\Column(type: 'boolean')]
+    private $soumis;
+
+    #[ORM\Column(type: 'boolean')]
+    private $rejet;
+
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
+    private $motifRejet;
+
+    #[ORM\Column(type: 'datetime', nullable:true)]
+    private $dateAcceptation;
+
+    #[ORM\Column(type: 'boolean')]
+    private $accepte;
+
+    #[ORM\Column(type: 'boolean')]
+    private $valide;
+
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'demande')]
     private $utilisateur;
 
@@ -70,6 +88,11 @@ class Demande
         $this->created_by = "";
         $this->created_at = new \DateTimeImmutable();
         $this->dateCreation = new \DateTime();
+        $this->soumis=true;
+        $this->accepte=false;
+        $this->valide=false;
+        $this->rejet=false;
+        $this->motifRejet="";
         $this->etat = "Soumis";
     }
 
@@ -186,9 +209,77 @@ class Demande
         return $this;
     }
 
+    public function getDateAcceptation(): ?\DateTimeInterface
+    {
+        return $this->dateAcceptation;
+    }
+
+    public function setDateAcceptation(\DateTimeInterface $dateAcceptation): self
+    {
+        $this->dateValidation = $dateAcceptation;
+
+        return $this;
+    }
+
     public function getNumeroPassage(): ?int
     {
         return $this->numeroPassage;
+    }
+
+    public function setSoumis(bool $val): self
+    {
+        $this->soumis = $val;
+
+        return $this;
+    }
+    public function getSoumis(): ?bool
+    {
+        return $this->soumis;
+    }
+
+    public function setRejet(bool $val): self
+    {
+        $this->rejet = $val;
+
+        return $this;
+    }
+    public function getRejet(): ?bool
+    {
+        return $this->rejet;
+    }
+
+    public function getMotifRejet(): ?string
+    {
+        return $this->motifRejet;
+    }
+
+    public function setMotifRejet(?string $motifRejet): self
+    {
+        $this->motifRejet = $motifRejet;
+
+        return $this;
+    }
+
+    public function setAccepte(bool $val): self
+    {
+        $this->accepte = $val;
+
+        return $this;
+    }
+    public function getAccepte(): ?bool
+    {
+        return $this->accepte;
+    }
+
+    public function setValide(bool $val): self
+    {
+        $this->valide = $val;
+
+        return $this;
+    }
+    public function getValide(): ?bool
+    {
+        return $this->valide;
     }
 
     public function setNumeroPassage(int $numeroPassage): self

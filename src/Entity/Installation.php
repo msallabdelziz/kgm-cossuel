@@ -584,6 +584,63 @@ class Installation
         }
     }
 
+    public function getPJPhoto1(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Photo Installation 1") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getPJPhoto2(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Photo Installation 2") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getPJPhoto3(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Photo Installation 3") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+    public function getPJPhoto4(): ?PieceJointe
+    {
+        $les_pj = $this->pieceJointes;
+        $res= null;
+        if($les_pj->count()) {
+            foreach ($les_pj as $pj) {
+                if($pj->getLibelle() == "Photo Installation 4") {
+                    $res=$pj; break;
+                }
+            }
+        } 
+        return $res;
+    }
+
+
     public function getPJElectricien(): ?PieceJointe
     {
         $les_pj = $this->pieceJointes;

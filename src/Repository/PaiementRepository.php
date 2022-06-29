@@ -69,6 +69,8 @@ class PaiementRepository extends ServiceEntityRepository
         }
         if($orderBy) {
             $q->orderBy('a.'.$orderBy, 'ASC');
+        } else {
+            $q->orderBy('a.created_at', 'DESC');
         }
         if($page) {
             $q

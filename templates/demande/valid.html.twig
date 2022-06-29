@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     #synthese_demande input[disabled] {
@@ -45,9 +45,9 @@
         {% set link_liste = app.session.get('page_liste_demande') %}
     {% endif %}
 
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de demandes </span>
             </a>
         </header>
@@ -250,7 +250,7 @@
                     {% if demande.installation.electricien %}
                     <div class="card mb-2">
                         <h2 class="fs-title text-black titre_bloc_4">
-                            Informations sur l'électricien installateur
+                            Informations sur l'électricien
                             <div class="float-end">
                                 <a class="pt fs-7 text-danger btn_bloc_4" title="Cacher les détails">
                                     <svg class="bi" width="20" height="20" fill="#dc3545"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-up") }}"></use></svg>Cacher ...
@@ -290,6 +290,17 @@
                             <div class="col-lg-4">
                                 <label >Numéro Pièce</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ demande.installation.electricien.numPiece }}">
+                            </div>
+                            <div class="col-lg-4 mt-2">
+                                <label >Scan CNI Electricien</label><br />
+                            {% if demande.installation.PJElectricien %}
+                                    <svg class="bi" width="24" height="24" fill="gray">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                    </svg>
+                                    <span onclick="window.open('{{path('app_installation_downloadpj', {'id': demande.installation.id, 'type':'electricien'})}}')" class="text-success pt fs-7">{{demande.installation.PJElectricien.fichier}} </span>
+                            {% else %}
+                                    <span class="text-danger pt fs-8">N/D</span>
+                            {% endif %}
                             </div>
                         </div>
                     </div>
@@ -339,6 +350,29 @@
                             <div class="col-lg-4">
                                 <label >Numéro Pièce</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.numPiece }}">
+                            </div>
+                            <div class="col-lg-4 mt-2">
+                                <label >Scan CNI Propriétaire</label><br />
+                            {% if installation.PJProprietaire %}
+                                    <svg class="bi" width="24" height="24" fill="gray">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                    </svg>
+                                    <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'proprietaire'})}}')" class="text-success pt fs-7">{{installation.PJProprietaire.fichier}} </span>
+                            {% else %}
+                                    <span class="text-danger pt fs-8">N/D</span>
+                            {% endif %}
+                            </div>
+
+                            <div class="col-lg-4 mt-2">
+                                <label >{% if installation.usages!='erp_ert' %}Titre de propriété{% else %}Documents Techniques{% endif %}</label><br />
+                            {% if installation.PJDossierTechnique %}
+                                    <svg class="bi" width="24" height="24" fill="gray">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                    </svg>
+                                    <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'dosstech'})}}')" class="text-success pt fs-7">{{installation.PJDossierTechnique.fichier}} </span>
+                            {% else %}
+                                    <span class="text-danger pt fs-8">N/D</span>
+                            {% endif %}
                             </div>
                         </div>
                     {% endif %}

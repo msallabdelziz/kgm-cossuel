@@ -18,18 +18,24 @@ class DetailVerification
     #[ORM\Column(type: 'boolean', nullable: true)]
     private $conclusion;
 
+    #[ORM\Column(type: 'boolean')]
+    private $sansobjet=false;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $commentaire;
 
     #[ORM\ManyToOne(targetEntity: PointVerification::class)]
     private $pointVerification;
 
+    #[ORM\ManyToOne(targetEntity: PointNonconf::class)]
+    private $pointNonconf = null;
+
     #[ORM\ManyToOne(targetEntity: Visite::class)]
     private $visite;
 
     public function __construct()
     {
-
+        $this->sansobjet=false;
     }
 
     public function getId(): ?int
@@ -61,6 +67,18 @@ class DetailVerification
         return $this;
     }
 
+    public function getSansobjet(): ?bool
+    {
+        return $this->sansobjet;
+    }
+
+    public function setSansobjet(bool $sansobjet): self
+    {
+        $this->sansobjet = $sansobjet;
+
+        return $this;
+    }
+
     public function getVisite(): ?Visite
     {
         return $this->visite;
@@ -86,6 +104,17 @@ class DetailVerification
         return $this;
     }
 
+    public function getPointNonconf(): ?PointNonconf
+    {
+        return $this->pointNonconf;
+    }
+
+    public function setPointNonconf(?PointNonconf $pnc): self
+    {
+        $this->pointNonconf = $pnc;
+
+        return $this;
+    }
 
     public function __toString()
     {

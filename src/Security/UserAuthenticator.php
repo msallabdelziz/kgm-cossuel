@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Repository\UtilisateurRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,8 +25,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
     private $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    private $userRepository;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, UtilisateurRepository $userRepository)
     {
+        $this->userRepository = $userRepository;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -35,13 +39,16 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(Security::LAST_USERNAME, $login);
 
-        return new Passport(
-            new UserBadge($login),
+        $pss=new Passport(
+            new UserBadge($login, function ($login) {
+                return $this->userRepository->findOneBy(['login' => $login, 'isActif'=>1]);
+            }),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
             ]
         );
+        return $pss;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response

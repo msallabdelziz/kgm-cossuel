@@ -395,7 +395,7 @@
 				</div>
 			</div>
 
-			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO') %}
 			<div class="row mt-50">
 				<div class="col-md-8">
 					<div class="card">
@@ -423,7 +423,7 @@
 				<thead>
 					<tr>
 						<th scope="col">N° demande</th> 
-						<th scope="col">Usage</th> 
+						<th class="priority-3">Usage</th> 
 						<th>Localité</th>
 						<th>Type Construction</th>
 						<th>Statut demande</th>
@@ -476,7 +476,7 @@
 							{# <td>{{ ag.agence }}</td> #}
 							{# <td class="text-center">
 								{% if reg.departement.count >0 %}
-									<span class="badge bg-success text-red rounded-pill fw-normal">{{ reg.departement.count }}</span>
+									<span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
 								{% else %}
 									<code class="text-danger text-opacity-50">Aucun département</code>
 								{% endif %}

@@ -1,4 +1,4 @@
-    <section class="container">
+    <section class="">
         <div class="row">
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             {% else %}
-            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation|length }})</div>
+            <div align="top" class="caption fs-5 mt-0 pt-0">Liste des Demandes ({{ les_installation.getTotalItemCount }})</div>
 
             {# Affichage des demandes en format card #}
 
@@ -92,7 +92,7 @@
                                     </a>
                                 {% else %}
                                     <a class="text-decoration-none" href="{{ path('app_installation_show', {'id': ag.id }) }}">
-                                        <span class="{{text_usage}}">Saisie [{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
+                                        <span class="{{text_usage}}">Saisie [{{ ag.createdAt|date("d/m/y_H:i:s") }}]</span>
                                     </a>
                                 {% endif %}
                             </h5>
@@ -111,7 +111,7 @@
                                 </h6>
                                 <p class="card-text fs-7">
                                     {% if ag.electricien %}
-                                    <div class="mb-2 border-0 text-muted" title="Electricien installateur">
+                                    <div class="mb-2 border-0 text-muted" title="Electricien">
                                         <svg class="bi pt" width="22" height="22" fill="#036">
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
                                         </svg>

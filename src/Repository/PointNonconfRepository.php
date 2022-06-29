@@ -2,30 +2,30 @@
 
 namespace App\Repository;
 
-use App\Entity\PointNomConforme;
+use App\Entity\PointNonconf;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method PointNomConforme|null find($id, $lockMode = null, $lockVersion = null)
- * @method PointNomConforme|null findOneBy(array $criteria, array $orderBy = null)
- * @method PointNomConforme[]    findAll()
- * @method PointNomConforme[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method PointNonconf|null find($id, $lockMode = null, $lockVersion = null)
+ * @method PointNonconf|null findOneBy(array $criteria, array $orderBy = null)
+ * @method PointNonconf[]    findAll()
+ * @method PointNonconf[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PointNomConformeRepository extends ServiceEntityRepository
+class PointNonconfRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, PointNomConforme::class);
+        parent::__construct($registry, PointNonconf::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(PointNomConforme $entity, bool $flush = true): void
+    public function add(PointNonconf $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -37,7 +37,7 @@ class PointNomConformeRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(PointNomConforme $entity, bool $flush = true): void
+    public function remove(PointNonconf $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -46,15 +46,15 @@ class PointNomConformeRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return PointNomConforme[] Returns an array of PointNomConforme objects
+    //  * @return PointNonconf[] Returns an array of PointNonconf objects
     //  */
     /*
     public function findByExampleField($value)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.exampleField = :val')
             ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('l.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
@@ -63,10 +63,10 @@ class PointNomConformeRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?PointNomConforme
+    public function findOneBySomeField($value): ?PointNonconf
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.exampleField = :val')
             ->setParameter('val', $value)
             ->getQuery()
             ->getOneOrNullResult()

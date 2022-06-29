@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/agent" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des agents</span>
@@ -41,6 +41,7 @@
                                 <tr class="{{ cur }}">
                                     <td scope="row"><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.matricule }}</a></td>
                                     <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}  {{ dep.prenom }}</a></td>
+                                    <td><a href="{{ path('app_agent_show', {'id': dep.id }) }}" class="text-dark fw-normal fs-8 text-decoration-none">{{ dep.profil.nom }}</a></td>
 {#                                     
                                     <td align="center">
                                     {% if dep.localite.count >0 %}
@@ -81,11 +82,18 @@
                                     <span class="text-danger">-</span>
                                 {% endif %}
                                 {% if is_granted('ROLE_ADMIN') %}
-                                <a class="ms-2" href="{{ path('app_agent_affect', { 'id' : agent.id}) }}" title="Nouvelle affectation">
-                                    <svg class="bi" width="16" height="16" fill="red">
-                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
-                                    </svg>
-                                </a>
+                                    <a class="ms-2" href="{{ path('app_agent_affect', { 'id' : agent.id}) }}" title="Nouvelle affectation">
+                                        <svg class="bi" width="16" height="16" fill="green">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                        </svg>
+                                    </a>
+                                    {% if agent.idagence %}
+                                    <a class="ms-2" href="{{ path('app_agent_desaffect', { 'id' : agent.id}) }}" title="Supprimer affectation">
+                                        <svg class="bi" width="16" height="16" fill="red">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-square') }}"></use>
+                                        </svg>
+                                    </a>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>

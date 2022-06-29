@@ -19,7 +19,7 @@
 <script>
     $(document).ready(function () {
 
-        {% for filtre in ["agence", "usage", "statut"] %}
+        {% for filtre in ["agence", "usage", "statut", "passage"] %}
             $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
             $('#val_{{filtre}}0').on('change', function() {
                 optSel=$('#val_{{filtre}}0').find("option:selected");

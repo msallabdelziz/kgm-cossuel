@@ -285,10 +285,19 @@ class UtilisateurController extends AbstractController
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
+        $login0=$utilisateur->getLogin();
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
+            $login_u=$request->request->get('login_u');
+            $util_doublon=$utilisateurRepository->findBy(array("login"=>$login_u));
+            if(!$util_doublon && $login_u) {
+                $utilisateur->setLogin($login_u);
+            } else {
+                $utilisateur->setLogin($login0); 
+                $this->addFlash('danger', 'L\'identifiant saisi est déja attribué à un autre utilisateur !');
+            }
+
             $utilisateurRepository->add($utilisateur);
             return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
         }
@@ -298,6 +307,39 @@ class UtilisateurController extends AbstractController
             'utilisateur' => $utilisateur,
             'utilisateurForm' => $form,
         ]);
+    }
+
+    #[Route('/{id}/resetpass', name: 'app_utilisateur_resetpass', methods: ['GET'])]
+    public function resetpass(Request $request, ManagerRegistry $doctrine, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $utilisateur->setPassword( $userPasswordHasher->hashPassword($utilisateur, $utilisateur->getLogin() ) );
+        $em = $doctrine->getManager();
+        $em->flush();
+        $this->addFlash('success', 'Mot de passe utilisateur réinitialisé !');
+        return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
+    }
+
+    #[Route('/{id}/activer', name: 'app_utilisateur_activer', methods: ['GET'])]
+    public function activer(Request $request, ManagerRegistry $doctrine, Utilisateur $utilisateur, UtilisateurRepository $utilisateurRepository, UserPasswordHasherInterface $userPasswordHasher): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $etatActif=$utilisateur->isActif();
+        if($etatActif) { $mess="Compte désactivé"; }
+        else { $mess="Compte activé"; }
+        $utilisateur->setIsActif(!$etatActif);
+        $em = $doctrine->getManager();
+        $em->flush();
+        $this->addFlash('success', $mess.' avec succès !');
+        return $this->redirectToRoute("app_utilisateur_show", ['id'=>$utilisateur->getId()]);
     }
 
     #[Route('/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]

@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
-    <section class="container">
+    <section class="">
         <header class="hstack pb-2 mb-2 border-bottom">
             <a href="/utilisateur" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des utilisateurs</span>
@@ -64,9 +64,9 @@
                                     <label class="fw fs-7">Profil Utilisateur</label>
                                     <div class="form-control disabled bg-warning bg-opacity-25">{{ utilisateur.type }}</div>
                                 </div>
-                                <div class="col-5 mb-2">
+                                <div class="col-6 mb-2">
                                     <label class="fw fs-7">Identifiant</label>
-                                    <div class="form-control disabled bg-warning bg-opacity-25">{{ utilisateur.login }}</div>
+                                    <input type="text" name="login_u" id="login_u" class="form-control bg-opacity-25 fw-bold" required="required" value="{{ utilisateur.login }}" />
                                 </div>
                                 <div class="col-5">
                                     {{ form_row(utilisateurForm.nom) }}

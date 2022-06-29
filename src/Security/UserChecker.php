@@ -21,6 +21,10 @@ class UserChecker implements UserCheckerInterface
             // the message passed to this exception is meant to be displayed to the user
             throw new CustomUserMessageAccountStatusException('Le processus de validation de votre compte n\'a pas encore été finalisé. Vous devez confirmer votre email pour poursuivre. ');
         }
+        if (! $user->isActif()) {
+            // the message passed to this exception is meant to be displayed to the user
+            throw new CustomUserMessageAccountStatusException('Le compte est inactif. ');
+        }
     }
 
     public function checkPostAuth(UserInterface $user): void

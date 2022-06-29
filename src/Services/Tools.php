@@ -36,7 +36,7 @@ class Tools
 
     private $siteEmail;
 
-    public function __construct(EntityManagerInterface $em, HttpClientInterface $client=null, MailerInterface $mailer=null, string $siteEmail=null, string $siteName=null)
+    public function __construct(EntityManagerInterface $em, HttpClientInterface $client=null, MailerInterface $mailer=null, string $siteEmail='yatamala.net@gmail.com', string $siteName='COSSUEL - Notification')
     {
         $this->em = $em;
         $this->mailer = $mailer;
@@ -145,11 +145,13 @@ class Tools
     }
 
     public function notifMail(string $dest, string $mess, string $sujet=""): bool {
+        return true;
         $email = (new Email())
             ->from(new Address($this->siteEmail, $this->siteName))
-            ->to($dest)
+            ->to("mlthioune@gmail.com")
+            // ->to($dest)
             ->subject($sujet)
-            ->text($mess);
+            ->html($mess);
         ;
 
         $this->mailer->send($email);
@@ -157,8 +159,13 @@ class Tools
     }
 
     public function notifSMS(string $dest, string $mess, string $sujet=""): bool {
+        // return true;
+
         $auth = 'Basic Y29zc3VlbDpDT1MyMDIyQGtnbQ==';
-        
+        if(!$this->client) {
+            return false;
+        }
+
         $response = $this->client->request(
             'POST',
             'https://api.freebusiness.sn/sms/1/text/single', [
@@ -174,12 +181,14 @@ class Tools
                 'body' => '
                 {
                     "from" : "cossuel",
-                    "to" : "'.$dest.'",
-                    "text" : "'.$mess.'"
+                    "to" : "221773799200",
+                    "text" : "TEST: '.$mess.'"
                 }
                 '
             ]
         );
+        // "to" : "221'.$dest.'",
+
 
         // $response = $this->client->request(
         //     'POST',

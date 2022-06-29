@@ -53,6 +53,7 @@ class ProprietaireType extends AbstractType
             'attr' => [
                 'class' => 'form-control'
             ],
+            'data'=>'',
             'required' => false,
             'label' => 'Adresse'
         ])
@@ -65,9 +66,9 @@ class ProprietaireType extends AbstractType
                 new Callback(function($object, ExecutionContextInterface $context) {
                     $v = $object;
                     if($object) {
-                        if (strlen($object) >15) {
+                        if (strlen($object) !=9) {
                             $context
-                                ->buildViolation('Trop de chiffre saisis pour un numéro de téléphone ! Au max 15 !')
+                                ->buildViolation('Le nombre de chiffres saisis pour un numéro de téléphone incorrect !')
                                 ->addViolation();
                         }
                     }
@@ -110,7 +111,7 @@ class ProprietaireType extends AbstractType
             ->add('updated_at')
             ->add('updated_by')*/
             ->add('localite', EntityType::class, [
-                'mapped' => false,
+                'mapped' => true,
                 'attr' => [
                     'class' => 'form-select'
                 ],
@@ -118,7 +119,9 @@ class ProprietaireType extends AbstractType
                 'choice_label' => 'nom',
                 'label' => 'Localité',
                 'group_by' => 'departement',
-                'required' => true])
+                'required' => false
+                ]
+            )
         ;
     }
 

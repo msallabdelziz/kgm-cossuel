@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <div class="row">
+            <div class="card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="fw-bold">Historique Paiements enregistrés</h4>
+                    </div>
+                </div>
+                <span class="divider">
+                    <hr></span>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+                <div class="col-5 fs-6 border-bottom py-1">
+                    <span class="float-start fs-6 me-2">Période du </span> <input type="date" name="val_deb0" id="val_deb0" style="width:160px;" class="form-control float-start border-warning p-1 fs-7" value="{{val_deb}}" />
+                    <input type="date" name="val_fin0" max="{{ 'now'|date('Y-m-d') }}" id="val_fin0" style="width:160px;" class="form-control float-start border-warning p-1 fs-7 ms-2" value="{{val_fin}}" />
+                </div>
+                <div class="col-7 fs-6 border-bottom py-1">
+                    <span class="float-start fs-6 me-2">Situation de </span>
+                    <button id="perio_all" class="btn btn-outline-primary btn-sm me-2 px-4 pt">Tout</button>
+                    <button id="perio_demb" class="btn btn-outline-primary btn-sm me-2 px-4 pt">Hier</button>
+                    <button id="perio_tey" class="btn btn-outline-primary btn-sm me-2 pt">Aujourd'hui</button>
+                    <button id="perio_week" class="btn btn-outline-primary btn-sm me-2 pt">Cette semaine</button>
+                    <button id="perio_mois0" class="btn btn-outline-primary btn-sm me-2 pt">Mois passé</button>
+                    <button id="perio_mois" class="btn btn-outline-primary btn-sm me-2 pt">Ce mois</button>
+                </div>
+            </div>
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+                <div class="clear my-1"></div>
+                <div class="col-2 offset-3 fs-6 border-bottom">
+                    <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les Agences ...</option>
+                        {% for obj in les_agence %}
+                            <option value="{{obj.id}}" {% if obj.id == val_agence %} selected="selected"{% endif %}>{{obj.nom}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="val_modep0" id="val_modep0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Tous les Modes ...</option>
+                        {% for obj  in les_modep %}
+                            <option value="{{obj}}" {% if obj == val_modep %} selected="selected"{% endif %}>{{obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom">
+                    <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Tous les Usages ...</option>
+                        {% for obj,lib_obj in les_usage %}
+                            <option value="{{obj}}" {% if obj == val_usage %} selected="selected"{% endif %}>{{lib_obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                <div class="col-1" align="center">
+                    <svg class="bi" width="28" height="28" fill="#c32424">
+                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
+                    </svg>
+                </div>
+            </div>
+            <div class="clear"></div>
+            {% if les_demande|length == 0 %}
+                <div class="clear pt-2"></div>
+                <div class="row pt-2">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+            <table class="table table-striped table-hover table-sm pt-0 mt-0">
+            <caption align="top" class="fs-5 mt-0 pt-0">Historique des paiements ({{ les_demande.getTotalItemCount }})</caption>
+            <thead>
+                <tr>
+                    <th scope="col">N° demande</th> 
+                    <th class="priority-3">Usage</th> 
+                    <th class="priority-5">Agence</th>
+                    <th class="priority-4">Date Paiement</th>
+                    <th class="priority-3">Montant</th>
+                    <th class="priority-4">Mode Paiement</th>
+                    <th class="priority-5">Enregistré par</th>
+                    <th class="priority-5">Validé par</th>
+                    <th>Statut paiement</th>
+                    {# <th scope="col">Agence</th> #}
+                    {# <th class="text-center" scope="col">Départements</th>  #}
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ag in les_demande %}
+                    {% if ag.etat != "Paiement validé" %}
+                        {% set badge_etat = "danger" %}
+                    {% else %}
+                        {% set badge_etat = "success" %}
+                    {% endif %}
+                    <tr>
+                        <td scope="row">
+                                <a href="{{ path('app_demande_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">
+                                    {{ ag.numero }}
+                                </a>
+                        </td>
+                        <td>
+                        <a href="{{ path('app_demande_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">
+                            {% if ag.installation.usages == "domestique" %}
+                                <span class="text-warning fs-8 fw-bold">Domestique</span>
+                            {% elseif ag.installation.usages == "non_domestique" %}
+                                <span class="text-primary fs-8 fw-bold">Professionnel</span>
+                            {% elseif ag.installation.usages == "erp_ert" %}
+                                <span class="text-primary fs-8 fw-bold">ERP - ERT</span>
+                            {% endif %}
+                        </a></td>
+                        <td class="priority-4">
+                            {% if ag.installation.localite is not null and ag.installation.localite.agence is not null %}
+                                {{ ag.installation.localite.agence.nom }}
+                            {% else %}
+                                <span class="text-danger">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="priority-4">
+                                {{ ag.paiement.datePaiement|date("d-m-Y") }}
+                        </td>
+                        {# <td class="priority-5">{{ ag.adresse }}</td> #}
+                        <td class="priority-3" align="right" style="padding-right:30px;">
+                                <span class="badge bg-info bg-opacity-25 fs-8 text-dark p-1">{{ ag.cout|number_format(0, ',', ' ') }} FCFA</span>
+                        </td>
+                        <td class="priority-4">
+                                {{ ag.paiement.mode }}
+                        </td>
+                        <td class="priority-5">
+                                {% if ag.paiement.createdBy %}
+                                    {% if tools.getUtilisateur(ag.paiement.createdBy) %}
+                                        {% set creator = tools.getUtilisateur(ag.paiement.createdBy) %}
+                                        <span class="text-dark fs-8">{{creator.nomComplet}}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                        </td>
+                        <td class="priority-5">
+                                {% if ag.paiement.updatedBy %}
+                                    {% if tools.getUtilisateur(ag.paiement.updatedBy) %}
+                                        {% set creator = tools.getUtilisateur(ag.paiement.updatedBy) %}
+                                        <span class="text-danger fs-8">{{creator.nomComplet}}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                        </td>
+                        <td>
+                            <a  href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}">
+                                {% if ag.installation.step == 8 %}
+                                    <span class="badge badge-success fs-8">{{ag.etat}}</span>
+                                {% else %}
+                                    <span class="badge bg-green fs-8">Paiement validé</span>
+                                {% endif %}
+                                {% if ag.paiement and ag.paiement.etatRembousement %}
+                                    <span class="text-danger fs-8">Remboursé</span>
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td class="text-end">
+                                <a href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}" class="mx-1" title="Afficher les détails">
+                                    <svg class="bi" width="16" height="16" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#search') }}"></use>
+                                    </svg>
+                                </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+
+                {% do les_demande.setPageRange(1)%}
+                {{ knp_pagination_render(les_demande, 'pagination.html.twig')}}
+
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+
+        {% for filtre in ["agence", "usage", "statut", "modep"] %}
+            $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
+            $('#val_{{filtre}}0').on('change', function() {
+                optSel=$('#val_{{filtre}}0').find("option:selected");
+                valSel=optSel.val();
+                $('#val_{{filtre}}').val(valSel);
+                $('#form_rech_list').submit();
+            });
+        {% endfor %}
+
+            $('#val_deb').val($('#val_deb0').val())
+            $('#val_deb0').on('change', function() {
+                valSel=$('#val_deb0').val();
+                $('#val_deb').val(valSel);
+                $('#form_rech_list').submit();
+            });
+
+            $('#val_fin').val($('#val_fin0').val())
+            $('#val_fin0').on('change', function() {
+                valSel=$('#val_fin0').val();
+                $('#val_fin').val(valSel);
+                $('#form_rech_list').submit();
+            });
+
+            var val_deb=$('#val_deb').val();
+            var val_fin=$('#val_fin').val();
+
+            var date = new Date();
+            var tey = date.setDate(date.getDate());
+            var demb = date.setDate(date.getDate() - 1);
+
+            var sem1 = new Date(date.setDate(date.getDate()-6)).toUTCString();
+            var sem2 = new Date(date.setDate(date.getDate()+7)).toUTCString();
+
+            var mois1 = new Date(date.getFullYear(), date.getMonth(), 1);
+            var mois2 = new Date(date.getFullYear(), date.getMonth()+1, 0);
+
+            var mois01 = new Date(date.getFullYear(), date.getMonth()-1, 1);
+            var mois02 = new Date(date.getFullYear(), date.getMonth(), 0);
+
+            perio_demb=$("#perio_demb"); perio_tey=$("#perio_tey");
+            perio_week=$("#perio_week"); perio_mois=$("#perio_mois");
+            perio_mois0=$("#perio_mois0"); perio_all=$("#perio_all");
+
+            perio_all.on('click', function() {
+                $('#val_deb').val("");
+                $('#val_fin').val(convert_date(tey));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb=="" && val_fin==convert_date(tey)) { perio_all.removeClass("btn-outline-primary"); perio_all.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_demb.on('click', function() {
+                $('#val_deb').val(convert_date(demb));
+                $('#val_fin').val(convert_date(demb));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(demb) && val_fin==convert_date(demb)) { perio_demb.removeClass("btn-outline-primary"); perio_demb.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_tey.on('click', function() {
+                $('#val_deb').val(convert_date(tey));
+                $('#val_fin').val(convert_date(tey));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(tey) && val_fin==convert_date(tey)) { perio_tey.removeClass("btn-outline-primary"); perio_tey.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_week.on('click', function() {
+                $('#val_deb').val(convert_date(sem1));
+                $('#val_fin').val(convert_date(sem2));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(sem1) && val_fin==convert_date(sem2)) { perio_week.removeClass("btn-outline-primary"); perio_week.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_mois.on('click', function() {
+                $('#val_deb').val(convert_date(mois1));
+                $('#val_fin').val(convert_date(mois2));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(mois1) && val_fin==convert_date(mois2)) { perio_mois.removeClass("btn-outline-primary"); perio_mois.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+            perio_mois0.on('click', function() {
+                $('#val_deb').val(convert_date(mois01));
+                $('#val_fin').val(convert_date(mois02));
+                $('#form_rech_list').submit();
+            });
+            if(val_deb==convert_date(mois01) && val_fin==convert_date(mois02)) { perio_mois0.removeClass("btn-outline-primary"); perio_mois0.addClass("btn-outline-dark fw-bold btn-warning"); }
+
+    });
+
+</script>
+{% endblock %}

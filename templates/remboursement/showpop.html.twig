@@ -1,5 +1,5 @@
 {% extends 'base_modal.html.twig' %}
-{% block title %}Administration{% endblock %}
+{% block title %}COSSUEL{% endblock %}
 {% block body %}
     <style>
     input[disabled] {
@@ -30,10 +30,10 @@
     {% set link_liste = 'stat' %}
 
 
-    <section class="container">
+    <section class="">
         <a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
         <header class="hstack pb-2 mb-2 border-bottom">
-            <a href="/installation" class="align-items-center text-dark text-decoration-none">
+            <a href="" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">{{ action_demande }} de demandes </span>
             </a>
         </header>
@@ -88,7 +88,7 @@
                     {% if demande.installation.electricien %}
                     <div class="card mb-2">
                         <h2 class="fs-title text-black titre_bloc_4">
-                            Informations sur l'électricien installateur
+                            Informations sur l'électricien
                         </h2>
                         <div class="row bloc_4">
                             <hr class="mb-3" />
@@ -124,6 +124,17 @@
                                 <label >Numéro Pièce</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ demande.installation.electricien.numPiece }}">
                             </div>
+                            <div class="col-lg-4 mt-2">
+                                <label >Scan CNI Electricien</label><br />
+                            {% if demande.installation.PJElectricien %}
+                                    <svg class="bi" width="24" height="24" fill="gray">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                    </svg>
+                                    <span onclick="window.open('{{path('app_installation_downloadpj', {'id': demande.installation.id, 'type':'electricien'})}}')" class="text-success pt fs-7">{{demande.installation.PJElectricien.fichier}} </span>
+                            {% else %}
+                                    <span class="text-danger pt fs-8">N/D</span>
+                            {% endif %}
+                            </div>
                         </div>
                     </div>
                     {% endif %}                                
@@ -148,18 +159,20 @@
                                 <label for="form_alimente" >Installation déja alimentée ?</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{% if installation.alimente %}Oui{% else %}Non{% endif %}" id="form_alimente">
                             </div>
-                            <div class="col-lg-4 alimente1">
-                                <label for="form_compteur" >Numéro Compteur</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.compteur }}" id="form_compteur">
-                            </div>
-                            <div class="col-lg-4 alimente1">
-                                <label for="form_abonnement" >Numéro Abonnement</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.abonnement }}" id="form_abonnement">
-                            </div>
-                            <div class="col-lg-4 alimente1">
-                                <label for="form_grstReseau" >Gestionnaire Réseau</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.grstReseau }}" id="form_grstReseau">
-                            </div>
+                            {% if installation.compteur %}
+                                <div class="col-lg-4 alimente1">
+                                    <label for="form_compteur" >Numéro Compteur</label>
+                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.compteur }}" id="form_compteur">
+                                </div>
+                                <div class="col-lg-4 alimente1">
+                                    <label for="form_abonnement" >Numéro Abonnement</label>
+                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.abonnement }}" id="form_abonnement">
+                                </div>
+                                <div class="col-lg-4 alimente1">
+                                    <label for="form_grstReseau" >Gestionnaire Réseau</label>
+                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.grstReseau }}" id="form_grstReseau">
+                                </div>
+                            {% endif %}
                             <hr class="my-3" />
                             <div class="col-lg-4">
                                 <label for="form_localite" >Localité</label>
@@ -173,159 +186,19 @@
                                 <label for="form_habitation" >Complément Adresse</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.habitation }}" id="form_habitation">
                             </div>
-                            <div class="col-lg-2">
-                                <label for="form_lattitude" >Latitude</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.lattitude }}" id="form_lattitude">
-                            </div>
-                            <div class="col-lg-2">
-                                <label for="form_longitude" >Longitude</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.longitude }}" id="form_longitude">
-                            </div>
+                            {% if installation.lattitude %}
+                                <div class="col-lg-2">
+                                    <label for="form_lattitude" >Latitude</label>
+                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.lattitude }}" id="form_lattitude">
+                                </div>
+                                <div class="col-lg-2">
+                                    <label for="form_longitude" >Longitude</label>
+                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.longitude }}" id="form_longitude">
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 
-                    {# BLOC 2 #}
-                    {% if installation.typeConstruction %}
-                    <div class="card mb-2">
-                        <h2 class="fs-title titre_bloc_2">
-                            Caractéristiques du site
-                            <div class="float-end">
-                                <a class="pt fs-7 text-warning btn_bloc_2" title="Afficher les détails">
-                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
-                                Afficher ...</a>
-                            </div>
-                        </h2>
-                        <div class="row bloc_2">
-                            <hr class="mb-3" />
-                            <div class="col-lg-4">
-                                <label for="form_collectif collectif1" >Bien Collectif ?</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{% if installation.collectif %}Oui{% else %}Non{% endif %}" id="form_collectif">
-                            </div>
-                            <div class="col-lg-4 collectif1">
-                                <label for="form_nomSite" >Nom du site</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.nomSite }}" id="form_nomSite">
-                            </div>
-                            <div class="col-lg-4 collectif1">
-                                <label for="form_logement" >Nombre de logements</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.logement }}" id="form_logement">
-                            </div>
-                            <hr class="my-3" />
-                            <div class="col-lg-6">
-                                <label for="form_typeConstruction" >Type de construction</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_typeConstruction">
-                            </div>
-                            <div class="col-lg-3 typeConstruction1">
-                                <label for="form_niveau" >Nombre de niveaux</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.niveau }}" id="form_niveau">
-                            </div>
-                            <div class="col-lg-6 typeConstruction3">
-                                <label for="form_activite" >Activités</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.activite }}" id="form_activite">
-                            </div>
-                            <div class="col-lg-3 typeConstruction1 typeConstruction2">
-                                <label for="form_priece" >Nombre de pièces</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.priece }}" id="form_priece">
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {# BLOC 3 #}
-                    {% if installation.natureTravaux %}
-                    <div class="card mb-2">
-                        <h2 class="fs-title titre_bloc_3">
-                            Caractéristiques de l'installation
-                            <div class="float-end">
-                                <a class="pt fs-7 text-warning btn_bloc_3" title="Afficher les détails">
-                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
-                                Afficher ...</a>
-                            </div>
-                        </h2>
-                        <div class="row bloc_3">
-                            <hr class="mb-3" />
-                            <div class="col-lg-6">
-                                <label for="form_natureTravaux" >Nature des travaux</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.natureTravaux }}" id="form_natureTravaux">
-                            </div>
-                            <div class="col-lg-2 natureTravaux1">
-                                <label for="form_neuf15" >Neufs_15</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neuf15 }}" id="form_neufs_15">
-                                <label for="form_existant15" >Existants_15</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existant15 }}" id="form_existant15">
-                            </div>
-                            <div class="col-lg-2 natureTravaux1">
-                                <label for="form_neuf25" >Neufs_25</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neuf25 }}" id="form_neuf25">
-                                <label for="form_existant25" >Existants_25</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existant25 }}" id="form_existant25">
-                            </div>
-                            <div class="col-lg-2 natureTravaux1">
-                                <label for="form_neufAutre" >Neufs_Autres</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.neufAutre }}" id="form_neufAutre">
-                                <label for="form_existantAutre" >Existants_Autres</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.existantAutre }}" id="form_existantAutre">
-                            </div>
-                            <hr class="my-3" />
-                            <div class="col-lg-4 intervenantAutre1">
-                                <label for="form_intervenantAutre" >Autres intervenants ?</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.intervenantAutre }}" id="form_intervenantAutre">
-                            </div>
-                            <div class="col-lg-8 intervenantAutre1">
-                                <label for="form_intervenant" >Intervenants</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.intervenant }}" id="form_intervenant">
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {# BLOC 5 #}
-                    {% if installation.proprietaire %}
-                    <div class="card mb-2">
-                        <h2 class="fs-title titre_bloc_5">
-                            Informations sur le propriétaire de l'installation
-                            <div class="float-end">
-                                <a class="pt fs-7 text-warning btn_bloc_5" title="Afficher les détails">
-                                <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
-                                Afficher ...</a>
-                            </div>
-                        </h2>
-                        <div class="row bloc_5">
-                            <hr class="mb-3" />
-                            <div class="col-lg-3">
-                                <label >Nom</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.nom }}">
-                            </div>
-                            <div class="col-lg-5">
-                                <label >Prénom</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.prenom }}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label >Localité</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.localite }}">
-                            </div>
-                            <div class="col-lg-8">
-                                <label >Adresse</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.adresse }}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label >Téléphone</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.telephone }}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label >Email</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.email }}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label >Type de pièce</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.typePiece }}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label >Numéro Pièce</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.proprietaire.numPiece }}">
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
                 </fieldset>
             </div>
 

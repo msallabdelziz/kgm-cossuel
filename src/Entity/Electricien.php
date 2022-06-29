@@ -24,7 +24,7 @@ class Electricien
     #[ORM\Column(type: 'string', length: 255)]
     private $nom;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $adresse;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -102,7 +102,7 @@ class Electricien
         return $this->adresse;
     }
 
-    public function setAdresse(string $adresse): self
+    public function setAdresse(?string $adresse): self
     {
         $this->adresse = $adresse;
 
@@ -212,6 +212,11 @@ class Electricien
     }
 
     public function nomComplet()
+    {
+        return $this->getPrenom()." ".$this->getNom();
+    }
+
+    public function getNomComplet()
     {
         return $this->getPrenom()." ".$this->getNom();
     }
