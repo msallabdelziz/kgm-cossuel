@@ -126,6 +126,18 @@ class AgentRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function filtrePdf($profil,$id2)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.profil = :val')
+            ->setParameter('val', $profil)
+            ->andWhere('a.id_agence = :val')
+            ->setParameter('val', $id2)
+            ->orderBy('a.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
     /*
     public function findOneBySomeField($value): ?Agent

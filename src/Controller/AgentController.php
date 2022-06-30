@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -332,7 +333,7 @@ class AgentController extends AbstractController
     }
 
 
-    #[Route('/pdf', name: 'pdfs')]
+    #[Route('/pdfs', name: 'pdfs')]
     public function pdfs(Request $request,AgentPDF $pdf, ProfilRepository $profilRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository)
     {
         
@@ -417,11 +418,66 @@ class AgentController extends AbstractController
     }
 
 
-    #[Route('/pdf/{val_profil,id2}', name: 'pdf')]
-    public function pdf(int $val_profil,int $id2,AgentPDF $pdf, ProfilRepository $profilRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository)
+    #[Route('/pdf', name: 'pdf')]
+    public function pdf(SessionInterface $session,Request $request,AgentPDF $pdf, ProfilRepository $profilRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository)
     {
+        $session=$request->getSession();
+        $id2=$session->get('id2');
+        $id1=$session->get('id1');
         
-        if ($val_profil == 0 and $id2 != 0){
+        if ($id1==0 and $id2==0){
+            $result2=$agentRepository->findBy([],['nom'=>'asc']);
+            $pdf = new AgentPDF('L','mm','A4');
+            $pdf->AddPage();
+            $pdf->SetFont('Helvetica','B',9);
+            $pdf->SetTextColor(0);
+            $pdf->AliasNbPages();
+            $position_entete = 60;
+            $pdf->SetFont('Helvetica','',9);
+            $pdf->SetTextColor(0);
+            $pdf->SetDrawColor(255,215,0);
+            $pdf->SetFillColor(255,215,0);
+            $pdf->SetTextColor(0);
+            $pdf->SetY($position_entete);
+            $pdf->SetX(10);
+            $pdf->Cell(50,8,'Matricule',1,0,'C',1);
+            $pdf->SetX(60); 
+            $pdf->Cell(60,8,'Nom',1,0,'C',1);
+            $pdf->SetX(120); 
+            $pdf->Cell(53,8,'Fonction',1,0,'C',1);
+            $pdf->SetX(173); 
+            $pdf->Cell(55,8,utf8_decode('Téléphone'),1,0,'C',1);
+            $pdf->SetX(228); 
+            $pdf->Cell(60,8,'Adresse Email',1,0,'C',1);
+            $position_detail = 68; 
+            $ligne=0;
+            for ($i=0; $i<count($result2);$i++) {
+                $ligne = $ligne+1;
+                    if ($ligne == 15){
+                        $pdf->AddPage();
+                        $ligne = 0;
+                        $position_detail=68;
+                    }
+                $pdf->SetY($position_detail);
+                $pdf->SetX(10);
+                $pdf->MultiCell(50,8,utf8_decode($result2[$i]->getNom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(60); 
+                $pdf->MultiCell(60,8,utf8_decode($result2[$i]->getPrenom()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(120); 
+                $pdf->MultiCell(53,8,utf8_decode($result2[$i]->getProfil()),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(173); 
+                $pdf->MultiCell(55,8,$result2[$i]->getTelephone(),1,'C');
+                $pdf->SetY($position_detail);
+                $pdf->SetX(228); 
+                $pdf->MultiCell(60,8,$result2[$i]->getEmail(),1,'C');
+                $position_detail += 8; 
+            }
+        }
+    
+        if ($id1 == 0 and $id2 != 0){
             $agence = $agenceRepository->find($id2);
             $result2=$agentRepository->findByAgence($agence);
             $pdf = new AgentPDF('L','mm','A4');
@@ -473,8 +529,8 @@ class AgentController extends AbstractController
                 $position_detail += 8; 
             }
         }
-        elseif ($val_profil!=0 and $id2 == 0){
-            $prof = $profilRepository->find($val_profil);
+        elseif ($id1!=0 and $id2 == 0){
+            $prof = $profilRepository->find($id1);
             $result2=$agentRepository->findByProfil($prof);
             $pdf = new AgentPDF('L','mm','A4');
             $pdf->AddPage();
@@ -525,10 +581,8 @@ class AgentController extends AbstractController
                 $position_detail += 8; 
             }
         }
-        elseif ($val_profil!=0 and $id2!=0){
-            $prof = $profilRepository->find($val_profil);
-            $agence = $agenceRepository->find($id2);
-            $result2=$agentRepository->findByProfil($prof)->findByAgence($agence);
+        elseif ($id1!=0 and $id2!=0){
+            $result2=$agentRepository->filtrePdf($id1,$id2);
             $pdf = new AgentPDF('L','mm','A4');
             $pdf->AddPage();
             $pdf->SetFont('Helvetica','B',9);
