@@ -67,7 +67,7 @@
         </div>
 
         <div class="row pt-4">
-            <div class="col-lg-8 mb-2 priority-4">
+            <div class="col-lg-8 mb-2">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif {% if demande and demande.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
@@ -118,7 +118,7 @@
                     </div>
 
                     {# BLOC 1 #}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title text-black titre_bloc_1">
                         Données de base de la demande
                             <div class="float-end">
@@ -175,7 +175,7 @@
 
                     {# BLOC 2 #}
                     {% if installation.typeConstruction %}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title titre_bloc_2">
                             Caractéristiques du site
                             <div class="float-end">
@@ -221,7 +221,7 @@
 
                     {# BLOC 3 #}
                     {% if installation.natureTravaux %}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title titre_bloc_3">
                             Caractéristiques de l'installation
                             <div class="float-end">
@@ -269,7 +269,7 @@
 
                 {# BLOC 4 #}
                     {% if demande.installation.electricien %}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title titre_bloc_4">
                             Informations sur l'électricien
                             <div class="float-end">
@@ -318,7 +318,7 @@
 
                     {# BLOC 5 #}
                     {% if installation.proprietaire %}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title titre_bloc_5">
                             Informations sur le propriétaire de l'installation
                             <div class="float-end">

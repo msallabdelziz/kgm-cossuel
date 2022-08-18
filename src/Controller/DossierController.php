@@ -3,15 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Agent;
+use App\Entity\Attestation;
+use App\Entity\AttestationConf;
 use App\Entity\DetailVerification;
 use App\Entity\Dossier;
+use App\Entity\Electricien;
 use App\Entity\Installation;
+use App\Entity\Localite;
 use App\Entity\PieceJointe;
 use App\Entity\PointNonconf;
+use App\Entity\Proprietaire;
 use App\Entity\Rapport;
 use App\Entity\Signature;
 use App\Entity\Utilisateur;
 use App\Entity\Visite;
+use App\PDF\DetailPDF;
 use App\Repository\AgenceRepository;
 use App\Repository\AgentRepository;
 use App\Repository\DossierRepository;
@@ -23,6 +29,9 @@ use App\Repository\VisiteRepository;
 use App\Services\Tools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use Knp\Snappy\Pdf;
@@ -52,11 +61,70 @@ use Symfony\Component\Validator\Constraints\File as ConstraintsFile;
 #[Route('/dossier')]
 class DossierController extends AbstractController
 {
+
+    /*  
+    #[Route('/majattestation', name: 'app_dossier_majattestation')]
+    public function majattestation(Request $request, Tools $tools, ManagerRegistry $doctrine): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this || !$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
+        $em = $doctrine->getManager();
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
+        $les_attestation = $em->getRepository(Attestation::class)->findAll();
+        $nb=0;
+        foreach($les_attestation as $att) {
+            $dossier=$att->getDossier(); 
+            $attestation=new Attestation();
+            $attestation->setCreatedby($this->getUser()->getId());
+            $attestation->setDateDelivrance($att->getDateDelivrance());
+            $attestation->setDossier($dossier);
+            $num_a=intval($dossier->getDemande()->getNumero());
+            $num_a+=40000;
+            $attestation->setNumero($num_a);
+
+            $attestationConf=new AttestationConf();
+            $attestationConf->setAdresseE($dossier->getDemande()->getInstallation()->getAdresse());
+            $attestationConf->setAdresseP($dossier->getDemande()->getInstallation()->getProprietaire()->getAdresse());
+            $attestationConf->setAgence($dossier->getDemande()->getInstallation()->getLocalite()->getAgence());
+            $attestationConf->setControleur($dossier->getControleur());
+            $attestationConf->setReferent($dossier->getReferent());
+            $attestationConf->setDateDelivrance($attestation->getDateDelivrance()->format("Y-m-d H:i:s"));
+            $attestationConf->setEmailE($dossier->getDemande()->getInstallation()->getElectricien()->getEmail());
+            $attestationConf->setEmailP($dossier->getDemande()->getInstallation()->getProprietaire()->getEmail());
+            $attestationConf->setNumpieceE($dossier->getDemande()->getInstallation()->getElectricien()->getNumPiece());
+            $attestationConf->setNumpieceP($dossier->getDemande()->getInstallation()->getProprietaire()->getNumPiece());
+            $attestationConf->setTelephoneP($dossier->getDemande()->getInstallation()->getProprietaire()->getTelephone());
+            $attestationConf->setTelephoneE($dossier->getDemande()->getInstallation()->getElectricien()->getTelephone());
+            $attestationConf->setNumero($attestation->getNumero());
+            $attestationConf->setPuissance($dossier->getDemande()->getPuissance());
+            $attestationConf->setLocalite($dossier->getDemande()->getInstallation()->getLocalite());
+            $attestationConf->setLatitude($dossier->getDemande()->getInstallation()->getLattitude());
+            $attestationConf->setLongitude($dossier->getDemande()->getInstallation()->getLongitude());
+            $attestationConf->setUsages($dossier->getDemande()->getInstallation()->getUsages());
+            $em->getRepository(AttestationConf::class)->add($attestationConf);  
+            $nb++;
+        }
+        $this->addFlash("success", "$nb Attestations créées ! ");
+
+        return $this->redirectToRoute('app_dossier_index0', array()); 
+    }
+    */
+
     #[Route('/all', name: 'app_dossier_index0')]
     public function index0(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -85,7 +153,7 @@ class DossierController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -148,6 +216,15 @@ class DossierController extends AbstractController
         if($val_referent) { $val_filtre["referent"] = $val_referent; }
         if($val_passage) { $val_filtre["passage"] = $val_passage; }
 
+        $key_sess='filtre_dossier_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
+
 
         $list=$dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
@@ -182,7 +259,7 @@ class DossierController extends AbstractController
     public function affectation_index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -211,7 +288,7 @@ class DossierController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -289,6 +366,15 @@ class DossierController extends AbstractController
         if($val_referent) { $val_filtre["referent"] = $val_referent; }
         if($val_passage) { $val_filtre["passage"] = $val_passage; }
 
+        $key_sess='filtre_dossier_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
+
         $list=$dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
 
@@ -323,7 +409,7 @@ class DossierController extends AbstractController
     public function visite_index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -349,7 +435,7 @@ class DossierController extends AbstractController
         } 
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -426,6 +512,15 @@ class DossierController extends AbstractController
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
+        $key_sess='filtre_dossier_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
+
         $list=$dossierRepository->findByRestr($val_rech, $val_filtre, $orderBy, $page);
         $list = $pgn->paginate($list, $request->query->getInt('page', 1), 20);
 
@@ -460,7 +555,7 @@ class DossierController extends AbstractController
     public function rapport_index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -487,7 +582,7 @@ class DossierController extends AbstractController
         } 
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -503,7 +598,7 @@ class DossierController extends AbstractController
             if(!$request->getSession()->get($pref_sess.'_'.$varssess)) { 
                 $request->getSession()->set($pref_sess.'_'.$varssess, "");
                 if($varssess=="statut") {
-                    $request->getSession()->set($pref_sess.'_'.$varssess, "Visite|Rapport");
+                    $request->getSession()->set($pref_sess.'_'.$varssess, "Rapport");
                 }
             }
         }
@@ -562,6 +657,14 @@ class DossierController extends AbstractController
             $val_filtre["referent"]=$id_type;
         }
 
+        $key_sess='filtre_dossier_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
 
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
@@ -599,7 +702,7 @@ class DossierController extends AbstractController
     public function attestation_index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -625,7 +728,7 @@ class DossierController extends AbstractController
         } 
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -684,6 +787,16 @@ class DossierController extends AbstractController
             }
             $request->query->set('page', 1);
         }
+
+        $key_sess='filtre_dossier_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
+
         if($val_statut) { $val_filtre["etat"] = $val_statut; }
         if($val_usage) { $val_filtre["usages"] = $val_usage; }
         if($val_agence) { $val_filtre["agence"] = $val_agence; }
@@ -730,7 +843,7 @@ class DossierController extends AbstractController
     }
 
     #[Route('/liste_excel', name:'app_dossier_excel')]
-    public function genExcel(Request $request, ManagerRegistry $doctrine, array $headers = [], $fileName = 'liste.xlsx'): Response
+    public function genExcel(Request $request, Tools $tools, ManagerRegistry $doctrine, array $headers = [], $fileName = 'liste.xlsx'): Response
     {
         $em = $doctrine->getManager();
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
@@ -744,7 +857,7 @@ class DossierController extends AbstractController
         }
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
 
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
         }
@@ -757,20 +870,29 @@ class DossierController extends AbstractController
         /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
         $sheet = $spreadsheet->getActiveSheet();
         $entete=array(
-            'N° Dossier',
-            'Date Dossier ',
-            'Usage',
-            'Agence',
-            'Localité',
-            'Type Construction',
-            'Electricien',
-            'Référent',
-            'Controleur',
-            'Statut Demande',
+            array('N° Demande', 15),
+            array('Usage', 15),
+            array('Date Demande ', 17),
+            array('Créée par ', 20),
+            array('Etat Demande', 17),
+            array('Agence', 20),
+            array('Localité', 25),
+            array('Electricien', 25),
+            array('Tél électricien', 15),
+            array('Propriétaire', 25),
+            array('Tél Propriétaire', 15),
+            array('Référent Dossier', 25),
+            array('Inspecteur', 25),
+            array('Début Inspection', 17),
+            array('Fin Inspection', 17),
+            array('Clôturé le', 17),
+            array('Clôturé par', 25),
+            array('Ancien Numero', 17),
         );
         $id_col="A";
         foreach ($entete as $col) {
-            $sheet->setCellValue($id_col.$i, $col);
+            $sheet->setCellValue($id_col.$i, $col[0]);
+            $sheet->getColumnDimension($id_col)->setWidth($col[1]);
             $id_col++;
         }
         $sm = $request->getSession()->get('sousmenu');
@@ -825,35 +947,148 @@ class DossierController extends AbstractController
                 }
             break;
         }
+
+        $key_sess="filtre_dossier_";
+        $val_rech=$request->getSession()->get($key_sess.'rech');
+        $val_agence=$request->getSession()->get($key_sess.'agence');
+        $val_usage=$request->getSession()->get($key_sess.'usage');
+        $val_statut=$request->getSession()->get($key_sess.'etat');
+        $val_controleur=$request->getSession()->get($key_sess.'controleur');
+        $val_referent=$request->getSession()->get($key_sess.'referent');
+        $val_passage=$request->getSession()->get($key_sess.'passage');
+        
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+        if($val_referent) { $val_filtre["referent"] = $val_referent; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+        
         $list0=$em->getRepository(Dossier::class)->findByRestr($val_rech, $val_filtre, "", 0);
         $list = array();
         foreach ($list0 as $val) {
-            $numD=$val->getDemande()->getNumero(); 
-            $dateD=$val->getDateCreation(); 
+            $val=$val->getDemande()->getInstallation();
+            $dateD=$val->getCreatedAt();
+            $creator="";
+            if($val->getCreatedBy()) {
+                $creator=$tools->getUtilisateur($val->getCreatedBy());
+                if($creator) {
+                    $creator=$creator->getNom()." ".$creator->getPrenom();
+                } else {
+                    $creator="-";
+                }
+            }
+            $numD='['.$val->getCreatedAt()->format("d/m/y_H:i:s").']';
             $etatD=$val->getEtat();
+            $_agence=""; if($val->getLocalite()) { $_agence=$val->getLocalite()->getAgence(); }
+            $referent="-";
+            $controleur="-";
+            $deb_visite="-";
+            $fin_visite="-";
+            $cloture_par="-";
+            $cloture_le="-";
+            $_conformite="-";
+
+            $_localite=$val->getLocalite();
+            $_electricien="";
+            $_electricien_tel="";
+            if($val->getElectricien()) {
+                $_electricien=$val->getElectricien()->getNomComplet();
+                $_electricien_tel=$val->getElectricien()->getTelephone();
+            }
+            $_proprietaire="";
+            $_proprietaire_tel="";
+            if($val->getProprietaire()) {
+                $_proprietaire=$val->getProprietaire()->getNomComplet();
+                $_proprietaire_tel=$val->getProprietaire()->getTelephone();
+            }
+            $_dem=$val->getDemandeCourante();
+            if($_dem) { 
+                $numD=$_dem->getNumero(); 
+                $dateD=$_dem->getDateCreation(); 
+                $etatD=$_dem->getEtat();
+                $doss=$_dem->getDossier();
+                if($doss) { 
+                    if($doss->getReferent()) {
+                        $referent=$doss->getReferent()->nomComplet(); 
+                    }
+                    if($doss->getControleur()) {
+                        $controleur=$doss->getControleur()->nomComplet(); 
+                    }
+                    $_visite=$doss->getVisiteCourante();
+                    if($_visite) {
+                        $deb_visite=$_visite->getDateRealise();
+                        $fin_visite=$_visite->getDateRapporte();
+                        $cloture_le=$_visite->getDateAtteste();
+                        $cloture_par=$referent;
+                        if($_visite->getAtteste())
+                        if($_visite->getConclusion()) {
+                            $_conformite="Conforme";
+                        } else {
+                            $_conformite="Non Conforme";
+                        }
+                    }
+                }    
+            }
+            
             $list[]=array(
                 $numD,
+                $val->getUsages(),
                 $dateD,
-                $val->getDemande()->getInstallation()->getUsages(),
-                $val->getDemande()->getInstallation()->getLocalite()->getAgence(),
-                $val->getDemande()->getInstallation()->getLocalite(),
-                $val->getDemande()->getInstallation()->getTypeConstruction(),
-                $val->getDemande()->getInstallation()->getElectricien(),
-                $val->getReferent(),
-                $val->getControleur(),
+                $creator,
                 $etatD,
+                $_agence,
+                $_localite,
+                $_electricien,
+                $_electricien_tel,
+                $_proprietaire,
+                $_proprietaire_tel,
+                $referent,
+                $controleur,
+                $deb_visite,
+                $fin_visite,
+                $cloture_le,
+                $cloture_par,
+                
+                $val->getHabitation(),
             );
         }
 
         $i = 3; $id_col="A";
+        $max_col=$id_col;
         foreach ($list as $u ) {
             $id_col="A"; $ix=0;
             foreach ($entete as $col) {
+                $max_col=$id_col;
                 $sheet->setCellValue($id_col.$i, $u[$ix]);
                 $id_col++; $ix++;
             }
             $i++;
         }
+
+        $BStyle = array(
+            'borders' => array(
+                'outline' => array(
+                'style' =>  'thin'
+                )
+            )
+        );
+        $id_col--;
+        $nb_lig=count($list)+2;
+        $sheet->getStyle(
+            'A2:'.$max_col.$nb_lig
+        )->getBorders()->getAllBorders()->setBorderStyle("thin");
+        
+        $sheet->getStyle('A2:'.$max_col.'2')
+        ->getFont()->setBold(true);
+        $sheet->getStyle('A2:'.$max_col.'2')
+        ->getFill()
+        ->setFillType('solid')
+        ->getStartColor()
+        ->setRGB('cccccc');
+
+        $sheet->getStyle('A1');
+
         // Create your Office 2007 Excel (XLSX Format)
         $writer = new Xlsx($spreadsheet);
 
@@ -872,13 +1107,18 @@ class DossierController extends AbstractController
     public function showrapport(Dossier $dossier, Tools $tools, ManagerRegistry $doctrine, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
-        $em = $doctrine->getManager(); 
+        $em = $doctrine->getManager();
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $type_user=$userConn->getType();
+        $id_type=$userConn->getIdType();
+
         $dossier=$dossierRepository->find($dossier);
-        if(($dossier->getRapport() && ! $dossier->getAttestation()) || $dossier->getAttestation()) {
+        if(($dossier->getRapport() && ! $dossier->getAttestation()) || $dossier->getAttestation() || ($dossier->getVisite() && !$dossier->getRapport() && in_array($role, array('ROLE_CONTROLEUR')))) {
             return $this->render('dossier/show2.html.twig', [
                 'dossier' => $dossier,
 
@@ -897,7 +1137,7 @@ class DossierController extends AbstractController
     public function cloture_index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, DossierRepository $dossierRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -923,7 +1163,7 @@ class DossierController extends AbstractController
         } 
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -1021,20 +1261,93 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_dossier_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_dossier_show', methods: ['GET', 'POST'])]
     public function show(Request $request, Dossier $dossier, Tools $tools, ManagerRegistry $doctrine, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this || !$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+        
         $em = $doctrine->getManager(); 
         $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
         $role=$userConn->getRoles()[0];
 
-        // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
-            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
-        }
-        
         if(($role=="ROLE_RFO" || $role=="ROLE_ADMIN") && $request->getSession()->get('page_liste_demande') && $request->getSession()->get('page_liste_demande') == 'app_installation_index3') {
             $request->getSession()->set('page_liste_dossier', 'app_installation_index3');
+        }
+
+        if($request->request->count()) {
+            $form = $this->createFormBuilder()->getForm();
+            $form->handleRequest($request);
+            $data=$form->getExtraData();
+
+            $installation=$dossier->getDemande()->getInstallation();
+            if(isset($data["edit1"]) && $data["edit1"]) {
+                $localite=$data['localite'];
+                $adresse=$data['adresse'];
+                $habitation=$data['habitation'];
+
+                $localite=$em->getRepository(Localite::class)->find($localite);
+                $installation->setLocalite($localite);
+                $installation->setAdresse($adresse);
+                $installation->setHabitation($habitation);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+            if(isset($data["edit2"]) && $data["edit2"]) {
+                $nom=$data['nom'];
+                $prenom=$data['prenom'];
+                $telephone=$data['telephone'];
+                $email=$data['email'];
+                $adresse=$data['adresse'];
+                $numpiece=$data['numPiece'];
+                $electricien=$installation->getElectricien();
+                $change_elec1=($electricien->getTelephone()!=$telephone && ($electricien->getPrenom()!=$prenom || $electricien->getNom()!=$nom));
+                $change_elec2=($electricien->getNumPiece()!=$numpiece && ($electricien->getPrenom()!=$prenom || $electricien->getNom()!=$nom));
+                if($change_elec1 || $change_elec2) {
+                    $electricien2=clone $electricien;
+                    $electricien2->restId();
+                    $electricien=$electricien2;
+                }
+                $electricien->setAdresse($adresse);
+                $electricien->setNom($nom);
+                $electricien->setPrenom($prenom);
+                $electricien->setEmail($email);
+                $electricien->setTelephone($telephone);
+                $electricien->setNumPiece($numpiece);
+                $em->getRepository(Electricien::class)->add($electricien);
+                $installation->setElectricien($electricien);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+
+            if(isset($data["edit3"]) && $data["edit3"]) {
+                $nom=$data['nom'];
+                $prenom=$data['prenom'];
+                $telephone=$data['telephone'];
+                $email=$data['email'];
+                $adresse=$data['adresse'];
+                $numpiece=$data['numPiece'];
+                $proprietaire=$installation->getProprietaire();
+                $change_prop1=($proprietaire->getTelephone()!=$telephone && ($proprietaire->getPrenom()!=$prenom || $proprietaire->getNom()!=$nom));
+                $change_prop2=($proprietaire->getNumPiece()!=$numpiece && ($proprietaire->getPrenom()!=$prenom || $proprietaire->getNom()!=$nom));
+                if($change_prop1 || $change_prop2) {
+                    $proprietaire2=clone $proprietaire;
+                    $proprietaire2->restId();
+                    $proprietaire=$proprietaire2;
+                }
+                $proprietaire->setAdresse($adresse);
+                $proprietaire->setNom($nom);
+                $proprietaire->setPrenom($prenom);
+                $proprietaire->setEmail($email);
+                $proprietaire->setTelephone($telephone);
+                $proprietaire->setNumPiece($numpiece);
+                $em->getRepository(Proprietaire::class)->add($proprietaire);
+                $installation->setProprietaire($proprietaire);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+
+            $this->addFlash("success", "Les informations ont été modifiées !");
+            return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
         }
 
         $em = $doctrine->getManager(); 
@@ -1052,7 +1365,7 @@ class DossierController extends AbstractController
     public function showpop(Dossier $dossier, Tools $tools, ManagerRegistry $doctrine, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1069,7 +1382,7 @@ class DossierController extends AbstractController
     public function showtime(Dossier $dossier, Tools $tools, EntityManagerInterface $em, DossierRepository $dossierRepository, PaiementRepository $paiementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1086,7 +1399,7 @@ class DossierController extends AbstractController
     public function attribuer(Request $request, Dossier $dossier, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1143,10 +1456,10 @@ class DossierController extends AbstractController
     }
 
     #[Route('/{id}/affecter', name: 'app_dossier_affecter')]
-    public function affecter(Request $request, Dossier $dossier, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
+    public function affecter(Request $request, Tools $tools, ManagerRegistry $doctrine, Dossier $dossier, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1200,6 +1513,17 @@ class DossierController extends AbstractController
             } 
             $dossierRepository->add($dossier);
 
+            // Notification à faire au controleur
+            // -----------------------------------------------------------------------------------------------
+            $em=$doctrine->getManager(); 
+            $mess_sms='Le dossier numéro '.$dossier->getDemande()->getNumero().', vous a été confié par le référent '.$dossier->getReferent();
+            if($id_agent && $agent->getTelephone()) {
+                $resT=$tools->notifSMS($agent->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
+            }
+            // -----------------------------------------------------------------------------------------------
+
             $this->addFlash("success", "Le dossier a été affecté au contrôleur ".$dossier->getControleur()." !");
             return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
         }
@@ -1212,10 +1536,10 @@ class DossierController extends AbstractController
     }
 
     #[Route('/{id}/desaffecter', name: 'app_dossier_desaffecter')]
-    public function desaffecter(Request $request, ManagerRegistry $doctrine, Dossier $dossier, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
+    public function desaffecter(Request $request, Tools $tools, ManagerRegistry $doctrine, Dossier $dossier, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1247,12 +1571,26 @@ class DossierController extends AbstractController
                 foreach($visite->getDetailVerification() as $dv) {
                     $entityManager->remove($dv);
                 }
+                foreach($visite->getSignatures() as $dv) {
+                    $entityManager->remove($dv);
+                }
                 $entityManager->remove($visite);
                 $entityManager->flush();
             }
             $comment=$form->get('commentaire')->getData();
             $dossier->setControleur(null);
             $dossierRepository->add($dossier);
+
+            // Notification à faire au controleur
+            // -----------------------------------------------------------------------------------------------
+            $em=$doctrine->getManager(); 
+            $mess_sms='Le dossier numéro '.$dossier->getDemande()->getNumero().', vous a été retiré par le référent '.$dossier->getReferent();
+            if($old_controleur->getTelephone()) {
+                $resT=$tools->notifSMS($old_controleur->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
+            }
+            // -----------------------------------------------------------------------------------------------
 
             $this->addFlash("success", "Le dossier a été retiré au contrôleur ".$old_controleur." !");
             return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
@@ -1269,7 +1607,7 @@ class DossierController extends AbstractController
     public function visiter(Request $request, Tools $tools, ManagerRegistry $doctrine, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1337,14 +1675,19 @@ class DossierController extends AbstractController
             $demande=$dossier->getDemande();
             $installation=$demande->getInstallation();
             $dateV = date_create($dateVisite->format("Y-m-d"));
+            $heureV = date_create($dateVisite->format("H"));
 
             $em=$doctrine->getManager(); 
-            $mess_sms='Pour le traitement de votre demande '.$demande->getNumero().', une inspection de votre installation est programmée le '.date_format($dateV, 'd-m-Y - H:i:s').'. Nous vous prions de prendre toutes les dispositions nécessaires';
+            $mess_sms='Pour le traitement de votre demande '.$demande->getNumero().', une inspection de votre installation est programmée le '.date_format($dateV, 'd-m-Y').' - '.$heureV.'h. Nous vous prions de prendre toutes les dispositions nécessaires';
             if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
-                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
-                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             
             $sujet_mail='Demande COSSUEL - Visite planifiée !';
@@ -1372,7 +1715,7 @@ class DossierController extends AbstractController
     public function revisiter(Request $request, Tools $tools, ManagerRegistry $doctrine, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1442,14 +1785,19 @@ class DossierController extends AbstractController
             $demande=$dossier->getDemande();
             $installation=$demande->getInstallation();
             $dateV = date_create($dateVisite->format("Y-m-d"));
+            $heureV = date_create($dateVisite->format("H"));
 
             $em=$doctrine->getManager(); 
-            $mess_sms='Pour le traitement de votre demande '.$demande->getNumero().', une inspection de votre installation est reprogrammée le '.date_format($dateV, 'd-m-Y - H:i:s').'. Nous vous prions de prendre toutes les dispositions nécessaires';
+            $mess_sms='Pour le traitement de votre demande '.$demande->getNumero().', une inspection de votre installation est reprogrammée le '.date_format($dateV, 'd-m-Y').' - '.$heureV.'h. Nous vous prions de prendre toutes les dispositions nécessaires';
             if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
-                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
-                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             
             $sujet_mail='Demande COSSUEL - Visite re-planifiée !';
@@ -1477,7 +1825,7 @@ class DossierController extends AbstractController
     public function rapporter(Request $request, ManagerRegistry $doctrine, SluggerInterface $slugger, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository, PieceJointeRepository $pjRepository, SignatureRepository $signatureRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1868,32 +2216,42 @@ class DossierController extends AbstractController
             $photoFile4 = $form->get('pj4')->getData();
 
             $photoElec = $form->get('sign_electricien')->getData();
+            // dd($photoElec);
             $photoContr = $form->get('sign_controleur')->getData();
             if ($photoElec) {
-                    $image_parts = explode(";base64,", $photoElec);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
+                $image_parts = explode(";base64,", $photoElec);
+                $image_type_aux = explode("image/", $image_parts[0]);
+                $image_type = $image_type_aux[1];
+                if($image_type) {
                     $image_base64 = base64_decode($image_parts[1]);
                     $dir = $this->getParameter('photo_directory') .'/';
-                    $fich='signelec_'. uniqid() . '.'.$image_type;
+                    $fich='signelec_'. $dossier->getId() . '.'.$image_type;
                     $file = $dir.$fich;
                     file_put_contents($file, $image_base64);
                     $signelectricien->setFichier($fich);
                     $signatureRepository->add($signelectricien);
+                } else {
+                    $valid=0; $stay=1;
+                    $this->addFlash("danger", "La signature de l'Electricien n'a pas pu être enregistrée ! Merci d'effacer et de la reprendre");
+                }
             }
 
             if ($photoContr) {
-                    $image_parts = explode(";base64,", $photoContr);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
+                $image_parts = explode(";base64,", $photoContr);
+                $image_type_aux = explode("image/", $image_parts[0]);
+                $image_type = $image_type_aux[1];
+                if($image_type) {
                     $image_base64 = base64_decode($image_parts[1]);
                     $dir = $this->getParameter('photo_directory') .'/';
-                    $fich='signcontr_'. uniqid() . '.'.$image_type;
+                    $fich='signcontr_'. $dossier->getId() . '.'.$image_type;
                     $file = $dir.$fich;
                     file_put_contents($file, $image_base64);
                     $signcontroleur->setFichier($fich);
                     $signatureRepository->add($signcontroleur);
-                    // $this->addFlash("danger", "Le fichier de signature n'a pas pu être enregistré !");
+                } else {
+                    $valid=0; $stay=1;
+                    $this->addFlash("danger", "La signature du Controleur n'a pas pu être enregistrée ! Merci d'effacer et de la reprendre");
+                }
             }
 
             if ($photoFile1) {
@@ -1910,6 +2268,7 @@ class DossierController extends AbstractController
                     $pj1->setFichier($newFilename);
                     $pjRepository->add($pj1);
                 } catch (FileException $e) {
+                    $valid=0; $stay=1;
                     $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
             }
@@ -1927,6 +2286,7 @@ class DossierController extends AbstractController
                     $pj2->setFichier($newFilename);
                     $pjRepository->add($pj2);
                 } catch (FileException $e) {
+                    $valid=0; $stay=1;
                     $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
             }
@@ -1943,6 +2303,7 @@ class DossierController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
+                    $valid=0; $stay=1;
                     $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
                 
@@ -1951,7 +2312,7 @@ class DossierController extends AbstractController
             }
                         
             if ($photoFile4) {
-                $originalFilename = pathinfo($photoFile2->getClientOriginalName(), PATHINFO_FILENAME);
+                $originalFilename = pathinfo($photoFile4->getClientOriginalName(), PATHINFO_FILENAME);
 
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile4->guessExtension();
@@ -1962,6 +2323,7 @@ class DossierController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
+                    $valid=0; $stay=1;
                     $this->addFlash("danger", "Le fichier n'a pas pu être téléchargé !");
                 }
                 
@@ -2008,7 +2370,10 @@ class DossierController extends AbstractController
                 return $this->redirectToRoute('app_dossier_show', array('id' => $dossier->getId())); 
             } 
         }
-
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash("danger", "Les informations n'ont pas pu être enregistrées ! Vérifier les données saisies.");
+            
+        }
         return $this->renderForm('dossier/rapporter.html.twig', [
             'dossier' => $dossier,
             'step' => $step,
@@ -2023,10 +2388,19 @@ class DossierController extends AbstractController
     public function attester(Request $request, Tools $tools, ManagerRegistry $doctrine, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
+        $em = $doctrine->getManager();
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agence=null; $agent=null; $electricien=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
         $dossier=$dossierRepository->find($dossier);
         $paiement=$dossier->getDemande()->getPaiement();
 
@@ -2068,7 +2442,43 @@ class DossierController extends AbstractController
             $visite->setAtteste(1);
             $visite->setDateAtteste(new \DateTime());
             $resultat=0;
-            if($decision == "conformite") { $resultat=1; }
+            if($decision == "conformite") { 
+                $attestation=new Attestation();
+                $attestation->setCreatedby($this->getUser()->getId());
+                $attestation->setDateDelivrance(new \DateTime());
+                $attestation->setDossier($dossier);
+                $num_a=intval($dossier->getDemande()->getNumero());
+                $num_a+=40000;
+                $attestation->setNumero($num_a);
+                $em->getRepository(Attestation::class)->add($attestation);  
+
+                $attestationConf=new AttestationConf();
+                $attestationConf->setAdresseE($dossier->getDemande()->getInstallation()->getElectricien()->getAdresse());
+                $attestationConf->setAdresseP($dossier->getDemande()->getInstallation()->getAdresse());
+                $attestationConf->setElectricien($dossier->getDemande()->getInstallation()->getElectricien());
+                $attestationConf->setProprietaire($dossier->getDemande()->getInstallation()->getProprietaire());
+                $attestationConf->setAgence($dossier->getDemande()->getInstallation()->getLocalite()->getAgence());
+                $attestationConf->setControleur($dossier->getControleur());
+                $attestationConf->setReferent($dossier->getReferent());
+                $attestationConf->setDateDelivrance($attestation->getDateDelivrance()->format("Y-m-d H:i:s"));
+                $attestationConf->setEmailE($dossier->getDemande()->getInstallation()->getElectricien()->getEmail());
+                $attestationConf->setEmailP($dossier->getDemande()->getInstallation()->getProprietaire()->getEmail());
+                $attestationConf->setNumpieceE($dossier->getDemande()->getInstallation()->getElectricien()->getNumPiece());
+                $attestationConf->setNumpieceP($dossier->getDemande()->getInstallation()->getProprietaire()->getNumPiece());
+                $attestationConf->setTelephoneP($dossier->getDemande()->getInstallation()->getProprietaire()->getTelephone());
+                $attestationConf->setTelephoneE($dossier->getDemande()->getInstallation()->getElectricien()->getTelephone());
+                $attestationConf->setNumero($attestation->getNumero());
+                $attestationConf->setPuissance($dossier->getDemande()->getPuissance());
+                $attestationConf->setLocalite($dossier->getDemande()->getInstallation()->getLocalite());
+                $attestationConf->setLatitude($dossier->getDemande()->getInstallation()->getLattitude());
+                $attestationConf->setLongitude($dossier->getDemande()->getInstallation()->getLongitude());
+                $attestationConf->setUsages($dossier->getDemande()->getInstallation()->getUsages());
+                $attestationConf->setDemande($dossier->getNum());
+                $attestationConf->setDossier($dossier->getNum());
+                $em->getRepository(AttestationConf::class)->add($attestationConf);  
+
+                $resultat=1;
+            }
             $visite->setConclusion($resultat);
             $visite->setCommentaire($commentaire);
             $visiteRepository->add($visite);
@@ -2086,13 +2496,17 @@ class DossierController extends AbstractController
             if(! $resultat) {
                 $mess_sms='Après traitement de votre demande '.$demande->getNumero().', votre installation est jugée non conforme. Veuillez prendre en compte les observations reportées et nous soumettre une nouvelle demande.';
             } else {
-                $mess_sms='Après traitement de votre demande  '.$demande->getNumero().', votre installation est jugée conforme. Vous pouvez imprimer votre attestation de conformité à partir de votre compte ou la récupérer en agence.';
+                $mess_sms='Après traitement de votre demande  '.$demande->getNumero().', votre installation est jugée conforme. Vous pouvez récupérer votre attestation de conformité en agence.';
             }
             if($installation->getElectricien() && $installation->getElectricien()->getTelephone()) {
-                $tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getElectricien()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             if($installation->getProprietaire() && $installation->getProprietaire()->getTelephone()) {
-                $tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                $resT=$tools->notifSMS($installation->getProprietaire()->getTelephone(), $mess_sms);
+                if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+                else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
             }
             
             if(! $resultat) {
@@ -2125,7 +2539,7 @@ class DossierController extends AbstractController
     public function rejetrapport(Request $request, Dossier $dossier, VisiteRepository $visiteRepository, PaiementRepository $paiementRepository, DossierRepository $dossierRepository, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -2168,11 +2582,11 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/showpdf', name: 'app_attestation_showpdf', methods: ['GET'])]
+    #[Route('/{id}/showpdf', name: 'app_attestation_showpdf00', methods: ['GET'])]
     public function showpdf(Request $request, Dossier $dossier, Pdf $knpSnappyPdf)
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -2217,5 +2631,797 @@ class DossierController extends AbstractController
         // );
     }
 
+    #[Route('/{id}/attestpdf', name: 'app_attestation_showpdf', methods: ['GET', 'POST'])]
+    public function pdf(Dossier $dossier, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, ): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this || !$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $em = $doctrine->getManager();
+        $attestation = $em->getRepository(Attestation::class)->findOneByDossier($dossier->getId());
+        $installation=$dossier->getDemande()->getInstallation();
+        $demande=$dossier->getDemande();
+        $type_usage=$installation->getUsages(); 
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='ATTESTATION_'.$attestation->getNumero();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+        $writer = new PngWriter();
+
+        // Create QR code
+        $lien="https://espace.cossuel.sn/pdfattestation/".$attestation->getId().$attestation->getNumero().".pdf"; 
+        
+        if($installation->getUsages()=="domestique") {
+            $qrCode = QrCode::create($lien)->setForegroundColor(new Color(255, 228, 54));
+        } else {
+            $qrCode = QrCode::create($lien)->setForegroundColor(new Color(119, 181, 254));
+        }
+
+        $result = $writer->write($qrCode);
+        $dir = $this->getParameter('photo_directory') .'/';
+        $fich_qr='qrcode_'. $dossier->getId() . '.png';
+        $result->saveToFile($fich_qr);
+
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+
+        $pdf->SetTextColor(230);
+        $pdf->SetFont('Arial','',45);
+        $pdf->RotatedText(32,255,'ATTESTATION  DE  CONFORMITE',55,-45);
+        $pdf->SetTextColor(0);
+
+        $pdf->angle=0;
+
+        $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",55,6,100);
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',16);
+        $pdf->SetLineWidth(1);
+        $pdf->SetDrawColor($couleur1,$couleur2, $couleur3);
+        $pdf->Ln(23);
+        $pdf->SetFont('Arial','B',13);
+        $pdf->Cell(0,10,utf8_decode('ATTESTATION DE CONFORMITE'),"TB",1,'C');
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','B',11);
+        $pdf->Cell(0,5,utf8_decode('USAGE '.strtoupper($type_usage)),0,1,'C');
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Attestation N°: '.$attestation->getNumero()),0,0);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Délivrée le : '.$dossier->getDateCloture()->format("d/m/Y")),0,0, "C");
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Expire le : '.$dossier->getDateCloture()->modify("+1 year")->format("d/m/Y")),0,1, "R");
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Installateur : '.($installation->getElectricien()->getNomComplet())),0,1);
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Téléphone le : '.$installation->getElectricien()->getTelephone()),0,0, "L");
+        $pdf->setX(12);
+
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INSTALLATION ELECTRIQUE',0,2,'C',true);
+        
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getNomComplet()),0,0);
+        
+        $pdf->setX(150);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode($installation->getProprietaire()->getTypePiece()." N°: "),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getNumPiece(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Tél. Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getTelephone()),0,0);
+        
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Email Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getEmail(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Adresse'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getAdresse()),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Localité'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getLocalite()->getNom()),0,0);
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','IB',10);
+        $pdf->Cell(12,5,utf8_decode('GPS : '),0,0);
+        $pdf->setX(115);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode('Latitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLattitude(),0,0,'L');
+        $pdf->setX(155);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(18,5,utf8_decode('Longitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLongitude(),0,1,'L');
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(36,5,utf8_decode('Puissance demandée: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getPuissance()." kW"),0,0);
+        
+        $pdf->Ln(11);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INFOS COSSUEL',0,2,'C',true);
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Agence: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getLocalite()->getAgence()->getNom().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Numéro Demande: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getNumero().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Numéro Dossier: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getNumero().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Code Client: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getElectricien()->getTypePiece()."-".$installation->getElectricien()->getNumPiece()),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Référent technique: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($dossier->getReferent()),0,0);
+        
+        $pdf->Image($fich_qr,155,157,40);
+
+        $pdf->SetLineWidth(0.5);
+        $pdf->Ln(11);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor(255);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'LA DUREE DE VALIDITE DE CETTE ATTESTATION EST D\'UN (01) AN',1,2,'C',true);
+
+        $pdf->Ln(4);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Multicell(0,6,utf8_decode("L'installateur soussigné atteste que l'installation électrique, objet de cette attestation est conforme aux prescriptions de sécurité en vigueur et que les parties rénovées sont compatibles avec celles non rénovées."));
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Multicell(0,6,utf8_decode("Le signataire reconnait avoir pris connaissance et accepte le réglement d'intervention du COSSUEL."));
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,utf8_decode('NB: '),0,0);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->setX(18);
+        $pdf->Multicell(0,6,utf8_decode("Cette attestation ne donne pas obligatoirement le droit d'obtention d'un compteur."));
+
+        $y=260;
+        $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),'T',0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+    }
+
+    #[Route('/{id}/attest0pdf', name: 'app_attestation_showpdf0', methods: ['GET', 'POST'])]
+    public function pdf0(Dossier $dossier, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, ): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this || !$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $em = $doctrine->getManager();
+        $installation=$dossier->getDemande()->getInstallation();
+        $demande=$dossier->getDemande();
+        $visite=$dossier->getVisiteCourante();
+        $type_usage=$installation->getUsages(); 
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='BONTRAVAUX_'.$visite->getId();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+        $writer = new PngWriter();
+
+        // Create QR code
+        $lien="https://espace.cossuel.sn/pdfbontravaux/".$visite->getId().$dossier->getNum().".pdf"; 
+        
+        if($installation->getUsages()=="domestique") {
+            $qrCode = QrCode::create($lien)->setForegroundColor(new Color(255, 228, 54));
+        } else {
+            $qrCode = QrCode::create($lien)->setForegroundColor(new Color(119, 181, 254));
+        }
+
+        $result = $writer->write($qrCode);
+        $dir = $this->getParameter('photo_directory') .'/';
+        $fich_qr='qrcode_'. $dossier->getId() . '.png';
+        $result->saveToFile($fich_qr);
+
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+
+        $pdf->SetTextColor(230);
+        $pdf->SetFont('Arial','',45);
+        $pdf->RotatedText(72,185,'BON  DE  TRAVAUX',55,-45);
+        $pdf->SetTextColor(0);
+
+        $pdf->angle=0;
+
+        $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",55,6,100);
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',16);
+        $pdf->SetLineWidth(1);
+        $pdf->SetDrawColor($couleur1,$couleur2, $couleur3);
+        $pdf->Ln(23);
+        $pdf->SetFont('Arial','B',13);
+        $pdf->Cell(0,10,utf8_decode('BON DE TRAVAUX'),"TB",1,'C');
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','B',11);
+        $pdf->Cell(0,5,utf8_decode('USAGE '.strtoupper($type_usage)),0,1,'C');
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Bon de travaux N°: '.$visite->getId()),0,0);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Délivrée le : '.$dossier->getDateCloture()->format("d/m/Y")),0,0, "C");
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Expire le : '.$dossier->getDateCloture()->modify("+1 year")->format("d/m/Y")),0,1, "R");
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Installateur : '.($installation->getElectricien()->getNomComplet())),0,1);
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(0,5,utf8_decode('Téléphone le : '.$installation->getElectricien()->getTelephone()),0,0, "L");
+        $pdf->setX(12);
+
+
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INSTALLATION ELECTRIQUE',0,2,'C',true);
+        
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getNomComplet()),0,0);
+        
+        $pdf->setX(150);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode($installation->getProprietaire()->getTypePiece()." N°: "),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getNumPiece(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Tél. Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getTelephone()),0,0);
+        
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Email Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getEmail(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Adresse'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getAdresse()),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Localité'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getLocalite()->getNom()),0,0);
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','IB',10);
+        $pdf->Cell(12,5,utf8_decode('GPS : '),0,0);
+        $pdf->setX(115);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode('Latitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLattitude(),0,0,'L');
+        $pdf->setX(155);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(18,5,utf8_decode('Longitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLongitude(),0,1,'L');
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(36,5,utf8_decode('Puissance demandée: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getPuissance()." kW"),0,0);
+        
+        $pdf->Ln(11);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INFOS COSSUEL',0,2,'C',true);
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Agence: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getLocalite()->getAgence()->getNom().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Numéro Demande: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getNumero().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Numéro Dossier: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getNumero().""),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Code Client: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getElectricien()->getTypePiece()."-".$installation->getElectricien()->getNumPiece()),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Référent technique: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($dossier->getReferent()),0,0);
+        
+        $pdf->Image($fich_qr,155,157,40);
+
+        $pdf->SetLineWidth(0.25);
+
+        $pdf->Ln(11);
+        $rub="";
+        $les_detailverif = $visite->getDetailVerification();
+        $pdf->SetDrawColor(0);
+        foreach($les_detailverif as $pt) {
+            if(!$pt->getConclusion() && !$pt->getSansobjet()) {
+                if($rub != $pt->getPointVerification()->getRubrique()->getId()) {
+                    $pdf->Ln(7);
+                    $pdf->SetFont('Arial','B',10);
+                    $pdf->SetFillColor(0);
+                    $pdf->SetTextColor(255);
+                    $pdf->Cell(0,8,utf8_decode($pt->getPointVerification()->getRubrique()->getNumero()."- ".$pt->getPointVerification()->getRubrique()->getLibelle()),0,2,'L',true);
+                    $rub=$pt->getPointVerification()->getRubrique()->getId();
+                }
+                $pdf->SetTextColor(0);
+                $pdf->SetFillColor(180);
+                $pdf->Ln(3);
+                $pdf->SetFont('Arial','B',10);
+                $pdf->setX(12);
+                $pdf->Multicell(0,6,utf8_decode($pt->getPointVerification()->getObjetVerification()), 1, 1, 1);
+                if($pt->getPointNonconf()) {
+                    $pdf->setX(15);
+                    $pdf->Ln(2);
+                    $pdf->SetFont('Arial','',10);
+                    $pdf->setX(15);
+                    $pdf->SetTextColor(255, 0, 0);
+                    $pdf->Multicell(0,4,utf8_decode($pt->getPointVerification()->getLibelleConclusion2().": ".$pt->getPointNonconf()->getLibelle()));
+                    $pdf->SetTextColor(0);
+                }
+                if($pt->getCommentaire()) {
+                    $pdf->Ln(2);
+                    $pdf->SetFont('Arial','I',9);
+                    $pdf->setX(20);
+                    $pdf->Multicell(0,6,utf8_decode("Commentaire : ".$pt->getCommentaire()));
+                }
+            }
+        }
+
+        $y=260;
+        $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),'T',0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    #[Route('/{id}/rapportpdf', name: 'app_dossier_rapportpdf', methods: ['GET', 'POST'])]
+    public function rapportpdf(Dossier $dossier, ManagerRegistry $doctrine, PaiementRepository $paiementRepository,Request $request, ): Response
+    {
+        // Redirection vers page login si session inexistante !!!
+        if(!$this || !$this->getUser()) {
+            return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $em = $doctrine->getManager();
+        $installation=$dossier->getDemande()->getInstallation();
+        $demande=$dossier->getDemande();
+        $visite=$dossier->getVisiteCourante();
+        $type_usage=$installation->getUsages(); 
+        $ok_rapp=($dossier->getRapport());
+        if($installation->getUsages()=="non_domestique") {
+            $type_usage="professionnel";
+        }
+        if($installation->getUsages()=="erp_ert") {
+            $type_usage="ERP / ERT";
+        }
+        if($type_usage!="domestique") {
+            $couleur1="119"; $couleur2="181"; $couleur3="254";
+        } else {
+            $couleur1="255"; $couleur2="228"; $couleur3="54";
+        }
+
+        $nom_f='RAPPORT_'.$visite->getId();
+        $fich = $this->getParameter('pdf_directory').'/'.$nom_f.'.pdf';
+
+        // if(file_exists($fich)) {
+        //     return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+        // } 
+
+        $pdf = new DetailPDF('P','mm','A4');
+        $pdf->AddPage();
+
+        $pdf->SetTextColor(230);
+        $pdf->SetFont('Arial','',45);
+        $pdf->SetTextColor(0);
+
+        $pdf->angle=0;
+
+        $pdf->Image("assets/img/thumbnail_Logo_COSSUEL.png",55,6,100);
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',16);
+        $pdf->SetLineWidth(1);
+        $pdf->SetDrawColor($couleur1,$couleur2, $couleur3);
+        $pdf->Ln(23);
+        $pdf->SetFont('Arial','B',13);
+        $pdf->Cell(0,10,utf8_decode('RAPPORT D\'INSPECTION'),"TB",1,'C');
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial','IB',10);
+        $pdf->setX(12);
+        $pdf->Cell(110,5,utf8_decode('Numéro Dossier : '.($demande->getNumero())."  du ".$dossier->getDateCreation()->format("d-m-Y")),0,0);
+        $pdf->Cell(150,5,utf8_decode('Date Inspection : '.($visite->getDateRealise()->format("d-m-Y à H:i"))),0,1);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(110,5,utf8_decode('Installateur : '.($installation->getElectricien()->getNomComplet())),0,0);
+        $pdf->Cell(150,5,utf8_decode('Controleur : '.($dossier->getControleur())),0,1);
+        $pdf->Ln(3);
+        $pdf->setX(12);
+        $pdf->Cell(110,5,utf8_decode('Téléphone le : '.$installation->getElectricien()->getTelephone()),0,0, "L");
+        $pdf->Cell(150,5,utf8_decode('Référent : '.($dossier->getReferent())),0,1);
+        $pdf->setX(12);
+
+
+        $pdf->Ln(4);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'INSTALLATION ELECTRIQUE A USAGE '.strtoupper($type_usage),0,2,'C',true);
+        
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getNomComplet()),0,0);
+        
+        $pdf->setX(150);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode($installation->getProprietaire()->getTypePiece()." N°: "),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getNumPiece(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Tél. Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(140,5,utf8_decode($installation->getProprietaire()->getTelephone()),0,0);
+        
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(32,5,utf8_decode('Email Propriètaire: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getProprietaire()->getEmail(),0,1,'L');
+
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Adresse'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getAdresse()),0,1);
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(30,5,utf8_decode('Localité'),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($installation->getLocalite()->getNom()),0,0);
+        $pdf->setX(100);
+        $pdf->SetFont('Arial','IB',10);
+        $pdf->Cell(12,5,utf8_decode('GPS : '),0,0);
+        $pdf->setX(115);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(15,5,utf8_decode('Latitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLattitude(),0,0,'L');
+        $pdf->setX(155);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(18,5,utf8_decode('Longitude : '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(42,5,$installation->getLongitude(),0,1,'L');
+        
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->Cell(36,5,utf8_decode('Puissance demandée: '),0,0);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,5,utf8_decode($demande->getPuissance()." kW"),0,0);
+        
+        $pdf->Ln(11);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->SetFillColor($couleur1,$couleur2, $couleur3);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(0,8,'DETAILS DU RAPPORT',0,2,'C',true);
+
+        $pdf->SetLineWidth(0.25);
+
+        $rub="";
+        $les_detailverif = $visite->getDetailVerification();
+        $pdf->SetDrawColor(0);
+        foreach($les_detailverif as $pt) {
+            if($rub != $pt->getPointVerification()->getRubrique()->getId()) {
+                $pdf->Ln(5);
+                $pdf->SetFont('Arial','B',10);
+                $pdf->SetFillColor(0);
+                $pdf->SetTextColor(255);
+                $pdf->Cell(0,8,utf8_decode($pt->getPointVerification()->getRubrique()->getNumero()."- ".$pt->getPointVerification()->getRubrique()->getLibelle()),0,2,'L',true);
+                $rub=$pt->getPointVerification()->getRubrique()->getId();
+            }
+            $pdf->SetTextColor(0);
+            $pdf->SetFillColor(180);
+            $pdf->Ln(3);
+            $pdf->SetFont('Arial','B',10);
+            $pdf->setX(12);
+            $pdf->Multicell(0,6,utf8_decode($pt->getPointVerification()->getObjetVerification()), 1, 1, 1);
+
+            if(!$pt->getSansobjet()) {
+                if(!$pt->getConclusion()) {
+                    $pdf->setX(15);
+                    $pdf->Ln(2);
+                    $pdf->setX(15);
+                    $pdf->SetFillColor(250, 20, 20);
+                    $pdf->Cell(4,4,"x",1,0,'C',true);
+                    $pdf->SetFont('Arial','',10);
+                    $pdf->setX(20);
+                    $pdf->SetTextColor(255, 0, 0);
+                    if($pt->getPointNonconf()) {
+                        $pdf->Multicell(0,4,utf8_decode($pt->getPointVerification()->getLibelleConclusion2().": ".$pt->getPointNonconf()->getLibelle()));
+                    } else {
+                        $pdf->Multicell(0,4,utf8_decode($pt->getPointVerification()->getLibelleConclusion2()));
+                    }
+                    $pdf->SetTextColor(0);
+                    if($pt->getCommentaire()) {
+                        $pdf->Ln(2);
+                        $pdf->SetFont('Arial','I',9);
+                        $pdf->setX(20);
+                        $pdf->Multicell(0,6,utf8_decode("Commentaire : ".$pt->getCommentaire()));
+                    }
+                } else {
+                    $pdf->setX(15);
+                    $pdf->Ln(2);
+                    $pdf->setX(15);
+                    $pdf->SetFillColor(80, 120, 80);
+                    $pdf->Cell(4,4,"v",1,0,'C',true);
+                    $pdf->SetFont('Arial','',10);
+                    $pdf->setX(20);
+                    $pdf->SetTextColor(50, 155, 120);
+                    $pdf->Multicell(0,4,utf8_decode($pt->getPointVerification()->getLibelleConclusion1()));
+                    $pdf->SetTextColor(0);
+                }
+            } else {
+                $pdf->SetTextColor(0);
+                $pdf->setX(15);
+                $pdf->Ln(2);
+                $pdf->SetFont('Arial','I',10);
+                $pdf->setX(15);
+                $pdf->Multicell(0,4,"Sans Objet");
+            }
+        }
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor(0);
+        $pdf->SetTextColor(255);
+        $pdf->Cell(0,8,utf8_decode("Tableau 2: Mesure prises de terre"),0,2,'L',true);
+        $pdf->SetTextColor(0);
+        $pdf->SetFillColor(230);
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->setX(12);
+        $pdf->Cell(40,6,utf8_decode("Mesure prises de terre"), 0,0, "L", 0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(20,6,utf8_decode($visite->getMesurePriseTerre()), 1, 0, "C", 1);
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->setX(120);
+        $pdf->Cell(30,6,utf8_decode("Barrettes"), 0,0, "L", 0);
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(30,6,utf8_decode($visite->getBarrette()), 1, 1, "C", 1);
+
+        $pdf->Ln(2 );
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor(230);
+        $pdf->SetTextColor(0);
+        $pdf->Cell(0,6,utf8_decode("Commentaires"),1,2,'L',true);
+        $pdf->SetTextColor(0);
+        $pdf->SetFillColor(230);
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial','I',10);
+        $pdf->setX(12);
+        $pdf->Multicell(0,4,utf8_decode($visite->getCommentaire2()));
+
+        if($pdf->getY()>220) { $pdf->AddPage(); }
+        $pdf->Ln(10);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->SetFillColor(0);
+        $pdf->SetTextColor(255);
+        $pdf->Cell(0,8,utf8_decode("Illustrations et Signatures"),0,2,'L',true);
+        $pdf->SetTextColor(0);
+        $pdf->SetFillColor(230);
+        $pdf->Ln(3);
+        $pdf->SetFont('Arial','B',10);
+
+        $pdf->setX(12);
+        $pdf->Cell(40,6,utf8_decode("Photo 1"), 0,0, "L", 0);
+        if($installation->getPJPhoto1() && file_exists("upload/photo/".$installation->getPJPhoto1()->getFichier()) && is_file("upload/photo/".$installation->getPJPhoto1()->getFichier()) && filesize("upload/photo/".$installation->getPJPhoto1()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$installation->getPJPhoto1()->getFichier(),15,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        $pdf->setX(120);
+        $pdf->Cell(40,6,utf8_decode("Photo 2"), 0,0, "L", 0);
+        if($installation->getPJPhoto2() && file_exists("upload/photo/".$installation->getPJPhoto2()->getFichier()) && is_file("upload/photo/".$installation->getPJPhoto2()->getFichier()) && filesize("upload/photo/".$installation->getPJPhoto2()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$installation->getPJPhoto2()->getFichier(),125,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        $pdf->Ln(50);
+        $pdf->setX(12);
+        $pdf->Cell(40,6,utf8_decode("Photo 3"), 0,0, "L", 0);
+        if($installation->getPJPhoto3() && file_exists("upload/photo/".$installation->getPJPhoto3()->getFichier()) && is_file("upload/photo/".$installation->getPJPhoto3()->getFichier()) && filesize("upload/photo/".$installation->getPJPhoto3()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$installation->getPJPhoto3()->getFichier(),15,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        $pdf->setX(120);
+        $pdf->Cell(40,6,utf8_decode("Photo 4"), 0,0, "L", 0);
+        if($installation->getPJPhoto4() && file_exists("upload/photo/".$installation->getPJPhoto4()->getFichier()) && is_file("upload/photo/".$installation->getPJPhoto4()->getFichier()) && filesize("upload/photo/".$installation->getPJPhoto4()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$installation->getPJPhoto4()->getFichier(),125,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+
+        $pdf->Ln(50);
+        $pdf->setX(20);
+        $pdf->Cell(40,6,utf8_decode("Signature Controleur"), 0,0, "L", 0);
+        if($visite->getSigncontroleur() && file_exists("upload/photo/".$visite->getSigncontroleur()->getFichier()) && is_file("upload/photo/".$visite->getSigncontroleur()->getFichier()) && filesize("upload/photo/".$visite->getSigncontroleur()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$visite->getSigncontroleur()->getFichier(),15,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+        $pdf->setX(125);
+        $pdf->Cell(40,6,utf8_decode("Signature Electricien"), 0,0, "L", 0);
+        if($visite->getSignelectricien() && file_exists("upload/photo/".$visite->getSignelectricien()->getFichier()) && is_file("upload/photo/".$visite->getSigncontroleur()->getFichier()) && filesize("upload/photo/".$visite->getSigncontroleur()->getFichier())) {
+            try {
+                $pdf->Image("upload/photo/".$visite->getSignelectricien()->getFichier(),125,$pdf->getY()+5,30);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+        }
+
+
+        $y=260;
+        $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Comité Sénégalais pour la Sécurité des Usagers de l'Electricité (COSSUEL)"),'T',0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Organisme agréé par le Ministère chargé de l'Energie suivant le decret No 0022609 du 22 Août 2019"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Téléphone: (+221) 76 644 76 02/ 33 842 01 81  Email: cossuel@cossuel.sn"),0,0,'C');
+        $y+=3; $pdf->SetY($y);
+        $pdf->SetFont('Arial','I',8);
+        $pdf->Cell(0,5,utf8_decode("Adresse: 2 Rue Wagane Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL"),0,0,'C');
+
+
+        $pdf->Output($fich,'F');
+        return $this->file($fich, ''.$nom_f.'_'.date("YmdHis").'.pdf', ResponseHeaderBag::DISPOSITION_INLINE);
+
+    }
 
 }

@@ -67,6 +67,7 @@ class DemandeRepository extends ServiceEntityRepository
         $q = $this->createQueryBuilder('a')
         ->leftjoin('App\Entity\Installation', 'i', 'WITH', 'i.id = a.installation')
         ->leftjoin('App\Entity\Paiement', 'pm', 'WITH', 'pm.id = a.paiement')
+        ->leftjoin('App\Entity\Remboursement', 'remb', 'WITH', '(pm.id = remb.paiement and remb.valide=1)')
         ->leftjoin('App\Entity\Dossier', 'd', 'WITH', 'd.id = a.dossier')
         ->leftjoin('App\Entity\Localite', 'l', 'WITH', 'l.id = i.localite')
         ->leftjoin('App\Entity\Electricien', 'e', 'WITH', 'e.id = i.electricien')
@@ -105,13 +106,15 @@ class DemandeRepository extends ServiceEntityRepository
 
                     $q->andWhere($restr);
                 } elseif($p=="paiement_deb") {
-                    $q->andWhere('pm.datePaiement >= :val'.$ix)
+                    $q->andWhere('(pm.datePaiement >= :val'.$ix.' or remb.dateValidation >= :val'.$ix.')')
                     ->setParameter('val'.$ix, "$v");
                 } elseif($p=="mode_paiement") {
                     $q->andWhere('pm.mode = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
+                } elseif($p=="type_paiement") {
+                    if($v=="Remboursement") { $q->andWhere('remb.valide = 1'); }
                 } elseif($p=="paiement_fin") {
-                    $q->andWhere('pm.datePaiement <= :val'.$ix)
+                    $q->andWhere('(pm.datePaiement <= :val'.$ix.' or remb.dateValidation <= :val'.$ix.')')
                     ->setParameter('val'.$ix, "$v");
                 } elseif($p=="agence") {
                     $q->andWhere('l.'.$p.' = :val'.$ix)
@@ -224,6 +227,7 @@ class DemandeRepository extends ServiceEntityRepository
         ->andWhere('a.rejet=0')
         ->andWhere('a.soumis=1')
         ;
+
         if(is_array($val_filtre) && count($val_filtre)) {
             $restr="";
             $ix=0;
@@ -234,6 +238,23 @@ class DemandeRepository extends ServiceEntityRepository
                 } elseif($p=="usages") {
                     $q->andWhere('i.usages = :val'.$ix)
                     ->setParameter('val'.$ix, "$v");
+                } elseif($p=="periode_dem") {
+                    if($v=="last7") {
+                        $q->andWhere('a.dateCreation >= :val'.$ix.'')
+                        ->setParameter('val'.$ix, new \DateTime('-1 week'));
+                    }
+                    if($v=="last1") {
+                        $q->andWhere('a.dateCreation >= :val'.$ix.'')
+                        ->setParameter('val'.$ix, new \DateTime('-1 day'));
+                    }
+                    if($v=="last15") {
+                        $q->andWhere('a.dateCreation >= :val'.$ix.'')
+                        ->setParameter('val'.$ix, new \DateTime('-2 week'));
+                    }
+                    if($v=="last30") {
+                        $q->andWhere('a.dateCreation >= :val'.$ix.'')
+                        ->setParameter('val'.$ix, new \DateTime('-1 month'));
+                    }
                 } elseif($p=="paiement_by") {
                     $q->andWhere('(p.created_by = :val'.$ix.' or p.updated_by = :val'.$ix.')')
                     ->setParameter('val'.$ix, "$v");

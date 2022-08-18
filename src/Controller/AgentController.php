@@ -34,7 +34,7 @@ class AgentController extends AbstractController
     public function index(Request $request, PaginatorInterface $pgn, AgentRepository $agentRepository, AgenceRepository $agenceRepository, ProfilRepository $profilRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -122,7 +122,7 @@ class AgentController extends AbstractController
     public function create(Request $request, ManagerRegistry $doctrine, AgenceRepository $agenceRepository, AgentRepository $agentRepository, SluggerInterface $slugger, AffectationsAgentsRepository $agaffRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -195,7 +195,7 @@ class AgentController extends AbstractController
     public function update(AgentRepository $agentRepository, Tools $tools, UtilisateurRepository $utilisateurRepository, SluggerInterface $slugger, Agent $id, Request $request): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -249,7 +249,9 @@ class AgentController extends AbstractController
             }
 
             // $tools->notifMail("mlthioune@gmail.com", "Mise à jour agent effectuée !", "Notification COSSUEL");
-            // $tools->notifSMS("773799200", "Mise à jour agent effectuée !");
+            // $resT=$tools->notifSMS("773799200", "Mise à jour agent effectuée !");
+            // if($resT) { $this->addFlash("success", "Notification sms envoyée au destinataire ! "); } 
+            // else { $this->addFlash("danger", "Echec de l'envoi de la notification sms ! Veuillez contacter l'administrateur."); }
 
             $this->addFlash('success', 'Les informations ont été enregistrées avec succès !.');
             return $this->redirectToRoute("app_agent_show", ['id'=>$agent->getId()]);
@@ -267,7 +269,7 @@ class AgentController extends AbstractController
     public function affecter(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -314,7 +316,7 @@ class AgentController extends AbstractController
     public function desaffecter(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository, AgenceRepository $agenceRepository, AffectationsAgentsRepository $agaffRepository, Request $request): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -334,7 +336,7 @@ class AgentController extends AbstractController
     public function show(ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -358,7 +360,7 @@ class AgentController extends AbstractController
     public function createuser(Request $request, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, Agent $agent, AgentRepository $agentRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -410,7 +412,7 @@ class AgentController extends AbstractController
     public function delete(ManagerRegistry $doctrine, int $id): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

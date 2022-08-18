@@ -1,0 +1,29 @@
+endroid_qr_code:
+    default:
+        writer: Endroid\QrCode\Writer\PngWriter
+        size: 200
+        margin: 10
+        encoding: 'UTF-8'
+        errorCorrectionLevel: 'low'
+        roundBlockSizeMode: 'margin'
+        validateResult: false
+    prof:
+        writer: Endroid\QrCode\Writer\PngWriter
+        size: 200
+        foregroundColor: [255, 228, 54]
+        margin: 10
+        encoding: 'UTF-8'
+        errorCorrectionLevel: 'low'
+        roundBlockSizeMode: 'margin'
+        validateResult: false
+
+    dom:
+        writer: Endroid\QrCode\Writer\PngWriter
+        size: 200
+        foregroundColor: [119, 181, 254]
+        margin: 10
+        encoding: 'UTF-8'
+        errorCorrectionLevel: 'low'
+        roundBlockSizeMode: 'margin'
+        validateResult: false
+

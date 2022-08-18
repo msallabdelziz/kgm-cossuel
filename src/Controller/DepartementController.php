@@ -27,7 +27,7 @@ class DepartementController extends AbstractController
     public function index(Request $request, PaginatorInterface $pgn, DepartementRepository $departementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -51,7 +51,7 @@ class DepartementController extends AbstractController
     public function load(Request $request, RegionRepository $regionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -131,7 +131,7 @@ class DepartementController extends AbstractController
     public function add(Request $request, Region $region, DepartementRepository $departementRepository, RegionRepository $regionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -158,7 +158,7 @@ class DepartementController extends AbstractController
     public function edit(Departement $departement, Request $request, DepartementRepository $departementRepository, RegionRepository $regionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -186,7 +186,7 @@ class DepartementController extends AbstractController
     public function show(Departement $departement, DepartementRepository $departementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

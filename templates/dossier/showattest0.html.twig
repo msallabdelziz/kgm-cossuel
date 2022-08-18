@@ -228,6 +228,7 @@
                         {% set ix = 0 %}
                         {% set les_detailverif = dossier.visiteCourante.detailVerification %}
                             {% for pt in les_detailverif %}
+                              {% if not pt.conclusion and not pt.sansobjet %}
                                 {% if rub != pt.pointverification.rubrique.id %}
                                     {% if rub %}
                                         </div>
@@ -236,9 +237,6 @@
                                         <h6 class="p-1 bg-dark text-light shadow border-bottom"> {{ pt.pointverification.rubrique.numero }}- {{ pt.pointverification.rubrique.libelle }}</h6>
                                     {% set rub = pt.pointverification.rubrique.id %}
                                     {% set ix = ix + 1 %}
-                                {% endif %}
-                                {% if not pt.conclusion %}
-                                  
                                 {% endif %}
                                 <div class="shadow p-1 mb-2" style="page-break-after:auto">
                                     <div class="border-bottom p-2 m-1 ms-0 ps-0 fs-6" style="font-size:14px;">
@@ -250,13 +248,16 @@
                                                 <svg class="bi" width="24" height="24" fill="red">
                                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
                                                 </svg>
-                                                <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                                <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}: </span> 
+                                                {% if pt.pointVerification.pointnonconf %} <i class="text-dark" style="font-size:11px;">{{ pt.pointnonconf.libelle }}</i> {% endif %}
+                                                
                                         </div>
                                     </div>
                                       <div class="fw-light ms-4" style="font-size:11px">
                                       Commentaire: <span class="text-danger">{{pt.commentaire}}</span>
                                       </div>
                                 </div>
+                              {% endif %}
                             {% endfor %}
                             </div>
 

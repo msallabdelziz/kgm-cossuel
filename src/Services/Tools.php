@@ -9,6 +9,7 @@ use App\Entity\Installation;
 use App\Entity\Paiement;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
+use Endroid\QrCode\Builder\BuilderInterface;
 use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -36,7 +37,8 @@ class Tools
 
     private $siteEmail;
 
-    public function __construct(EntityManagerInterface $em, HttpClientInterface $client=null, MailerInterface $mailer=null, string $siteEmail='yatamala.net@gmail.com', string $siteName='COSSUEL - Notification')
+
+    public function __construct(EntityManagerInterface $em, HttpClientInterface $client=null, MailerInterface $mailer=null, BuilderInterface $customQrCodeBuilder, string $siteEmail='yatamala.net@gmail.com', string $siteName='COSSUEL - Notification')
     {
         $this->em = $em;
         $this->mailer = $mailer;
@@ -44,6 +46,7 @@ class Tools
 
         $this->siteEmail=$siteEmail;
         $this->siteName=$siteName;
+
     }
 
     public static function dateEN2FR($x): string {
@@ -159,7 +162,7 @@ class Tools
     }
 
     public function notifSMS(string $dest, string $mess, string $sujet=""): bool {
-        // return true;
+        return true;
 
         $auth = 'Basic Y29zc3VlbDpDT1MyMDIyQGtnbQ==';
         if(!$this->client) {
@@ -172,7 +175,7 @@ class Tools
                 // 'http_version'=>'1.1',
                 // 'auth_basic' => ['cossuel', 'COS2022@kgm'],
                 'headers' => [
-                    'Authorization' => 'Basic Y29zc3VlbDpDT1MyMDIyQGtnbQ==',
+                    'Authorization' => $auth,
                     'Content-Type' => 'application/json',
                     'Accept' => '*/*',
                     'Connection' => 'keep-alive',
@@ -181,13 +184,12 @@ class Tools
                 'body' => '
                 {
                     "from" : "cossuel",
-                    "to" : "221773799200",
-                    "text" : "TEST: '.$mess.'"
+                    "to" : "221'.$dest.'",
+                    "text" : "'.$mess.'"
                 }
                 '
             ]
         );
-        // "to" : "221'.$dest.'",
 
 
         // $response = $this->client->request(
@@ -234,6 +236,7 @@ class Tools
             $content = $response->getContent();
             // $session->getFlashBag()->add('success', 'Notification SMS envoyée !');
          } else {
+            return false;
             // $session->getFlashBag()->add('danger', 'Echec Envoi Notification SMS !');
         }
         return true;

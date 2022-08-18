@@ -45,6 +45,16 @@ class AttestationRepository extends ServiceEntityRepository
         }
     }
 
+    public function findOneByDossier($value): ?Attestation
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.dossier = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     // /**
     //  * @return Attestation[] Returns an array of Attestation objects
     //  */

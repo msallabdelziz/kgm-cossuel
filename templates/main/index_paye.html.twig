@@ -34,13 +34,24 @@
 					{% set les_col = ["green bg-opacity-50", "success bg-opacity-50", "warning bg-opacity-25", "danger bg-opacity-50"] %}
 
 				<div class="row m-1 mt-4 pt-2">
-					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Situation des paiements par mode et usage installation</h5>
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">
+						<div class="float-start mr-20">Situation des paiements par mode et usage installation</div>
+						<form method="post" id="form_dash_perio" class="float-end" action="">
+							<select name="val_dash_perio" id="val_dash_perio" class="fw-bold bg-success bg-opacity-25 form-select-sm">
+								<option {% if perio_stat == 'last1' %} selected="selected" {% endif %} value="last1">Aujourd'hui</option>
+								<option {% if perio_stat == 'last7' %} selected="selected" {% endif %} value="last7">7 derniers jours</option>
+								<option {% if perio_stat == 'last15' %} selected="selected" {% endif %} value="last15">15 derniers jours</option>
+								<option {% if perio_stat == 'last30' %} selected="selected" {% endif %} value="last30">30 derniers jours</option>
+								<option {% if perio_stat == 'all' %} selected="selected" {% endif %} value="all">Toutes les périodes</option>
+							</select>
+						</form>
+					</h5>
 				</div>
 				<div class="row">
 					{% set ix = 0 %}
 					{% for mode,lib_mode in les_mode  %}
 					{% set col = les_col[ix] %}
-					<div class="col-md-3 mt-2">
+					<div class="col-12 col-md-6 col-lg-3 mt-2">
 						{% if ix==0 %}
 						<div class="card bg-warning bg-opacity-50 p-2 card-stat shadow">
 						{% else %}
@@ -102,6 +113,10 @@
 {% set les_code = {"1":"All", "2":"Espèce", "3":"Chèque", "4":"Autre"} %}
 <script>
     $(document).ready(function () {
+
+        $('#val_dash_perio').on('change', function() {
+            $("#form_dash_perio").submit();
+        });
 
 		{% for ix in [1, 2, 3, 4] %}
 			{% set code = les_code[ix] %}

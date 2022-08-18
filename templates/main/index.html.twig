@@ -25,7 +25,18 @@
 			</ul>
 
 			<div class="row m-1 pt-2">
-				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">
+						<div class="float-start mr-20">Mes Performances</div>
+						<form method="post" id="form_dash_perio" class="float-start" action="">
+							<select name="val_dash_perio" id="val_dash_perio" class="fw-bold bg-success bg-opacity-25 form-select-sm">
+								<option {% if perio_stat == 'last1' %} selected="selected" {% endif %} value="last1">Aujourd'hui</option>
+								<option {% if perio_stat == 'last7' %} selected="selected" {% endif %} value="last7">7 derniers jours</option>
+								<option {% if perio_stat == 'last15' %} selected="selected" {% endif %} value="last15">15 derniers jours</option>
+								<option {% if perio_stat == 'last30' %} selected="selected" {% endif %} value="last30">30 derniers jours</option>
+								<option {% if perio_stat == 'all' %} selected="selected" {% endif %} value="all">Toutes les périodes</option>
+							</select>
+						</form>
+
 				<div class="float-end text-dark fs-6">Vous êtes actif sur <span class="badge bg-success fw-bold px-1">{% if les_stat["All"] %}{{(mes_stat["All"]/les_stat["All"]*100)|round(1)}}{% else %}0{% endif %}%</span> du total des demandes</div>
 				</h5>
 			</div>
@@ -238,8 +249,13 @@
 		{% set les_col = ["#d83444", "#b5cbf1", "#b8d0c7", "#13c5ea", "#e1501e", "#508bf6", "#508bf6", "#4b9f47"] %}
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
+        $('#val_dash_perio').on('change', function() {
+            $("#form_dash_perio").submit();
+        });
+
+	{% if mes_stat["All"] %}
         var pieC = new d3pie("pieC", {
             "header": {
                 "title": {
@@ -361,7 +377,7 @@
 				}
 			}
         });
-
+	{% endif %}
 
     });
 </script>

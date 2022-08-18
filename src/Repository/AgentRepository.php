@@ -67,7 +67,7 @@ class AgentRepository extends ServiceEntityRepository
         ->join('App\Entity\Profil', 'prof', 'WITH', 'agt.profil = prof.id')
         ->andWhere('prof.code = :val2')
         ->setParameter('val2', $profil)
-        ->orderBy('agt.id', 'ASC')
+        ->orderBy('agt.matricule', 'ASC')
 //            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
@@ -78,7 +78,7 @@ class AgentRepository extends ServiceEntityRepository
      * @return Agent[] Returns an array of Agent objects
      */
     
-    public function findByRestr($val_rech, $val_filtre, $orderBy="", $page=0)
+    public function findByRestr($val_rech, $val_filtre, $orderBy="matricule", $page=0)
     {
         $les_col=array("matricule", "nom", "prenom", "adresse", "email", "telephone");
         $str='1 = 0';

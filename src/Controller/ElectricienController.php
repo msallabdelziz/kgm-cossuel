@@ -26,7 +26,7 @@ class ElectricienController extends AbstractController
     public function index(Request $request, PaginatorInterface $pgn, ElectricienRepository $electricienRepository, LocaliteRepository $localiteRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -109,7 +109,7 @@ class ElectricienController extends AbstractController
     public function new(Request $request, ElectricienRepository $electricienRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -132,7 +132,7 @@ class ElectricienController extends AbstractController
     public function show(Electricien $electricien, ManagerRegistry $doctrine, ElectricienRepository $electricienRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -150,7 +150,7 @@ class ElectricienController extends AbstractController
     public function edit(Request $request, Electricien $electricien, ElectricienRepository $electricienRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

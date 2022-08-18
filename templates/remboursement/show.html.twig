@@ -103,6 +103,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title text-black titre_bloc_4">
                             Informations sur l'électricien
+                            {% if (is_granted('ROLE_ADMIN')) %}
+                                <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit2', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                </svg>
+                                </a>
+                            {% endif %}
                         </h2>
                         <div class="row bloc_4">
                             <hr class="mb-3" />
@@ -157,6 +164,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title titre_bloc_1">
                         Données de base de la demande
+                        {% if (is_granted('ROLE_ADMIN')) %}
+                            <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit1', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                            <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                            </svg>
+                            </a>
+                        {% endif %}
                             <div class="float-end">
                                 <a class="pt fs-7 text-warning btn_bloc_1" title="Afficher les détails">
                                 <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
@@ -308,6 +322,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title titre_bloc_5">
                             Informations sur le propriétaire de l'installation
+                            {% if (is_granted('ROLE_ADMIN')) %}
+                                <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit3', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                </svg>
+                                </a>
+                            {% endif %}
                             <div class="float-end">
                                 <a class="pt fs-7 text-warning btn_bloc_5" title="Afficher les détails">
                                 <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
@@ -412,6 +433,10 @@
                             <label >Mode Paiement</label>
                             <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.mode }}">
                         </div>
+                        <div class="mb-3 ">
+                            <label >Montant Paiement</label>
+                            <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ demande.cout | number_format(0, '', ' ') }} FCFA">
+                        </div>
                         <div class="mb-3 reference">
                             <label >Référence Paiement</label>
                             <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6" value="{{ paiement.reference }}">
@@ -423,12 +448,12 @@
                         </div>
                         {% endif %}
                         <div class="mb-3">
-                            <label class="text-danger" >Date Demande remboursement</label>
+                            <label class="text-danger" >Date remboursement</label>
                             <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6 bg-warning bg-opacity-50" value="{{ remboursement.dateDemande|date("d-m-Y") }}">
                         </div>
                         <div class="mb-3">
                             <label class="text-danger" >Montant remboursement</label>
-                            <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6 bg-warning bg-opacity-50" value="{{ remboursement.montant }} FCFA">
+                            <input type="text" disabled readonly class="form-control form-control py-1 fw-bold fs-6 bg-warning bg-opacity-50" value="{{ remboursement.montant | number_format(0, '', ' ') }} FCFA">
                         </div>
                         <div class="mb-3 ">
                             <label class="text-danger">Motif Remboursement</label>

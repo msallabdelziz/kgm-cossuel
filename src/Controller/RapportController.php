@@ -21,7 +21,7 @@ class RapportController extends AbstractController
     public function index(Request $request, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -39,7 +39,7 @@ class RapportController extends AbstractController
     public function add(Request $request, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -65,7 +65,7 @@ class RapportController extends AbstractController
     public function edit(Request $request, Rapport $rapport, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -92,7 +92,7 @@ class RapportController extends AbstractController
     public function showpdf(Rapport $rapport, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -108,7 +108,7 @@ class RapportController extends AbstractController
     public function show(Rapport $rapport, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

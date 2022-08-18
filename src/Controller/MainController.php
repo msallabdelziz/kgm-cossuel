@@ -13,10 +13,13 @@ use App\Entity\Utilisateur;
 use App\Services\Tools;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
@@ -44,7 +47,9 @@ class MainController extends AbstractController
                     $agent=$em->getRepository(Agent::class)->find($userConn->getIdType());
                     if($agent) {
                         $request->getSession()->set('agent', $agent);
-                        $agence=$agent->getAgenceCourante();
+                        if($agent->getAgenceCourante()) {
+                            $agence=$em->getRepository(Agence::class)->find($agent->getAgenceCourante()->getId());
+                        }
                         // Initialisation variable de session pour agence actuelle de l'utilisateur connecté
                         if($agence) {
                             $request->getSession()->set('agence', $agence);
@@ -66,13 +71,21 @@ class MainController extends AbstractController
         $request->getSession()->set('page_liste_demande', 'main');
 
         $restr_dem=array(); $restr_dos=array();
-        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT"))) {
+        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT", "ROLE_OBSERVATEUR"))) {
             $restr_dem=array("agence"=>$idAgence);
         }
 
         if(in_array($role, array("ROLE_CAISSIER", "ROLE_COMPTABLE"))) {
             $restr_dem["paiement_by"]=$userConn->getId();
         }
+
+        $dash_perio="last1";
+        if($request->request->get("val_dash_perio")) {
+            $perio_dash=$request->request->get('val_dash_perio');
+            if(in_array($perio_dash, array("last1", "last7", "last15", "last30", "all"))) { $dash_perio=$perio_dash; }
+            $request->getSession()->set('dash_perio', $dash_perio);
+        }
+        $restr_dem["periode_dem"]=$dash_perio;
 
         if($request->query->count() && $request->query->get("dash_page")) {
             // dd($request->query->get("dash_page"));
@@ -90,7 +103,7 @@ class MainController extends AbstractController
         }
 
         $les_install=null; $last_client=null;
-        if(in_array($role, array("ROLE_ADMIN"))) {
+        if(in_array($role, array("ROLE_ADMIN")) && $dash_page=="stat_dem") {
             $last_client = $em->getRepository(Electricien::class)->findBy(array(),array('id' => 'DESC'),5 ,0);
             $les_install = $em->getRepository(Installation::class)->findByEtat("Saisie");
             $les_install = $pgn->paginate($les_install, $request->query->getInt('page', 1), 20);
@@ -161,153 +174,157 @@ class MainController extends AbstractController
             ];
 
             foreach($les_demande as $dem) {
-                // Stat sur paiements
-                // --------------------------------------------
-                $paiement=$dem->getPaiement();
-                if($paiement) {
-                    $p=$paiement;
-                    $montant=$p->getDemande()->getCout();
-                    $xx=0;
-                    $stat_paiement["All"][$xx][0]++; $stat_paiement["All"][$xx][1]+=$montant;
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $stat_paiement["Autre"][$xx][1]+=$montant; }
-                    else { $stat_paiement[$p->getMode()][$xx][0]++; $stat_paiement[$p->getMode()][$xx][1]+=$montant; }
+                if($dash_page=="stat_paye") {
+                    // Stat sur paiements
+                    // --------------------------------------------
+                    $paiement=$dem->getPaiement();
+                    if($paiement) {
+                        $p=$paiement;
+                        $montant=$p->getDemande()->getCout();
+                        $xx=0;
+                        $stat_paiement["All"][$xx][0]++; $stat_paiement["All"][$xx][1]+=$montant;
+                        if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $stat_paiement["Autre"][$xx][1]+=$montant; }
+                        else { $stat_paiement[$p->getMode()][$xx][0]++; $stat_paiement[$p->getMode()][$xx][1]+=$montant; }
 
-                    // mes paiements
-                    if($idConn && (($p->getCreatedBy() && $p->getCreatedBy()==$idConn) || ($p->getUpdatedBy() && $p->getUpdatedBy()==$idConn))) {
-                        $mes_stat_paiement["All"][$xx][0]++; $mes_stat_paiement["All"][$xx][1]+=$montant;
-                        if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $mes_stat_paiement["Autre"][$xx][0]++; $mes_stat_paiement["Autre"][$xx][1]+=$montant; }
-                        else { $mes_stat_paiement[$p->getMode()][$xx][0]++; $mes_stat_paiement[$p->getMode()][$xx][1]+=$montant; }
-                    }
+                        // mes paiements
+                        if($idConn && (($p->getCreatedBy() && $p->getCreatedBy()==$idConn) || ($p->getUpdatedBy() && $p->getUpdatedBy()==$idConn))) {
+                            $mes_stat_paiement["All"][$xx][0]++; $mes_stat_paiement["All"][$xx][1]+=$montant;
+                            if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $mes_stat_paiement["Autre"][$xx][0]++; $mes_stat_paiement["Autre"][$xx][1]+=$montant; }
+                            else { $mes_stat_paiement[$p->getMode()][$xx][0]++; $mes_stat_paiement[$p->getMode()][$xx][1]+=$montant; }
+                        }
 
-                    if($p->getDemande()->getInstallation()->getUsages()=="domestique") { $xx=1; }
-                    if($p->getDemande()->getInstallation()->getUsages()=="non_domestique") { $xx=2; }
-                    if($p->getDemande()->getInstallation()->getUsages()=="erp_ert") { $xx=3; }
+                        if($p->getDemande()->getInstallation()->getUsages()=="domestique") { $xx=1; }
+                        if($p->getDemande()->getInstallation()->getUsages()=="non_domestique") { $xx=2; }
+                        if($p->getDemande()->getInstallation()->getUsages()=="erp_ert") { $xx=3; }
 
-                    $stat_paiement["All"][$xx][0]++; $stat_paiement["All"][$xx][1]+=$montant;
-                    if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $stat_paiement["Autre"][$xx][1]+=$montant; }
-                    else { $stat_paiement[$p->getMode()][$xx][0]++; $stat_paiement[$p->getMode()][$xx][1]+=$montant; }
+                        $stat_paiement["All"][$xx][0]++; $stat_paiement["All"][$xx][1]+=$montant;
+                        if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $stat_paiement["Autre"][$xx][1]+=$montant; }
+                        else { $stat_paiement[$p->getMode()][$xx][0]++; $stat_paiement[$p->getMode()][$xx][1]+=$montant; }
 
-                    // mes paiements
-                    if($idConn && (($p->getCreatedBy() && $p->getCreatedBy()==$idConn) || ($p->getUpdatedBy() && $p->getUpdatedBy()==$idConn))) {
-                        $mes_stat_paiement["All"][$xx][0]++; $mes_stat_paiement["All"][$xx][1]+=$montant;
-                        if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $mes_stat_paiement["Autre"][$xx][1]+=$montant; }
-                        else { $mes_stat_paiement[$p->getMode()][$xx][0]++; $mes_stat_paiement[$p->getMode()][$xx][1]+=$montant; }
-                    }
-                }
-
-                // Stat sur demandes
-                // --------------------------------------------
-                $demande=$dem;
-                $etat = $demande->getEtat();
-                $usage = $demande->getInstallation()->getUsages();
-
-                $id_auteur_dem=$demande->getCreatedBy();
-                $id_referent=null; 
-                $id_rfo=null; 
-                $id_controleur=null; 
-                $id_auteur_doss=null;
-                $id_auteur_vis=null;
-                if($demande->getDossier()) {
-                    if($demande->getDossier()->getReferent()) { $id_referent=$demande->getDossier()->getReferent()->getId(); }
-                    if($demande->getDossier()->getRespoFrontOffice()) { $id_rfo=$demande->getDossier()->getRespoFrontOffice()->getId(); }
-                    if($demande->getDossier()->getControleur()) { $id_controleur=$demande->getDossier()->getControleur()->getId(); }
-                    $id_auteur_doss=$demande->getDossier()->getCreatedBy();
-                    if($demande->getDossier()->getVisiteCourante()) {
-                        $id_auteur_vis=$demande->getDossier()->getVisiteCourante()->getCreatedBy();
+                        // mes paiements
+                        if($idConn && (($p->getCreatedBy() && $p->getCreatedBy()==$idConn) || ($p->getUpdatedBy() && $p->getUpdatedBy()==$idConn))) {
+                            $mes_stat_paiement["All"][$xx][0]++; $mes_stat_paiement["All"][$xx][1]+=$montant;
+                            if(!in_array($p->getMode(), array("Espèce", "Chèque"))) { $stat_paiement["Autre"][$xx][0]++; $mes_stat_paiement["Autre"][$xx][1]+=$montant; }
+                            else { $mes_stat_paiement[$p->getMode()][$xx][0]++; $mes_stat_paiement[$p->getMode()][$xx][1]+=$montant; }
+                        }
                     }
                 }
-                $id_auteur_paye0=null; $id_auteur_paye1=null;
-                if($demande->getPaiement()) {
-                    $id_auteur_paye0=$demande->getPaiement()->getCreatedBy();
-                    $id_auteur_paye1=$demande->getPaiement()->getUpdatedBy();
-                }
 
-                $test_auteur=($id_auteur_vis && $idConn && $id_auteur_vis==$idConn) || ($id_auteur_doss && $idConn && $id_auteur_doss==$idConn) || ($id_auteur_dem && $idConn && $id_auteur_dem==$idConn) || ($id_auteur_paye1 && $idConn && $id_auteur_paye1 == $idConn) || ($id_auteur_paye0 && $idConn && $id_auteur_paye0 == $idConn) || ($id_referent && $idAgent && $id_referent == $idAgent) || ($id_controleur && $idAgent && $id_controleur == $idAgent);
+                if($dash_page=="stat_dem" || $dash_page=="perso") {
+                    // Stat sur demandes
+                    // --------------------------------------------
+                    $demande=$dem;
+                    $etat = $demande->getEtat();
+                    $usage = $demande->getInstallation()->getUsages();
 
-                if($usage=="domestique") { 
-                    $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; 
+                    $id_auteur_dem=$demande->getCreatedBy();
+                    $id_referent=null; 
+                    $id_rfo=null; 
+                    $id_controleur=null; 
+                    $id_auteur_doss=null;
+                    $id_auteur_vis=null;
+                    if($demande->getDossier()) {
+                        if($demande->getDossier()->getReferent()) { $id_referent=$demande->getDossier()->getReferent()->getId(); }
+                        if($demande->getDossier()->getRespoFrontOffice()) { $id_rfo=$demande->getDossier()->getRespoFrontOffice()->getId(); }
+                        if($demande->getDossier()->getControleur()) { $id_controleur=$demande->getDossier()->getControleur()->getId(); }
+                        $id_auteur_doss=$demande->getDossier()->getCreatedBy();
+                        if($demande->getDossier()->getVisiteCourante()) {
+                            $id_auteur_vis=$demande->getDossier()->getVisiteCourante()->getCreatedBy();
+                        }
+                    }
+                    $id_auteur_paye0=null; $id_auteur_paye1=null;
+                    if($demande->getPaiement()) {
+                        $id_auteur_paye0=$demande->getPaiement()->getCreatedBy();
+                        $id_auteur_paye1=$demande->getPaiement()->getUpdatedBy();
+                    }
+
+                    $test_auteur=($id_auteur_vis && $idConn && $id_auteur_vis==$idConn) || ($id_auteur_doss && $idConn && $id_auteur_doss==$idConn) || ($id_auteur_dem && $idConn && $id_auteur_dem==$idConn) || ($id_auteur_paye1 && $idConn && $id_auteur_paye1 == $idConn) || ($id_auteur_paye0 && $idConn && $id_auteur_paye0 == $idConn) || ($id_referent && $idAgent && $id_referent == $idAgent) || ($id_controleur && $idAgent && $id_controleur == $idAgent);
+
+                    if($usage=="domestique") { 
+                        $les_stat0["Domestiques"]=$les_stat0["Domestiques"]+1; 
+                        if($test_auteur) {
+                            $mes_stat["Domestiques"]++;
+                        }
+                    }
+                    if($usage=="non_domestique") { 
+                        $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; 
+                        if($test_auteur) {
+                            $mes_stat["Professionnelles"]++;
+                        }
+                    }
+                    if($usage=="erp_ert") { 
+                        $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; 
+                        if($test_auteur) {
+                            $mes_stat["ERP - ERT"]++;
+                        }
+                    }
+
+                    $numPassage = $demande->getNumeroPassage();
+                    if($numPassage=="1") { 
+                        $les_stat0["1ère visite"]=$les_stat0["1ère visite"]+1; 
+                        if($test_auteur) {
+                            $mes_stat["1ère visite"]++;
+                        }
+                    }
+                    if($numPassage=="2") { 
+                        $les_stat0["2e visite"]=$les_stat0["2e visite"]+1; 
+                        if($test_auteur) {
+                            $mes_stat["2e visite"]++;
+                        }
+                    }
+
+                    if(in_array($etat, array("Soumis", "Paiement enregistré", "Paiement validé"))) {
+                        $les_stat0[$etat]++; 
+                        if($test_auteur) { $mes_stat[$etat]++; }
+                    }
+
+                    $les_stat0["All"] = $les_stat0["All"]+1;
                     if($test_auteur) {
-                        $mes_stat["Domestiques"]++;
+                        $mes_stat["All"]++;
                     }
-                }
-                if($usage=="non_domestique") { 
-                    $les_stat0["Professionnelles"]=$les_stat0["Professionnelles"]+1; 
+                        
+                    // Stat sur dossier
+                    // --------------------------------------------
+                    $dossier=$dem->getDossier();
+                    if(!$dossier) { continue; }
+                    $affecte = $dossier->getAffecte(); $visite = $dossier->getVisite();
+                    $rapport = $dossier->getRapport(); $attestation = $dossier->getAttestation();
+
+                    $datePaiement=$dem->getPaiement()->getDatePaiement()->format('d-m-Y');;
+                    $dateNow=date("d-m-Y");
+                    $alerte5=0; $alerte15=0;
+                    if(!$attestation) {
+                        $delta=$tools->nbjours_entre($datePaiement, $dateNow);
+                        if($delta>5 && $delta<=15) { $alerte5=1; }
+                        if($delta>15) { $alerte15=1; }
+                        if($alerte5) { $les_alerte["Hors délais 5 jours"]++; }
+                        if($alerte15) { $les_alerte["Hors délais 15 jours"]++; }
+                    }
+                    // Dossier Validé, à affecter
+                    if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                        $etatD="Dossier validé";
+                    }
+                    if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
+                        $etatD="Dossier affecté";
+                    }
+                    if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { 
+                        $etatD="Visite planifiée";
+                    }
+                    if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { 
+                        $etatD="Rapport élaboré";
+                    }
+                    if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { 
+                        $etatD="Rapport validé";
+                    }
+
+                    $les_stat0[$etatD]++; 
                     if($test_auteur) {
-                        $mes_stat["Professionnelles"]++;
+                        $mes_stat[$etatD]++;
+                        // Hors délais 5 j
+                        if($alerte5) { $mes_alerte["Hors délais 5 jours"]++; }
+                        // Hors délais 15 j
+                        if($alerte15) { $mes_alerte["Hors délais 15 jours"]++; }
                     }
-                }
-                if($usage=="erp_ert") { 
-                    $les_stat0["ERP - ERT"]=$les_stat0["ERP - ERT"]+1; 
-                    if($test_auteur) {
-                        $mes_stat["ERP - ERT"]++;
-                    }
-                }
-
-                $numPassage = $demande->getNumeroPassage();
-                if($numPassage=="1") { 
-                    $les_stat0["1ère visite"]=$les_stat0["1ère visite"]+1; 
-                    if($test_auteur) {
-                        $mes_stat["1ère visite"]++;
-                    }
-                }
-                if($numPassage=="2") { 
-                    $les_stat0["2e visite"]=$les_stat0["2e visite"]+1; 
-                    if($test_auteur) {
-                        $mes_stat["2e visite"]++;
-                    }
-                }
-
-                if(in_array($etat, array("Soumis", "Paiement enregistré", "Paiement validé"))) {
-                    $les_stat0[$etat]++; 
-                    if($test_auteur) { $mes_stat[$etat]++; }
-                }
-
-                $les_stat0["All"] = $les_stat0["All"]+1;
-                if($test_auteur) {
-                    $mes_stat["All"]++;
-                }
-
-                // Stat sur dossier
-                // --------------------------------------------
-                $dossier=$dem->getDossier();
-                if(!$dossier) { continue; }
-                $affecte = $dossier->getAffecte(); $visite = $dossier->getVisite();
-                $rapport = $dossier->getRapport(); $attestation = $dossier->getAttestation();
-
-                $datePaiement=$dem->getPaiement()->getDatePaiement()->format('d-m-Y');;
-                $dateNow=date("d-m-Y");
-                $alerte5=0; $alerte15=0;
-                if(!$attestation) {
-                    $delta=$tools->nbjours_entre($datePaiement, $dateNow);
-                    if($delta>5 && $delta<=15) { $alerte5=1; }
-                    if($delta>15) { $alerte15=1; }
-                    if($alerte5) { $les_alerte["Hors délais 5 jours"]++; }
-                    if($alerte15) { $les_alerte["Hors délais 15 jours"]++; }
-                }
-                // Dossier Validé, à affecter
-                if($affecte == 0 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
-                    $etatD="Dossier validé";
-                }
-                if($affecte == 1 and $visite == 0 and $rapport == 0 and $attestation == 0) { 
-                    $etatD="Dossier affecté";
-                }
-                if($affecte == 1 and $visite == 1 and $rapport == 0 and $attestation == 0) { 
-                    $etatD="Visite planifiée";
-                }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 0) { 
-                    $etatD="Rapport élaboré";
-                }
-                if($affecte == 1 and $visite == 1 and $rapport == 1 and $attestation == 1) { 
-                    $etatD="Rapport validé";
-                }
-
-                $les_stat0[$etatD]++; 
-                if($test_auteur) {
-                    $mes_stat[$etatD]++;
-                    // Hors délais 5 j
-                    if($alerte5) { $mes_alerte["Hors délais 5 jours"]++; }
-                    // Hors délais 15 j
-                    if($alerte15) { $mes_alerte["Hors délais 15 jours"]++; }
                 }
             }
 
@@ -327,6 +344,7 @@ class MainController extends AbstractController
 
             'mes_alerte' => $mes_alerte,
             'les_alerte' => $les_alerte,
+            'perio_stat' => $dash_perio,
 
             'tools' => $tools,
         ]);
@@ -336,7 +354,7 @@ class MainController extends AbstractController
     public function demandepop(String $restr, Tools $tools, Request $request, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         $val_rech=""; $val_filtre = array(); $page = 0; $orderBy = "";
@@ -512,7 +530,7 @@ class MainController extends AbstractController
     public function stat_demande(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -543,10 +561,13 @@ class MainController extends AbstractController
         }
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT"))) { 
+        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT", "ROLE_OBSERVATEUR"))) { 
             $val_agence=$agence->getId(); $val_filtre["agence"] = $val_agence;
         }
         $les_agence = $em->getRepository(Agence::class)->findBy(array(), array("nom"=>"asc", ));
+        // if($agence) {
+        //     $les_agence=array($agence);
+        // }
 
         $val_usage=""; 
         $les_usage = array("domestique"=>"Domestique", "non_domestique"=>"Professionnel", "erp_ert"=>"ERP - ERT");
@@ -574,26 +595,34 @@ class MainController extends AbstractController
 
         if($request->request->count()) {
             $val_rech = $request->request->get("val_rech");
-            
+
             $val_agence = $request->request->get("val_agence");
             if($val_agence) { $val_filtre["agence"] = $val_agence; }
             
             $val_controleur = $request->request->get("val_controleur");
             if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
-            
+
             $val_referent = $request->request->get("val_referent");
             if($val_referent) { $val_filtre["referent"] = $val_referent; }
-            
+
             $val_passage = $request->request->get("val_passage");
             if($val_passage) { $val_filtre["passage"] = $val_passage; }
-            
+
             $val_usage = $request->request->get("val_usage");
             if($val_usage) { $val_filtre["usages"] = $val_usage; }
-            
+
             $val_statut = $request->request->get("val_statut");
             if($val_statut) { $val_filtre["etat"] = $val_statut; }
         }
 
+        $key_sess='filtre_stat_';
+        $request->getSession()->set($key_sess.'rech', $val_rech);
+        $request->getSession()->set($key_sess.'agence', $val_agence);
+        $request->getSession()->set($key_sess.'controleur', $val_controleur);
+        $request->getSession()->set($key_sess.'referent', $val_referent);
+        $request->getSession()->set($key_sess.'passage', $val_passage);
+        $request->getSession()->set($key_sess.'usage', $val_usage);
+        $request->getSession()->set($key_sess.'etat', $val_statut);
 
         // $les_demande = $em->getRepository(Demande::class)->findBy2($restr_dem);
         $les_demande = $em->getRepository(Demande::class)->findByRestr($val_rech, $val_filtre, $orderBy, $page);
@@ -659,5 +688,244 @@ class MainController extends AbstractController
 
             'tools'=> $tools,
         ]);
-    }    
+    }   
+    
+    #[Route('/stat_excel', name:'stat_excel')]
+    public function genExcel(Request $request, Tools $tools, ManagerRegistry $doctrine, array $headers = [], $fileName = 'liste.xlsx'): Response
+    {
+        $em = $doctrine->getManager();
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $type_user=$userConn->getType();
+        $id_type=$userConn->getIdType();
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
+        $val_rech=""; $val_filtre = array("etat"=>"AllSoumis"); $page = 0; $orderBy = "";
+        $em = $doctrine->getManager(); 
+        $userConn = $em->getRepository(Utilisateur::class)->find($this->getUser()->getId());
+        $role=$userConn->getRoles()[0];
+        $agent=null; $electricien=null; $agence=null;
+        if($request->getSession()->get('agence')) {
+            $agence=$request->getSession()->get('agence');
+            $agent=$request->getSession()->get('agent');
+        }
+
+        // Définition en session du module en cours
+        $request->getSession()->set('menu', 'main');
+        $request->getSession()->set('sousmenu', '');
+        $request->getSession()->set('page_liste_dossier', 'stat');
+        $request->getSession()->set('page_liste_demande', 'stat');
+
+        $restr_dem=array(); $restr_dos=array();
+
+        if($role=="ROLE_PUBLIC") {
+            $restr_dem=array("created_by"=>$userConn->getId());
+        }
+
+        if($role=="ROLE_CAISSIER") {
+            $restr_dem=array("paiement_by"=>$userConn->getId());
+        }
+
+        $val_agence=""; $restr_agence=0;
+        if($agence && in_array($role, array("ROLE_CONTROLEUR", "ROLE_REFERENT", "ROLE_OBSERVATEUR"))) { 
+            $val_agence=$agence->getId(); $val_filtre["agence"] = $val_agence;
+        }
+
+        $key_sess="filtre_stat_";
+        $val_rech=$request->getSession()->get($key_sess.'rech');
+        $val_agence=$request->getSession()->get($key_sess.'agence');
+        $val_usage=$request->getSession()->get($key_sess.'usage');
+        $val_statut=$request->getSession()->get($key_sess.'statut');
+        $val_controleur=$request->getSession()->get($key_sess.'controleur');
+        $val_referent=$request->getSession()->get($key_sess.'referent');
+        $val_passage=$request->getSession()->get($key_sess.'passage');
+        
+        if($val_agence) { $val_filtre["agence"] = $val_agence; }
+        if($val_controleur) { $val_filtre["controleur"] = $val_controleur; }
+        if($val_referent) { $val_filtre["referent"] = $val_referent; }
+        if($val_passage) { $val_filtre["passage"] = $val_passage; }
+        if($val_usage) { $val_filtre["usages"] = $val_usage; }
+        if($val_statut) { $val_filtre["etat"] = $val_statut; }
+
+        // $les_demande = $em->getRepository(Demande::class)->findBy2($restr_dem);
+        $les_demande = $em->getRepository(Demande::class)->findByRestr($val_rech, $val_filtre, $orderBy, $page);
+
+        // {#-----------Generation de fichiers Excel-------------#} 
+        $spreadsheet = new Spreadsheet();
+
+        $lib="Demande"; $fileName='liste_'.$lib;
+        $i=2;
+        /* @var $sheet \PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet */
+        $sheet = $spreadsheet->getActiveSheet();
+        $entete=array(
+            array('N° Demande', 15),
+            array('Usage', 15),
+            array('Date Demande ', 17),
+            array('Créée par ', 20),
+            array('Etat Demande', 17),
+            array('Agence', 20),
+            array('Localité', 25),
+            array('Electricien', 25),
+            array('Tél électricien', 15),
+            array('Propriétaire', 25),
+            array('Tél Propriétaire', 15),
+            array('Référent Dossier', 25),
+            array('Inspecteur', 25),
+            array('Début Inspection', 17),
+            array('Fin Inspection', 17),
+            array('Clôturé le', 17),
+            array('Clôturé par', 25),
+            array('Ancien Numero', 17),
+        );
+        $id_col="A";
+        foreach ($entete as $col) {
+            $sheet->setCellValue($id_col.$i, $col[0]);
+            $sheet->getColumnDimension($id_col)->setWidth($col[1]);
+            $id_col++;
+        }
+
+        $list0=$les_demande;
+        $list = array();
+        foreach ($list0 as $val) {
+            $val=$val->getInstallation();
+            $dateD=$val->getCreatedAt();
+            $creator="";
+            if($val->getCreatedBy()) {
+                $creator=$tools->getUtilisateur($val->getCreatedBy());
+                if($creator) {
+                    $creator=$creator->getNom()." ".$creator->getPrenom();
+                } else {
+                    $creator="-";
+                }
+            }
+            $numD='['.$val->getCreatedAt()->format("d/m/y_H:i:s").']';
+            $etatD=$val->getEtat();
+            $_agence=""; if($val->getLocalite()) { $_agence=$val->getLocalite()->getAgence(); }
+            $referent="-";
+            $controleur="-";
+            $deb_visite="-";
+            $fin_visite="-";
+            $cloture_par="-";
+            $cloture_le="-";
+            $_conformite="-";
+
+            $_localite=$val->getLocalite();
+            $_electricien="";
+            $_electricien_tel="";
+            if($val->getElectricien()) {
+                $_electricien=$val->getElectricien()->getNomComplet();
+                $_electricien_tel=$val->getElectricien()->getTelephone();
+            }
+            $_proprietaire="";
+            $_proprietaire_tel="";
+            if($val->getProprietaire()) {
+                $_proprietaire=$val->getProprietaire()->getNomComplet();
+                $_proprietaire_tel=$val->getProprietaire()->getTelephone();
+            }
+            $_dem=$val->getDemandeCourante();
+            if($_dem) { 
+                $numD=$_dem->getNumero(); 
+                $dateD=$_dem->getDateCreation(); 
+                $etatD=$_dem->getEtat();
+                $doss=$_dem->getDossier();
+                if($doss) { 
+                    if($doss->getReferent()) {
+                        $referent=$doss->getReferent()->nomComplet(); 
+                    }
+                    if($doss->getControleur()) {
+                        $controleur=$doss->getControleur()->nomComplet(); 
+                    }
+                    $_visite=$doss->getVisiteCourante();
+                    if($_visite) {
+                        $deb_visite=$_visite->getDateRealise();
+                        $fin_visite=$_visite->getDateRapporte();
+                        $cloture_le=$_visite->getDateAtteste();
+                        $cloture_par=$referent;
+                        if($_visite->getAtteste())
+                        if($_visite->getConclusion()) {
+                            $_conformite="Conforme";
+                        } else {
+                            $_conformite="Non Conforme";
+                        }
+                    }
+                }    
+            }
+            
+            $list[]=array(
+                $numD,
+                $val->getUsages(),
+                $dateD,
+                $creator,
+                $etatD,
+                $_agence,
+                $_localite,
+                $_electricien,
+                $_electricien_tel,
+                $_proprietaire,
+                $_proprietaire_tel,
+                $referent,
+                $controleur,
+                $deb_visite,
+                $fin_visite,
+                $cloture_le,
+                $cloture_par,
+                
+                $val->getHabitation(),
+            );
+        }
+
+        $i = 3; $id_col="A";
+        $max_col=$id_col;
+        foreach ($list as $u ) {
+            $id_col="A"; $ix=0;
+            foreach ($entete as $col) {
+                $max_col=$id_col;
+                $sheet->setCellValue($id_col.$i, $u[$ix]);
+                $id_col++; $ix++;
+            }
+            $i++;
+        }
+
+        $BStyle = array(
+            'borders' => array(
+                'outline' => array(
+                'style' =>  'thin'
+                )
+            )
+        );
+        $id_col--;
+        $nb_lig=count($list)+2;
+        $sheet->getStyle(
+            'A2:'.$max_col.$nb_lig
+        )->getBorders()->getAllBorders()->setBorderStyle("thin");
+        
+        $sheet->getStyle('A2:'.$max_col.'2')
+        ->getFont()->setBold(true);
+        $sheet->getStyle('A2:'.$max_col.'2')
+        ->getFill()
+        ->setFillType('solid')
+        ->getStartColor()
+        ->setRGB('cccccc');
+
+        $sheet->getStyle('A1');
+
+        // Create your Office 2007 Excel (XLSX Format)
+        $writer = new Xlsx($spreadsheet);
+
+        // Create a Temporary file in the system
+        $fileName = 'Liste des '.$lib.'.xlsx';
+        $temp_file = tempnam(sys_get_temp_dir(), $fileName);
+
+        // Create the excel file in the tmp directory of the system
+        $writer->save($temp_file);
+
+        // Return the excel file as an attachment
+        return $this->file($temp_file, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    }
+
+    
 }

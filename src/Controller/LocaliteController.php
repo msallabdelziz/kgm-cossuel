@@ -34,7 +34,7 @@ class LocaliteController extends AbstractController
     public function load(Request $request, DepartementRepository $departementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -87,7 +87,7 @@ class LocaliteController extends AbstractController
     public function add(Request $request, Departement $departement, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -114,7 +114,7 @@ class LocaliteController extends AbstractController
     public function edit(Localite $localite, Request $request, DepartementRepository $departementRepository, LocaliteRepository $localiteRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

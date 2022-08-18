@@ -18,7 +18,7 @@ class Dossier
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'string', length: 255, nullable:true)]
     private $num;
 
     #[ORM\Column(type: 'datetime')]
@@ -77,12 +77,12 @@ class Dossier
         return $this->id;
     }
 
-    public function getNum(): ?int
+    public function getNum(): ?string
     {
         return $this->num;
     }
 
-    public function setNum(int $num): self
+    public function setNum(string $num): self
     {
         $this->num = $num;
 

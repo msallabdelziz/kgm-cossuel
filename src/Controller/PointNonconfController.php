@@ -32,7 +32,7 @@ class PointNonconfController extends AbstractController
     public function add(Request $request, PointVerification $pointVerification, PointVerificationRepository $pointVerificationRepository, PointNonconfRepository $pointNonconfRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -59,7 +59,7 @@ class PointNonconfController extends AbstractController
     public function edit(PointNonconf $pointNonconf, Request $request, PointVerificationRepository $pointVerificationRepository, PointNonconfRepository $pointNonconfRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -85,7 +85,7 @@ class PointNonconfController extends AbstractController
     public function show(PointNonconf $pointNonconf, PointNonconfRepository $pointNonconfRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

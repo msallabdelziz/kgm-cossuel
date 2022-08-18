@@ -1,0 +1,144 @@
+{% extends 'base_modal.html.twig' %}
+
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Modification des informations de la Demande </span>
+            </a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-1" %}            
+            <div class="col-lg-12 mb-2  p-3">
+
+                <div class="">
+                    <div class="">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
+                            <div class="row">
+                                <!-- progressbar -->
+                                {% set curr_etat = 1 %}
+
+                            	<fieldset>
+                                <div class="card">
+                                    <h2 class="fs-title">Données de base de la demande</h2>
+                                    <div class="row">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.localite, {'attr': {'name': 'form_localite'}}) }}<br>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.adresse, {'attr': {'name': 'form_adresse'}}) }}<br>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.habitation, {'attr': {'name': 'form_habitation'}}) }}<br>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div align="right">
+                                    <a data-bs-dismiss="modal" class="closeModal next action-button btn btn-secondary my-3 ms-2">Annuler</a>
+                                    <button type="submit" class="next action-button btn btn-primary btn my-3">Valider les modifications</button>
+                                </div>
+                                </fieldset>
+                            </div>
+                        {{ form_end(installationForm) }}            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        $('.alimente0').show(); $('.alimente1').hide();
+        $('#form_abonnement').prop('required',false);
+        $('#form_compteur').prop('required',false);
+        $('#form_region').prop('required',true);
+        $('#form_usages').prop('required',true);
+        $('#form_departement').prop('required',true);
+        $('#form_localite').prop('required',true);
+        $('#form_adresse').prop('required',true);
+        optSel=$('input[type=radio][name="form[alimente]"]:checked');
+        valSel=optSel.val();
+        if (valSel==1) {
+            $('.alimente1').show(); $('.alimente0').hide();
+            $('#form_abonnement').prop('required',true);
+            $('#form_compteur').prop('required',true);
+        }
+
+        $('input[type=radio][name="form[alimente]"]').change(function() {
+            $('.alimente0').show(); $('.alimente1').hide();
+            $('#form_abonnement').prop('required',false);
+            $('#form_compteur').prop('required',false);
+            optSel=$('input[type=radio][name="form[alimente]"]:checked');
+            valSel=optSel.val();
+            if (valSel == 1) {
+                $('.alimente1').show(); $('.alimente0').hide();
+                $('#form_abonnement').prop('required',true);
+                $('#form_compteur').prop('required',true);
+            }
+        });
+
+        on_region_change();
+        on_departement_change();
+});
+
+    function on_departement_change() {
+        var $departement = $('#form_departement');
+        // When departement gets selected ...
+        $departement.change(function() {
+            // Simulate form data, but only include the selected departement value.
+            var data = {};
+            data['departement'] = $departement.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_localite_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
+    function on_region_change() {
+        var $region = $('#form_region');
+
+        // When region gets selected ...
+        $region.change(function() {
+            // Simulate form data, but only include the selected region value.
+            var data = {};
+            data['region'] = $region.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_departement_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current departement field ...
+                $('#form_departement').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_departement')
+                );
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                on_departement_change();
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
+</script>
+
+{% endblock %}

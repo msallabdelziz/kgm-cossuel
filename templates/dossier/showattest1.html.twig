@@ -156,7 +156,7 @@
               <div class="col-12">
                 <div class="d-flex mb-2">
                   <span>Adresse:</span>
-                  <span class="indentif" style="margin-left:10px;">{{proprietaire.adresse}}</span>
+                  <span class="indentif" style="margin-left:10px;">{{installation.adresse}}</span>
                 </div>
               </div>
               <div class="col-6">
@@ -171,7 +171,7 @@
                   <span>
                     Localité:</span>
                   <span class="indentif">
-                    {{proprietaire.localite}}</span>
+                    {{installation.localite}}</span>
                 </div>
               </div>
               <div class="col-12">
@@ -193,29 +193,34 @@
             <div class="col-12" style="padding:0px;">
               <div class="bg-orange">INFORMATIONS COSSUEL</div>
             </div>
-            <div class="col-12">
+            <div class="col-7">
+              <div class="col-12">
+                  <div class="d-flex mb-2">
+                    <span>Agence :</span>
+                    <span style="margin-left:10px;" class="indentif">{{agence.nom}}</span>
+                  </div>
+              </div>
+              <div class="col-12">
                 <div class="d-flex mb-2">
-                  <span>Agence :</span>
-                  <span style="margin-left:10px;" class="indentif">{{agence.nom}}</span>
-                </div>
+                    <span>Numéro Demande :</span>
+                    <span style="margin-left:10px;" class="indentif">{{demande.numero}}</span>
+                  </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex mb-2">
+                    <span>Code Client :</span>
+                    <span style="margin-left:10px;" class="indentif">{{electricien.typePiece}}-{{electricien.numPiece}}</span>
+                  </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex mb-2">
+                    <span>Référent technique :</span>
+                    <span style="margin-left:10px;" class="indentif">{{dossier.referent}}</span>
+                  </div>
+              </div>
             </div>
-            <div class="col-12">
-              <div class="d-flex mb-2">
-                  <span>Numéro Demande :</span>
-                  <span style="margin-left:10px;" class="indentif">{{demande.numero}}</span>
-                </div>
-            </div>
-            <div class="col-12">
-              <div class="d-flex mb-2">
-                  <span>Code Client :</span>
-                  <span style="margin-left:10px;" class="indentif">{{electricien.typePiece}}-{{electricien.numPiece}}</span>
-                </div>
-            </div>
-            <div class="col-12">
-              <div class="d-flex mb-2">
-                  <span>Référent technique :</span>
-                  <span style="margin-left:10px;" class="indentif">{{dossier.referent}}</span>
-                </div>
+            <div class="col-5" align="right">
+              <img width="150" src="{{ qr_code_path('My QR Code') }}" />
             </div>
         </div>
 
@@ -226,7 +231,7 @@
             </p> 
           </div>
           <div class="col-12 mt-2" style="font-size:14px;">
-            L'installateur soussigné atteste que l'installation éléctronique, objet de cette attestation est conforme aux prescriptions de sécurité en vigueur et que les parties rénovées sont compatibles avec celles non rénovées.
+            L'installateur soussigné atteste que l'installation électrique, objet de cette attestation est conforme aux prescriptions de sécurité en vigueur et que les parties rénovées sont compatibles avec celles non rénovées.
           </div>
 
           <div class="col-12 mt-2" style="font-size:14px; font-weight:bold">

@@ -24,7 +24,33 @@ class DetailPDF extends Fpdf {
         //   $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
       }
       
+      function Rotate($angle,$x=-1,$y=-1)
+      {
+          if($x==-1)
+              $x=$this->x;
+          if($y==-1)
+              $y=$this->y;
+          if(isset($this->angle) && $this->angle!=0)
+              $this->_out('Q');
+          $this->angle=$angle;
+          if($angle!=0)
+          {
+              $angle*=M_PI/180;
+              $c=cos($angle);
+              $s=sin($angle);
+              $cx=$x*$this->k;
+              $cy=($this->h-$y)*$this->k;
+              $this->_out(sprintf('q %.5F %.5F %.5F %.5F %.2F %.2F cm 1 0 0 1 %.2F %.2F cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
+          }
+      }
       
+      function RotatedText($x,$y,$txt,$angle)
+      {
+          //Text rotated around its origin
+          $this->Rotate($angle,$x,$y);
+          $this->Text($x,$y,$txt);
+          $this->Rotate(0);
+      }      
   }
   
   

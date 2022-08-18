@@ -7,6 +7,7 @@ use App\Repository\PaiementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 
 #[ORM\Entity(repositoryClass: PaiementRepository::class)]
 class Paiement
@@ -226,6 +227,20 @@ class Paiement
         }
 
         return $this;
+    }
+
+    public function getTotalRembourse(): ?int
+    {
+        $les_remb = $this->remboursements;
+        $res= 0;
+        if($les_remb->count()) {
+            foreach ($les_remb as $pj) {
+                if($pj->getValide()) {
+                    $res+=$pj->getMontant();
+                }
+            }
+        } 
+        return $res;
     }
 
 }

@@ -274,14 +274,23 @@
                 <div class="card mb-2 pb-0">
                     <h2 class="fs-title">Validation de Remboursement</h2>
                     <div class="row mb-2">
-                        <hr class="mb-3" />
+                        <hr class="mb-1" />
+                        <div class="col-lg-6 mt-1">
+                            <label>Date Paiement 1</label>
+                            <input type="text" readonly="readonly" class="form-control m-1 py-1 bg-success bg-opacity-50 fw-bold" value="{{ paiement.datesaisie | date("d-m-Y") }}" />
+                        </div>
+                        <div class="col-lg-6 mt-1">
+                            <label>Montant payé 1</label>
+                            <input type="text" readonly="readonly" class="form-control m-1 py-1 bg-success bg-opacity-50 fw-bold" value="{{ demande.cout | number_format(0, '', ' ') }} FCFA" />
+                        </div>
+                        <hr class="my-2" />
                         <div class="">
-                            <label>Date Demande</label>
+                            <label>Date Demande Remboursement</label>
                             <input type="text" readonly="readonly" class="form-control m-1" value="{{ 'now' | date("d-m-Y") }}" />
                         </div>
                         <div class="mt-2">
                             <label>Montant de demande de remboursement</label>
-                            <input type="text" readonly="readonly" class="form-control m-1" value="{{ demande.cout }} FCFA" />
+                            <input type="text" readonly="readonly" class="form-control m-1" value="{{ remboursement.montant | number_format(0, '', ' ') }} FCFA" />
                         </div>
                     </div>  
                     <div align="right">

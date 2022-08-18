@@ -20,8 +20,8 @@
                 </div>
                 <span class="divider">
                     <hr></span>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
-                <div class="col-2 offset-5 fs-6 border-bottom">
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light" style="height:0px; position:relative; top:4px;">
+                <div class="col-2 offset-5 fs-6 border-bottom priority-4">
                     <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Toutes les Agences ...</option>
                         {% for obj in les_agence %}
@@ -29,7 +29,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-2 fs-6 border-bottom">
+                <div class="col-2 fs-6 border-bottom priority-4">
                     <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Tous les Usages ...</option>
                         {% for obj, lib_obj in les_usage %}

@@ -182,7 +182,7 @@
                                                 <svg class="bi" width="24" height="24" fill="gray">
                                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
                                                 </svg>
-                                                <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'electricien'})}}')" class="text-success pt fs-7">{{demande.installation.PJElectricien.fichier}} </span>
+                                                <span onclick="window.open('{{path('app_installation_downloadpj', {'id': installation.id, 'type':'electricien'})}}')" class="text-success pt fs-7">{.installation.PJElectricien.fichier}} </span>
                                         {% else %}
                                                 <span class="text-danger pt fs-8">N/D</span>
                                         {% endif %}

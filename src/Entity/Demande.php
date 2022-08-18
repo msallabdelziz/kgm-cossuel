@@ -103,7 +103,11 @@ class Demande
 
     public function getNumero(): ?string
     {
-        return $this->numero;
+        if($this->numeroPassage==2) {
+            return $this->numero."-2";            
+        } else {
+            return $this->numero;
+        }
     }
 
     public function setNumero(string $numero): self

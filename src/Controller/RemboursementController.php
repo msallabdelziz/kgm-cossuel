@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Electricien;
+use App\Entity\Installation;
 use App\Entity\Paiement;
+use App\Entity\Proprietaire;
 use App\Entity\Remboursement;
 use App\Entity\Utilisateur;
 use App\Repository\AgenceRepository;
@@ -27,7 +30,7 @@ class RemboursementController extends AbstractController
     public function index(Request $request, Tools $tools, PaginatorInterface $pgn, ManagerRegistry $doctrine, RemboursementRepository $remboursementRepository, AgentRepository $agentRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -56,7 +59,7 @@ class RemboursementController extends AbstractController
         $mode_affichage=$request->getSession()->get('affichage_demande');
 
         $val_agence=""; $restr_agence=0;
-        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR'))) {
+        if($agence && in_array($role, array('ROLE_REFERENT', 'ROLE_CONTROLEUR', "ROLE_OBSERVATEUR"))) {
             $val_agence=$agence->getId();
             $val_filtre["agence"] = $val_agence;
             $restr_agence=1;
@@ -108,7 +111,7 @@ class RemboursementController extends AbstractController
     public function add(Request $request, Paiement $paiement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -123,6 +126,13 @@ class RemboursementController extends AbstractController
                 'required' => true,
                 'label' => 'Motif du remboursement'
             ])
+            ->add('montant', IntegerType::class, [
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'required' => true,
+                'label' => 'Montant remboursement'
+            ])
         ->getForm();
 
         $form->handleRequest($request);
@@ -135,7 +145,7 @@ class RemboursementController extends AbstractController
             $remboursement->setPaiement($paiement);
             $remboursement->setValide(0);
             $remboursement->setDateDemande(new \DateTime());
-            $remboursement->setMontant($paiement->getDemande()->getCout());
+            // $remboursement->setMontant($paiement->getDemande()->getCout());
             $remboursement->setCreatedby($this->getUser()->getId());
             $remboursementRepository->add($remboursement);
 
@@ -152,7 +162,7 @@ class RemboursementController extends AbstractController
     public function add2(Request $request, Remboursement $remboursement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -188,7 +198,7 @@ class RemboursementController extends AbstractController
     public function rejet(Request $request, Remboursement $remboursement, PaiementRepository $paiementRepository, RemboursementRepository $remboursementRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -222,15 +232,86 @@ class RemboursementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_remboursement_show', methods: ['GET'])]
-    public function show(Remboursement $remboursement, Tools $tools, ManagerRegistry $doctrine): Response
+    #[Route('/{id}', name: 'app_remboursement_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, Remboursement $remboursement, Tools $tools, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
         $em = $doctrine->getManager();
+
+        $installation=$remboursement->getPaiement()->getDemande()->getInstallation();
+        if($request->request->count()) {
+            $form = $this->createFormBuilder()->getForm();
+            $form->handleRequest($request);
+            $data=$form->getExtraData();
+
+            if(isset($data["edit1"]) && $data["edit1"]) {
+                $localite=$data['localite'];
+                $adresse=$data['adresse'];
+                $habitation=$data['habitation'];
+
+                $localite=$em->getRepository(Localite::class)->find($localite);
+                $installation->setLocalite($localite);
+                $installation->setAdresse($adresse);
+                $installation->setHabitation($habitation);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+            if(isset($data["edit2"]) && $data["edit2"]) {
+                $nom=$data['nom'];
+                $prenom=$data['prenom'];
+                $telephone=$data['telephone'];
+                $email=$data['email'];
+                $adresse=$data['adresse'];
+                $numpiece=$data['numPiece'];
+                $electricien=$installation->getElectricien();
+                $change_elec1=($electricien->getTelephone()!=$telephone && ($electricien->getPrenom()!=$prenom || $electricien->getNom()!=$nom));
+                $change_elec2=($electricien->getNumPiece()!=$numpiece && ($electricien->getPrenom()!=$prenom || $electricien->getNom()!=$nom));
+                if($change_elec1 || $change_elec2) {
+                    $electricien2=clone $electricien;
+                    $electricien2->restId();
+                    $electricien=$electricien2;
+                }
+                $electricien->setAdresse($adresse);
+                $electricien->setNom($nom);
+                $electricien->setPrenom($prenom);
+                $electricien->setEmail($email);
+                $electricien->setTelephone($telephone);
+                $electricien->setNumPiece($numpiece);
+                $em->getRepository(Electricien::class)->add($electricien);
+                $installation->setElectricien($electricien);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+
+            if(isset($data["edit3"]) && $data["edit3"]) {
+                $nom=$data['nom'];
+                $prenom=$data['prenom'];
+                $telephone=$data['telephone'];
+                $email=$data['email'];
+                $adresse=$data['adresse'];
+                $numpiece=$data['numPiece'];
+                $proprietaire=$installation->getProprietaire();
+                $change_prop1=($proprietaire->getTelephone()!=$telephone && ($proprietaire->getPrenom()!=$prenom || $proprietaire->getNom()!=$nom));
+                $change_prop2=($proprietaire->getNumPiece()!=$numpiece && ($proprietaire->getPrenom()!=$prenom || $proprietaire->getNom()!=$nom));
+                if($change_prop1 || $change_prop2) {
+                    $proprietaire2=clone $proprietaire;
+                    $proprietaire2->restId();
+                    $proprietaire=$proprietaire2;
+                }
+                $proprietaire->setAdresse($adresse);
+                $proprietaire->setNom($nom);
+                $proprietaire->setPrenom($prenom);
+                $proprietaire->setEmail($email);
+                $proprietaire->setTelephone($telephone);
+                $proprietaire->setNumPiece($numpiece);
+                $em->getRepository(Proprietaire::class)->add($proprietaire);
+                $installation->setProprietaire($proprietaire);
+                $em->getRepository(Installation::class)->add($installation);
+            }
+        }
+
         return $this->render('remboursement/show.html.twig', [
             'remboursement' => $remboursement,
 
@@ -242,7 +323,7 @@ class RemboursementController extends AbstractController
     public function showpop(Remboursement $remboursement, Tools $tools, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

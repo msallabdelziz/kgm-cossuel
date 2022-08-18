@@ -23,7 +23,7 @@ class RubriqueController extends AbstractController
     public function index(Request $request, RubriqueRepository $rubriqueRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -42,7 +42,7 @@ class RubriqueController extends AbstractController
     public function add(Request $request, Rapport $rapport, RubriqueRepository $rubriqueRepository, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -71,7 +71,7 @@ class RubriqueController extends AbstractController
     public function edit(Rubrique $rubrique, Request $request, RubriqueRepository $rubriqueRepository, RapportRepository $rapportRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -98,7 +98,7 @@ class RubriqueController extends AbstractController
     public function show(Rubrique $rubrique, RubriqueRepository $rubriqueRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

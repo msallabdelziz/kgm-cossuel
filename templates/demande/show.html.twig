@@ -100,6 +100,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title text-black titre_bloc_4">
                             Informations sur l'électricien
+                            {% if (is_granted('ROLE_ADMIN')) %}
+                                <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit2', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                </svg>
+                                </a>
+                            {% endif %}
                         </h2>
                         <div class="row bloc_4">
                             <hr class="mb-3" />
@@ -156,6 +163,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title titre_bloc_1">
                         Données de base de la demande
+                        {% if (is_granted('ROLE_ADMIN')) %}
+                            <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit1', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                            <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                            </svg>
+                            </a>
+                        {% endif %}
                             <div class="float-end">
                                 <a class="pt fs-7 text-warning btn_bloc_1" title="Afficher les détails">
                                 <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>
@@ -307,6 +321,13 @@
                     <div class="card mb-2">
                         <h2 class="fs-title titre_bloc_5">
                             Informations sur le propriétaire de l'installation
+                            {% if (is_granted('ROLE_ADMIN')) %}
+                                <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit3', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                </svg>
+                                </a>
+                            {% endif %}
                             <div class="float-end">
                                 <a class="pt fs-7 text-warning btn_bloc_5" title="Afficher les détails">
                                 <svg class="bi" width="20" height="20" fill="#FFC329"><use xlink:href="{{ asset("assets/img/bootstrap-icons.svg#caret-down") }}"></use></svg>

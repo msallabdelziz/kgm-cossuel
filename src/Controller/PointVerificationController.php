@@ -32,7 +32,7 @@ class PointVerificationController extends AbstractController
     public function add(Request $request, Rubrique $rubrique, RubriqueRepository $rubriqueRepository, PointVerificationRepository $pointVerificationRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -61,7 +61,7 @@ class PointVerificationController extends AbstractController
     public function edit(PointVerification $pointVerification, Request $request, RubriqueRepository $rubriqueRepository, PointVerificationRepository $pointVerificationRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -88,7 +88,7 @@ class PointVerificationController extends AbstractController
     public function show(PointVerification $pointVerification, PointVerificationRepository $pointVerificationRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

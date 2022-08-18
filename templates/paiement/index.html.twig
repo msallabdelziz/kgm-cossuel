@@ -26,9 +26,9 @@
                     <button id="perio_mois" class="btn btn-outline-primary btn-sm me-2 pt">Ce mois</button>
                 </div>
             </div>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="">
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light" style="">
                 <div class="clear my-1"></div>
-                <div class="col-2 offset-3 fs-6 border-bottom">
+                <div class="col-2 offset-1 fs-6 border-bottom priority-4">
                     <select name="val_agence0" id="val_agence0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Toutes les Agences ...</option>
                         {% for obj in les_agence %}
@@ -36,7 +36,15 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-2 fs-6 border-bottom">
+                <div class="col-2 fs-6 border-bottom priority-4">
+                    <select name="val_typep0" id="val_typep0" class="form-select form-select-sm border-warning py-1">
+                        <option value="">Toutes les opérations ...</option>
+                        {% for obj  in les_typep %}
+                            <option value="{{obj}}" {% if obj == val_typep %} selected="selected"{% endif %}>{{obj}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 fs-6 border-bottom priority-4">
                     <select name="val_modep0" id="val_modep0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Tous les Modes ...</option>
                         {% for obj  in les_modep %}
@@ -44,7 +52,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-2 fs-6 border-bottom">
+                <div class="col-2 fs-6 border-bottom priority-4">
                     <select name="val_usage0" id="val_usage0" class="form-select form-select-sm border-warning py-1">
                         <option value="">Tous les Usages ...</option>
                         {% for obj,lib_obj in les_usage %}
@@ -52,7 +60,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-2 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                <div class="col-lg-2 col-5 offset-6 offset-lg-0 fs-6 border-bottom"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
                 <div class="col-1" align="center">
                     <svg class="bi" width="28" height="28" fill="#c32424">
                         <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>
@@ -77,14 +85,18 @@
                 </div>
             {% else %}
             <div class="container mt-20">
-                <div class="offset-8 text-dark fs-6 col-3 py-2">
+                <div class="offset-6 offset-lg-8 offset-md-8 text-dark fs-6 col-6 col-md-3 col-lg-3 py-2">
                     <div class="row">
+                        {% if val_typep != "Remboursement" %}
                         <div class="bg-success bg-opacity-25 mt-2" align="right">
                             <label class="fw-light">Total Encaissé</label> <span class="badge text-success fs-6 p-1">{{tot_paye|number_format(0, ',', ' ')}} FCFA</span>
                         </div>
+                        {% endif %}
+                        {% if val_typep != "Paiement" %}
                         <div class="bg-danger bg-opacity-25 mt-2" align="right">
                             <label class=" fw-light">Total Remboursé</label> <span class="badge text-danger fs-6 p-1">{{tot_remb|number_format(0, ',', ' ')}} FCFA</span>
                         </div>
+                        {% endif %}
                         {% if tot_remb %}
                         <div class="bg-success mt-2" align="right">
                             <label class="text-light">Total Recette</label> <span class="badge fw-bold text-light fs-6 p-1">{{(tot_paye-tot_remb)|number_format(0, ',', ' ')}} FCFA</span>
@@ -105,7 +117,9 @@
                     <th class="priority-4">Mode Paiement</th>
                     <th class="priority-5">Ref Paiement</th>
                     <th class="priority-5">Validé par</th>
+                    {% if val_typep != "Paiement" %}
                     <th class="priority-3">Remboursé ?</th>
+                    {% endif %}
                     <th>Statut Paiement</th>
                     {# <th scope="col">Agence</th> #}
                     {# <th class="text-center" scope="col">Départements</th>  #}
@@ -121,12 +135,12 @@
                     {% endif %}
                     <tr>
                         <td scope="row">
-                                <a href="{{ path('app_demande_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">
+                                <a href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}" class="text-dark text-decoration-none fw-bold">
                                     {{ ag.numero }}
                                 </a>
                         </td>
                         <td>
-                        <a href="{{ path('app_demande_show', {'id': ag.id }) }}" class="text-dark text-decoration-none">
+                        <a href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}" class="text-dark text-decoration-none">
                             {% if ag.installation.usages == "domestique" %}
                                 <span class="text-warning fs-8 fw-bold">Domestique</span>
                             {% elseif ag.installation.usages == "non_domestique" %}
@@ -165,13 +179,15 @@
                                     -
                                 {% endif %}
                         </td>
+                        {% if val_typep != "Paiement" %}
                         <td class="priority-3">
                                 {% if ag.paiement and ag.paiement.etatRembousement %}
                                     <span class="text-danger fs-8">*</span>
-                                    <span class="badge bg-danger bg-opacity-25 fs-8 text-red p-1">{{ ag.cout|number_format(0, ',', ' ') }} FCFA</span>
+                                    <span class="badge bg-danger bg-opacity-25 fs-8 text-red p-1">{{ ag.paiement.totalRembourse|number_format(0, ',', ' ') }} FCFA</span>
                                 {% else %} -
                                 {% endif %}
                         </td>
+                        {% endif %}
                         <td>
                             <a  href="{{ path('app_paiement_show', {'id': ag.paiement.id }) }}">
                                 {% if ag.installation.step == 8 %}
@@ -209,7 +225,7 @@
 <script>
     $(document).ready(function() {
 
-        {% for filtre in ["agence", "usage", "statut", "modep"] %}
+        {% for filtre in ["agence", "usage", "statut", "modep", "typep"] %}
             $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
             $('#val_{{filtre}}0').on('change', function() {
                 optSel=$('#val_{{filtre}}0').find("option:selected");

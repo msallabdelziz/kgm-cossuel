@@ -870,8 +870,9 @@
 
     {% if step == 2 %}
 
-        var signelectricien = $('#signelectricien').jSignature();
-        var signcontroleur = $('#signcontroleur').jSignature();
+        var signelectricien = $('#signelectricien').signature({syncField: '#form_sign_electricien', syncFormat: 'PNG'});
+        var signcontroleur = $('#signcontroleur').signature({syncField: '#form_sign_controleur', syncFormat: 'PNG'});
+
         {% if dossier.visiteCourante.signelectricien %}
             $(".bloc_sign1").hide(); 
             $("#modifsign1").click(function(){ 
@@ -886,24 +887,14 @@
         {% endif %}
         $("#form_sign_electricien").hide(); $("#form_sign_controleur").hide();
         
-            $("#signelectricien").bind('change', function(e){ 
-                var data1 = signelectricien.jSignature('getData', 'image');
-                // Storing in textarea
-                $('#form_sign_electricien').val(data1);
-            })
-
-            $("#signcontroleur").bind('change', function(e){ 
-                var data2 = signcontroleur.jSignature('getData', 'image');
-                // Storing in textarea
-                $('#form_sign_controleur').val(data2);
-            })
-
             $('#clear2').click(function() {
-                signelectricien.jSignature('reset');
+                e.preventDefault();
+                signelectricien.signature('clear');
                 $("#form_sign_electricien").val('');
             });
             $('#clear1').click(function() {
-                signcontroleur.jSignature('reset');
+                e.preventDefault();
+                signcontroleur.signature('clear');
                 $("#form_sign_controleur").val('');
             });
 
@@ -924,10 +915,15 @@ function getBase64Image(img) {
 
 
 <!-- jSignature -->
+{# 
 <script src="{{ asset('assets/js/jSignature.min.js') }}"></script>
 <script src="{{ asset('assets/js/modernizr.js') }}"></script>
-
 <!--[if lt IE 9]>
 <script type="text/javascript" src="{{ asset('flashcanvas.js') }}"></script>
-<![endif]-->
+<![endif]--> 
+#}
+
+<script src="{{ asset('assets/js/signature_pad.umd.js') }}"></script>
+<script src="{{ asset('assets/js/app.js') }}"></script>
+
 {% endblock %}

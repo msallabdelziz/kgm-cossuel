@@ -26,7 +26,7 @@ class AgenceController extends AbstractController
     public function index(Request $request, AgenceRepository $agenceRepository, LocaliteRepository $localiteRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -173,7 +173,7 @@ class AgenceController extends AbstractController
     public function create(Request $request, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -197,7 +197,7 @@ class AgenceController extends AbstractController
     public function update(Agence $id,Request $request, AgenceRepository $agenceRepository, Tools $tools): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -222,7 +222,7 @@ class AgenceController extends AbstractController
     public function addlocalite(Agence $id, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -281,7 +281,7 @@ class AgenceController extends AbstractController
     public function dellocalite(Agence $id, Localite $idL, ManagerRegistry $doctrine, Request $request, LocaliteRepository $localiteRepository, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -298,7 +298,7 @@ class AgenceController extends AbstractController
     public function show(ManagerRegistry $doctrine, Agence $agence, AgenceRepository $agenceRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -321,7 +321,7 @@ class AgenceController extends AbstractController
     public function delete(ManagerRegistry $doctrine, int $id): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

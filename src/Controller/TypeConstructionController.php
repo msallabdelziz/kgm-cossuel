@@ -17,7 +17,7 @@ class TypeConstructionController extends AbstractController
     public function index(TypeConstructionRepository $typeConstructionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -30,7 +30,7 @@ class TypeConstructionController extends AbstractController
     public function new(Request $request, TypeConstructionRepository $typeConstructionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -53,7 +53,7 @@ class TypeConstructionController extends AbstractController
     public function show(TypeConstruction $typeConstruction): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -66,7 +66,7 @@ class TypeConstructionController extends AbstractController
     public function edit(Request $request, TypeConstruction $typeConstruction, TypeConstructionRepository $typeConstructionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -88,7 +88,7 @@ class TypeConstructionController extends AbstractController
     public function delete(Request $request, TypeConstruction $typeConstruction, TypeConstructionRepository $typeConstructionRepository): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

@@ -1050,7 +1050,7 @@ class MainController extends AbstractController
     public function demandepop(String $restr, Tools $tools, Request $request, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         
@@ -1152,7 +1152,7 @@ class MainController extends AbstractController
     public function stat_demande(Request $request, Tools $tools, ManagerRegistry $doctrine): Response
     {
         // Redirection vers page login si session inexistante !!!
-        if(!$this->getUser()) {
+        if(!$this || !$this->getUser()) {
             return $this->redirectToRoute('app_logout', [], Response::HTTP_SEE_OTHER);
         }
         

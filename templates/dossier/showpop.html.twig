@@ -93,7 +93,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-8 mb-2 priority-4">
+            <div class="col-lg-8 mb-2">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
@@ -118,7 +118,7 @@
                         </div>  
                     </div>
 
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title text-black">Situation paiement</h2>
                         <div class="row bloc_0">
                             <hr class="mb-3" />
@@ -144,7 +144,7 @@
                     </div>
 
                     {# BLOC 1 #}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title text-black titre_bloc_1">
                         Données de base de la demande
                             <div class="float-end">
@@ -204,7 +204,7 @@
 
                 {# BLOC 4 #}
                     {% if demande.installation.electricien %}
-                    <div class="card mb-2">
+                    <div class="card mb-2 priority-4">
                         <h2 class="fs-title titre_bloc_4">
                             Informations sur l'électricien
                             <div class="float-end">

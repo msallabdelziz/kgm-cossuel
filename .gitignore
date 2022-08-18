@@ -11,7 +11,8 @@ php.ini
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 
-/public/bundles/
+/src/Services/Tools.php
+/public
 /public/upload/
 /public/pdf/
 /var/

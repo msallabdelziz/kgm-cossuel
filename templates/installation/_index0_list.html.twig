@@ -3,11 +3,11 @@
             <div class="card">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h4 class="fw-bold">Toutes les Demandes</h4>
-                        <select name="val_affichage_demande" id="val_affichage_demande" class="bg-warning bg-opacity-50 form-select-sm">
+                        <h4 class="fw-bold mt-4">Toutes les Demandes</h4>
+                        {# <select name="val_affichage_demande" id="val_affichage_demande" class="bg-warning bg-opacity-50 form-select-sm">
                             <option {% if affichage == 'listing' %} selected="selected" {% endif %} value="listing">Affichage en Listing</option>
                             <option {% if affichage == 'bloc' %} selected="selected" {% endif %} value="bloc">Affichage en Blocs</option>
-                        </select>
+                        </select> #}
                     </div>
                     <div>
                         <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; position:relative; top:4px;">
@@ -49,9 +49,9 @@
                 <span class="divider">
                     <hr></span>
             <div class="clear"></div>
-            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light priority-4" style="height:0px; z-index:999">
-                <div class="offset-9 col-2 fs-6"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
-                <div class="col-1" align="center">
+            <div align="right" class="row fs-5 mt-0 pt-0 caption fw-light" style="height:0px; z-index:999">
+                    <div class="col-6 col-lg-3 fs-6 offset-6 offset-lg-8"><input class="py-1 border-dark bg-light mb-1 form-control form-control-sm" type="text" placeholder="Rechercher ..." id="val_rech0" name="val_rech0" value="{% if val_rech is defined %}{{ val_rech }}{% endif %}" /></div>
+                    <div class="col-lg-1 col-1 priority-3" align="right">
                     {# <a href="{{path('app_installation_pdf1')}}" class="ms-1">
                         <svg class="bi" width="28" height="28" fill="#c32424">
                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#filetype-pdf') }}"></use>

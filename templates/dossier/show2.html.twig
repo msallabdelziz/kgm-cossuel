@@ -106,10 +106,11 @@
                 {% if dossier.rapport and not dossier.attestation %}
                     {% if is_granted('ROLE_REFERENT') %}
                     <a href="{{ path('app_dossier_rejetrapport', {'id': dossier.id }) }}" class="next action-button btn btn-danger btn my-3">Rejeter le rapport</a>
-                    <a href="{{ path('app_dossier_show', {'id': dossier.id }) }}" class="next action-button btn btn-primary btn my-3">{{ libelle_action }}</a>
+                    <a href="{{ path('app_dossier_attester', {'id': dossier.id }) }}" class="next action-button btn btn-primary btn my-3">{{ libelle_action }}</a>
                     {% endif %}
                 {% endif %}
-                    <a target="_blank" href="{{ path('app_installation_showpdf', {'id': demande.installation.id}) }}" class="next action-button btn btn-outline-warning btn my-3">PDF Rapport</a>
+                    <a target="_blank" href="{{ path('app_dossier_rapportpdf', {'id': dossier.id}) }}" class="next action-button btn btn-outline-warning btn my-3">PDF Rapport</a>
+                    <a href="{{ path(link_liste, {'id': dossier.id}) }}" class="next action-button btn btn-outline-secondary btn my-3">Retour</a>
                 </div>
                 <fieldset id="synthese_demande">
                     {% if dossier.visite and dossier.visiteCourante.rejetRapport %}
@@ -135,10 +136,20 @@
                                 <label >Cout de la demande</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ demande.installation.demandeCourante.cout }} FCFA">
                             </div>
+                        {% if dossier.rapport %}
+                            <div class="col-lg-3">
+                                <label >Latitude</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.lattitude }}">
+                            </div>
+                            <div class="col-lg-3">
+                                <label >Longitude</label>
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1 fw-bold fs-6" value="{{ installation.longitude }}">
+                            </div>
+                        {% endif %}
                         </div>  
                     </div>
 
-                    <div class="container mt-4">
+                    <div class="container mt-4 mx-0">
                         <div class="row">
                             <div>
                         {% set rub = "" %}

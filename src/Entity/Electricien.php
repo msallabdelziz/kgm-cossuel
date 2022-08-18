@@ -73,6 +73,12 @@ class Electricien
         return $this->id;
     }
 
+    public function restId(): self
+    {
+       $this->id=null;
+       return $this;
+    }
+
     public function getPrenom(): ?string
     {
         return $this->prenom;

@@ -94,7 +94,7 @@
         </div>
 
         <div class="row pt-4">
-            <div class="col-lg-8 mb-2 priority-4">
+            <div class="col-lg-8 mb-2">
                 <fieldset id="synthese_demande">
                     <div class="card mb-2">
                         <h2 class="fs-title text-black">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}</h2>
@@ -141,29 +141,161 @@
                                             <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
                                         </svg> {{ pt.pointVerification.objetVerification }}
                                         <div class="float-end fw-bold">
-                                        {% if pt.conclusion %}
-                                                <svg class="bi" width="32" height="32" fill="green">
-                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                        {% if pt.sansobjet %}
+                                                <svg class="bi" width="32" height="32" fill="black">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x-octagon-fill') }}"></use>
                                                 </svg>
-                                                <span class="text-success">{{ pt.pointVerification.libelleConclusion1 }}</span>
+                                                Sans Objet
                                         {% else %}
-                                                <svg class="bi" width="32" height="32" fill="red">
-                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
-                                                </svg>
-                                                <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                            {% if pt.conclusion %}
+                                                    <svg class="bi" width="32" height="32" fill="green">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                                    </svg>
+                                                    <span class="text-success">{{ pt.pointVerification.libelleConclusion1 }}</span>
+                                            {% else %}
+                                                    <svg class="bi" width="32" height="32" fill="red">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                                    </svg>
+                                                    <span class="text-danger">{{ pt.pointVerification.libelleConclusion2 }}</span>
+                                            {% endif %}
                                         {% endif %}
                                         </div>
                                     </div>
-                                        {% if not pt.conclusion %}
+                                        {% if not pt.conclusion and not pt.sansobjet %}
                                                 <div class="fw-light ms-4 fs-8">
                                                 Commentaire: <span class="text-danger">{{pt.commentaire}}</span>
                                                 </div>
                                         {% endif %}
                                 </div>
                             {% endfor %}
+
+                                <div>
+                                    <h5 class="p-2 bg-dark text-light shadow border-bottom">Tableau 2: Mesures des prises de terre </h5>
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Mesures des prises de terre
+                                                <div class="float-end fw-bold">
+                                                </div>
+                                            </div>
+                                            <div class="fw-light ms-4 fs-7">
+                                                <span class="text-dark">{{dossier.visiteCourante.mesurePriseTerre}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Barrette
+                                                <div class="float-end fw-bold">
+                                                </div>
+                                            </div>
+                                            <div class="fw-light ms-4 fs-7">
+                                                <span class="text-dark">{{dossier.visiteCourante.barrette}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5 class="p-2 bg-dark text-light shadow border-bottom">Autres observations </h5>
+                                    <div class="shadow p-4 pt-2 mb-3">
+                                        <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                            <svg class="bi" width="20" height="20" fill="#333">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                            </svg> Commentaire sur l'inspection
+                                            <div class="float-end fw-bold">
+                                            </div>
+                                        </div>
+                                        <div class="fw-light ms-4 fs-8">
+                                            <span class="text-danger">{{dossier.visiteCourante.commentaire2}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 1
+                                                <div class="">
+                                                {% if installation.PJPhoto1 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto1.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 2
+                                                <div class="">
+                                                {% if installation.PJPhoto2 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto2.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 3
+                                                <div class="">
+                                                {% if installation.PJPhoto3 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto3.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Photo 4
+                                                <div class="">
+                                                {% if installation.PJPhoto4 %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ installation.PJPhoto4.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Signature Controleur
+                                                <div class="">
+                                                {% if dossier.visiteCourante.signcontroleur %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ dossier.visiteCourante.signcontroleur.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="shadow p-4 pt-2 mb-3 col-lg-6">
+                                            <div class="border-bottom p-2 m-2 ms-0 ps-0 fs-6">
+                                                <svg class="bi" width="20" height="20" fill="#333">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}"></use>
+                                                </svg> Signature Electricien
+                                                <div class="">
+                                                {% if dossier.visiteCourante.signelectricien %}
+                                                    <img width="100%" src="{{ asset('upload/photo/' ~ dossier.visiteCourante.signelectricien.fichier) }}" />
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
 
                 </fieldset>
             </div>

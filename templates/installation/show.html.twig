@@ -113,7 +113,7 @@
                                     {% endif %}
                                     <div class="card mb-2">
                                         <h2 class="fs-title">Puissance demandée et tarif {% if installation.demandecourante and installation.demandecourante.numeroPassage==2 %} <span class="badge bg-danger">2e VISITE</span> {% endif %}
-                                            {% if installation.step>=7 and installation.demandeCourante.numeroPassage==1 and (is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO')) %}
+                                            {% if 0 and installation.step>=7 and installation.demandeCourante.numeroPassage==1 and (is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO')) %}
                                                 <a href="{{ path('app_installation_clone', {'id': installation.id}) }}" class="next action-button btn btn-warning py-0 border-dark btn ms-5 float-end">
                                                 <svg class="bi" width="16" height="16" fill="black">
                                                     <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#files') }}"></use>
@@ -144,7 +144,16 @@
                                 {% endif %}
                                 {# BLOC 1 #}
                                 <div class="card mb-2">
-                                    <h2 class="fs-title">Données de base de la demande</h2>
+                                    <h2 class="fs-title">
+                                    Données de base de la demande
+                                    {% if (is_granted('ROLE_ADMIN')) %}
+                                        <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit1', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                        <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                        </svg>
+                                        </a>
+                                    {% endif %}
+                                    </h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-8">
@@ -274,7 +283,16 @@
                                 {# BLOC 4 #}
                                 {% if installation.electricien %}
                                 <div class="card mb-2">
-                                    <h2 class="fs-title">Informations sur l'électricien</h2>
+                                    <h2 class="fs-title">
+                                    Informations sur l'électricien
+                                    {% if (is_granted('ROLE_ADMIN')) %}
+                                        <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit2', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                        <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                        </svg>
+                                        </a>
+                                    {% endif %}
+                                    </h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-3">
@@ -329,7 +347,16 @@
                                 {# BLOC 5 #}
                                 {% if installation.proprietaire %}
                                 <div class="card mb-2">
-                                    <h2 class="fs-title">Informations sur le propriétaire de l'installation</h2>
+                                    <h2 class="fs-title">
+                                    Informations sur le propriétaire de l'installation
+                                    {% if (is_granted('ROLE_ADMIN')) %}
+                                        <a data-bs-toggle="modal" data-bs-target="#modal2" href="{{path('app_installation_edit3', {'id': installation.id})}}" class=" pt fs-8 text-dark">
+                                        <svg class="bi mb-1 ms-2" width="16" height="16" fill="red" title="Modifier les informations">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                        </svg>
+                                        </a>
+                                    {% endif %}
+                                    </h2>
                                     <div class="row">
                                         <hr class="mb-3" />
                                         <div class="col-lg-3">
