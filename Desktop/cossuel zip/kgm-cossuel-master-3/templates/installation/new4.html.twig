@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Soumission de demandes </span>
+            </a>
+            <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Demandes</a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-1" %}            
+            <div class="{{ offset }} col-lg-10 mb-2  p-3">
+
+                <div class="">
+                    <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
+                        <div class="container-fluid ps-4">
+                            <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                                <div class="col">
+                                    <svg class="bi" width="24" height="24" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                    </svg>
+                                    Saisie Nouvelle demande
+                                </div>
+                                <div class="col" align="right">
+                                        <span class="text-danger">[Etape 4 sur 6]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                    {% include "installation/_search_electricien.html.twig" %}
+                    <div class="">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
+                            <div class="row">
+                                <!-- progressbar -->
+                                {% set curr_etat = 4 %}
+                                {{ include('installation/_progress_bar.html.twig') }}
+
+                            	<fieldset>
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <h2 class="fs-title">Informations sur l'électricien</h2>
+                                        </div>
+                                        <div class="col-4" align="right">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text ">Rechercher</span>
+                                                <input placeholder="... par nin, tél. ou email" class="border-warning form-control" id="telephone_electricien" type="text" name="telephone_electricien" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-3">
+                                        {{ form_row(installationForm.nom) }}
+                                        </div>
+                                        <div class="col-lg-5">
+                                        {{ form_row(installationForm.prenom) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.localite) }}
+                                        </div>
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.adresse) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.telephone) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.email) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.typePiece) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.numPiece) }}
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label for="">PJ Electricien</label>
+                                            {% if installation.PJElectricien %}
+                                                <div class="form-control">
+                                                    <svg class="bi" width="24" height="24" fill="gray">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-pdf') }}"></use>
+                                                    </svg>
+                                                    <span class="text-success pt fs-8">{{installation.PJElectricien.fichier}} </span>
+                                                    <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj').show()">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                    </svg>
+                                                </div>
+                                            {% else %}
+                                                <div class="form-control">
+                                                    <span class="text-danger pt fs-8">Aucune pièce jointe</span>
+                                                    <svg class="bi float-end pt" width="16" height="16" fill="red" onclick="$('.z_pj').show()">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#pencil-square') }}"></use>
+                                                    </svg>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-lg-8 z_pj">
+                                            {{ form_row(installationForm.pj) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% include "installation/_actions_new.html.twig" %}
+                                </fieldset>
+                            </div>
+                            {# <div align="center">
+                                <a class="previous btn btn-secondary" href="{{ path('app_installation_index') }}">Annuler</a>
+                                <button type="button" class="next action-button btn btn-primary btn my-3">Enregistrer</button>
+                            </div> #}
+                        {{ form_end(installationForm) }}            
+                        {% include "installation/_delete_form.html.twig" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        $("#electricien_localite").prop('required',true);
+        $("#electricien_typePiece").prop('required',true);
+        $('.z_pj').hide();
+
+        {% if not installation.PJElectricien %}
+            $('.z_pj').show();
+            $("#electricien_pj").prop('required',true);
+        {% endif %}
+
+        $("#electricien_typePiece").change(function(e) {
+            $("#electricien_numPiece").focus();
+            $("#electricien_numPiece").css('borderColor', '#ced4da')
+            $("#electricien_numPiece").css('borderLeft', '2px solid red')
+        });
+
+        $("#electricien_numPiece").keydown(function(e) {
+            type_p=$("#electricien_typePiece option:selected").val();
+            val_num=$(this).val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=15;
+            if(type_p=="CNI") {
+                var test = /[0-9\b]/; //regex
+                $(this).val($(this).val().replace(/[a-zA-Z]/g,''));
+                val_num=$(this).val().replace(/ /g,'').length;
+                nb_max=13;
+            } else {
+                var test = /[a-zA-Z0-9\b]/; //regex
+            }
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+
+        $('#electricien_numPiece').focusout(function(){
+            type_p=$("#electricien_typePiece option:selected").val();
+            if(type_p=="CNI") {
+                var max1 = 13; var max2 = 14;
+                var len = $(this).val().length;
+
+                if((len != max1 && len != max2) && len){
+                    $(this).css('border', '1px solid red')
+                    $(this).css('borderLeft', '2px solid red')
+                    $(this).select();
+                    $(this).focus();
+                } else {
+                    $(this).css('borderColor', '#ced4da')
+                    $(this).css('borderLeft', '2px solid red')
+                }
+            }
+        });        
+
+        $("#electricien_telephone").keydown(function(e) {
+            val_num=$("#electricien_telephone").val().replace(/ /g,'').length;
+            var value = String.fromCharCode(e.keyCode); //get the charcode and convert to char
+            var test0 = /[\b]/; //regex
+            nb_max=9
+            var test = /[0-9\b]/; //regex
+            if (!value.match(test)) { 
+                return false; //dont display key if it is a number
+            }    
+            if (val_num>=nb_max) { 
+                if(!value.match(test0))
+                    return false; //dont display key if it is a number
+            }    
+
+        });
+
+        $('#electricien_telephone').focusout(function(){
+            var max = 9;
+            var len = $(this).val().length;
+
+            if(len != max && len){
+                $(this).css('border', '1px solid red')
+                $(this).css('borderLeft', '2px solid red')
+                $(this).select();
+                $(this).focus();
+            } else {
+                $(this).css('borderColor', '#ced4da')
+                $(this).css('borderLeft', '2px solid red')
+            }
+        });        
+
+        $("#telephone_electricien").keydown(function(event){
+            if(event.keyCode == 13) {
+                $("#rech_electricien").val($("#telephone_electricien").val());
+                $("#form_rech_electricien").submit();
+            }
+        });
+    });
+
+</script>
+{% endblock %}

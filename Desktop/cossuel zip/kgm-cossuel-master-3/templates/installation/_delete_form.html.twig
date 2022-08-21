@@ -1,0 +1,3 @@
+<form method="post" id="form_installation_del" action="{{ path('app_installation_delete', {'id': installation.id}) }}" onsubmit="return confirm('Etes vous sûr de vouloir réaliser cette suppression ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ installation.id) }}">
+</form>

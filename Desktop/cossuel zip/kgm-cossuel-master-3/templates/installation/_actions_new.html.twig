@@ -1,0 +1,23 @@
+    {% set link_prev = 'app_installation_add' %}
+    {% if curr_etat > 2 %}
+        {% set prev_etat = curr_etat - 1 %}
+        {% set link_prev = 'app_installation_add' ~ prev_etat %}
+    {% endif %}
+    <div class="row mt-2">
+        <div class="col-6">
+                {% if is_granted('ROLE_PUBLIC') or is_granted('ROLE_RFO') %}
+                <button type="button" onclick="$('#form_installation_del').submit()" class="next action-button btn btn-outline-danger btn my-2">Supprimer la demande</button>
+                {% endif %}
+        </div>
+        <div class="col-6" align="right">
+                <a href="{{ path('app_installation_index', {'id': installation.id}) }}" class="next action-button btn btn-warning btn my-2">Enregistrer et sortir</a>
+            <a href="{{ path(link_prev , {'id': installation.id}) }}" class="next action-button btn btn-secondary btn my-2">Etape Précédente</a>
+            {% if is_granted('ROLE_PUBLIC') or is_granted('ROLE_RFO') %}
+                {% if curr_etat == "6" %}
+                    <button type="submit" class="next action-button btn btn-primary btn my-2">Soumettre la demande</button>
+                {% else %}
+                    <button type="submit" class="next action-button btn btn-primary btn my-2">Etape Suivante</button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>

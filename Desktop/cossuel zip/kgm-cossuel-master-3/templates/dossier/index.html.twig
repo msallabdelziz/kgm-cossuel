@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}COSSUEL - Dossiers{% endblock %}
+{% block body %}
+
+    <form method="post" id="form_affichage_demande" action="{{ path(page_list) }}">
+            <input type="hidden" id="affichage_demande" type="text" name="affichage_demande" value="">
+    </form>
+
+    {% if app.session.get('affichage_demande') is not defined or not app.session.get('affichage_demande') or app.session.get('affichage_demande') == "listing" %}
+        {% include "dossier/_index_list.html.twig" %}
+    {% else %}
+        {% include "dossier/_index_card.html.twig" %}
+    {% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        $('#val_affichage_demande').on('change', function() {
+            optSel=$('#val_affichage_demande').find("option:selected");
+            valSel=optSel.val();
+            $("#affichage_demande").val(valSel);
+            $("#form_affichage_demande").submit();
+        });
+
+        {% for filtre in ["agence", "controleur", "statut", "referent", "usage", "passage"] %}
+            $('#val_{{filtre}}').val($('#val_{{filtre}}0').val())
+            $('#val_{{filtre}}0').on('change', function() {
+                optSel=$('#val_{{filtre}}0').find("option:selected");
+                valSel=optSel.val();
+                $('#val_{{filtre}}').val(valSel);
+                $('#form_rech_list').submit();
+            });
+        {% endfor %}
+    });
+</script>
+{% endblock %}

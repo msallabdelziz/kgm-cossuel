@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<body>
+	    {% if app.user %}
+				<!-- ========== section start ========== -->
+				<section class="section">
+					<div class="container-fluid">
+		{% endif %}
+
+		{% if val_rech is defined %}
+			{% include "include/_search_listem.html.twig" %}
+		{% endif %}
+
+		{% block body %}{% endblock %}
+
+	    {% if app.user %}
+					</div>
+				</section>
+				<!-- ========== section end ========== -->
+			</main>
+			<!-- ======== main-wrapper end =========== -->
+		{% endif %}
+
+		<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+		<script src="{{ asset('assets/js/ajaxload.js') }}"></script>
+	</body>
+</html>

@@ -1,0 +1,294 @@
+{% set proprietaire = installation.proprietaire %}
+{% set electricien = installation.electricien %}
+{% set typeConstruction = installation.typeConstruction %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+
+    {% if not (app.session.get('menu') is defined and app.session.get('menu') == "statistiques") %}
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+      integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+      crossorigin="anonymous"
+    />
+    {% endif %}
+    {% if installation.usages == "domestique" %}
+      <link rel="stylesheet" href="{{absolute_url(asset('assets/css/demande-A.css'))}}" />
+    {% else %}
+      <link rel="stylesheet" href="{{absolute_url(asset('assets/css/demande-B.css'))}}" />
+    {% endif %}
+
+    <title>Formulaire de Demande COSSUEL</title>
+  </head>
+  <body style="border:0px; background-color:#fff; padding:0px; margin:0px;">
+    {% if app.session.get('menu') is defined and app.session.get('menu') == "statistiques" %}
+        <a data-bs-dismiss="modal" class="closeModal float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+    {% endif %}
+    <div id="demande">
+    <div class="container" style="width:850px; margin-left:auto; margin-right:auto;">
+      <div class="invoice">
+        <div class="row ">
+          <div class="col-6 logo ">
+            <img width="340" src="{{absolute_url(asset('assets/img/Logo_COSSUEL.png'))}}" />
+          </div>
+          <div class="col-6">
+            <h3 class="text-center text-demande">DEMANDE D'ATTESTATION DE CONFORMITE</h3> 
+            <p class="document-type">Installation à usage {% if installation.usages != "domestique" %} non {% endif %}domestique</p>
+
+          </div>
+        </div>
+        <div class="clear"></div>
+        <div class="row mt-0 mb-1 font-size:16px;">
+          <div class="col-4">
+            <div class="d-flex justify-content-between">
+                Agence:
+                <span class="indentif">{% if installation.localite.agence %} {{installation.localite.agence.nom}} {% endif %}</span>
+              </div>
+          </div>
+          <div class="col-4">
+            <div class="d-flex  justify-content-between">
+                Demande Num:
+                <span class="indentif">{{installation.demandeCourante.numero}}</span>
+              </div>
+        </div>
+        <div class="col-4">
+            <div class="d-flex justify-content-between">
+                Du:
+                <span class="indentif">{{installation.demandeCourante.dateCreation | date("d/m/Y h:i")}}</span>
+              </div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+            <div class="row border">
+          <div class="col-12">
+            <div class="bg-orange">INFORMATIONS INSTALLATEUR</div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Nom du contact:
+              <span class="indentif">{{electricien.prenom}} {{electricien.nom}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Adresse:
+              <span class="indentif">{{electricien.adresse}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Ville:
+              <span class="indentif">{{electricien.localite}}</span>
+            </div>
+          </div>
+          <div class="col-6"></div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Téléphone:
+              <span class="indentif">{{electricien.telephone}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              E-Mail:
+              <span class="indentif">{{electricien.email}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Type Pièce :
+              <span class="indentif">{{electricien.typePiece}}</span>
+            </div>
+          </div>
+          <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+              Numéro Pièce:
+              <span class="indentif">{{electricien.numPiece}}</span>
+            </div>
+          </div>
+         
+       </div>
+        <div class="clear"></div>
+
+        <div class="row border">
+            <div class="col-12">
+              <div class="bg-orange">INSTALLATION ELECTRIQUE</div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Etat Installation:</span>
+                <span class="indentif">{% if installation.alimente %} Alimentée {% else %} Non alimenté {% endif %}</span>
+              </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Num Compteur:</span>
+                    <span class="indentif">{% if installation.alimente %} {{installation.compteur}} {% endif %}</span>
+                  </div>
+            </div>
+            <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Propriètaire Installation:</span>
+                  <span class="indentif">{{proprietaire.prenom}} {{proprietaire.nom}}</span>
+                </div>
+              </div>
+              <div class="col-6"></div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type Pièce:</span>
+                  <span class="indentif">{{proprietaire.typePiece}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Num Piece:</span>
+                  <span class="indentif">{{proprietaire.numPiece}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <div>Type Batiment:</div>
+                  <div class="indentif">{% if installation.collectif %} Collectif {% else %} Non collectif {% endif %}</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Adresse:</span>
+                  <span class="indentif">{{proprietaire.adresse}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Téléphone:</span>
+                  <span class="indentif">{{proprietaire.telephone}}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>
+                    Ville:</span>
+                  <span class="indentif">
+                    {{proprietaire.localite}}</span>
+                </div>
+              </div>
+              <div class="col-6"></div>
+              <div class="col-6">
+                  <div class="row">
+                        <div class="col-6">
+                            <span> Latitude:</span> <span class="indentif">{{installation.lattitude}}</span>
+                        </div>
+                        <div class="col-6">
+                            <span>Longitude:</span> <span class="indentif">{{installation.longitude}}</span>
+                        </div>
+                    </div>                    
+              </div>
+       </div>
+
+        <div class="clear"></div>
+           <div class="row border">
+            <div class="col-12">
+                <div class="bg-orange">TYPE DE CONSTRUCTION A USAGE DOMESTIQUE</div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type de Construction:</span>
+                  <span class="indentif">{{typeConstruction.nom}}</span>
+                </div>
+              </div>
+              <div class="col-5">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Nombre de pièces principales:</span>
+                  <span class="indentif">{{installation.priece}}</span>
+                </div>
+              </div>
+              <div class="col-1"></div>
+              <div class="col-6">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Type Opération:</span>
+                  <span class="indentif">Opération non collective</span>
+                </div>
+              </div>
+       </div>
+
+        <div class="clear"></div>
+        <div class="row border">
+         <div class="col-12">
+             <div class="bg-orange">TRAVAUX</div>
+           </div>
+           <div class="col-6">
+             <div class="d-flex justify-content-between mb-1">
+               Nature Travaux:
+               {% if installation.natureTravaux %}
+                  <span class="indentif">{{installation.natureTravaux.nom}}</span>
+               {% else %} - {% endif %}
+             </div>
+             <div class="d-flex justify-content-between mb-1">
+                <span>Autres Intervenants:</span>
+                <span class="indentif">{% if installation.intervenantAutre %} {{installation.intervenant}} {% else %} - {% endif %}</span>
+              </div>
+           </div>
+           <div class="col-6">
+           </div>
+             
+    </div>
+
+    <div class="clear"></div>
+    <div class="row">
+        <div class="col-9">
+                <div class="row border">
+                 <div class="col-12">
+                     <div class="bg-orange">TARIFICATION</div>
+                   </div>
+                   <div class="col-6">
+                     <div class="d-flex justify-content-between mb-1">
+                       <span>Info Visite:</span>
+                       <span class="indentif">{{installation.demandeCourante.numeroPassage}}e Visite</span>
+                     </div>
+                   </div>
+                   <div class="col-6"></div>
+                   <div class="col-6">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Puissance Demandée</span>
+                        <span class="indentif">{{installation.demandeCourante.puissance}} Kw</span>
+                      </div>
+                   </div>
+                   <div class="col-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Tarif</span>
+                        <span class="indentif">{{installation.demandeCourante.cout}} FCFA</span>
+                      </div>
+                   </div>
+                   <div class="col-2"></div>
+                     
+                </div>
+        </div>
+        <div class="col-3 signature" align="center">Signature</div>
+    </div>
+    <div class="clear"></div>
+    
+        <p class="bottom-page text-center">
+          <div class="text ">Comité Sénégalais pour la Sécurité des Usagers de l'Electricité
+            (COSSUEL) Organisme agréé par le Ministère chargé de l'Energie
+            suivant le decret No 0022609 du 22 Août 2019 Adresse: 2 Rue Wagane
+            Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL
+            Téléphone: (+221) 76 644 76 02/ 33 842 01 81 Email: cossuel@cossuel.sn</div>
+        </p>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>

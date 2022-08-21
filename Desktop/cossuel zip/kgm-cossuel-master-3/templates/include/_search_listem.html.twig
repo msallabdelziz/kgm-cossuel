@@ -1,0 +1,9 @@
+    <form method="post" id="form_rech_listm" onsubmit=" return false;">
+            <input type="hidden" id="val_rechm" type="text" name="val_rechm" value="">
+        {% for inp in ["localite", "agence", "usage", "passage", "statut", "controleur", "referent", "profil", "modep" ] %}
+            <input type="hidden" id="val_{{inp}}m" name="val_{{inp}}m" value="">
+        {% endfor %}
+        <input type="hidden" id="val_debm" type="text" name="val_debm" value="">
+        <input type="hidden" id="val_finm" type="text" name="val_finm" value="">
+
+    </form>

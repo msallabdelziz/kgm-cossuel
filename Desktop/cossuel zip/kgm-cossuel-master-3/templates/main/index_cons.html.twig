@@ -1,0 +1,536 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+{% block body %}
+	{% if app.user and app.user.isverified %}
+		<!-- ========== title-wrapper start ========== -->
+		<div class="title-wrapper pt-10">
+
+			<ul class="nav nav-tabs mb-4 border-bottom border-dark border-2">
+				<li class="nav-item bg-warning mx-1 rounded-top mb-0 mt-1">
+					<a class="nav-link text-dark" aria-current="page" href="{{ path('main', {'dash_page': 'perso'}) }}">Mon espace personnel</a>
+				</li>
+				{% if  app.user.roles[0] != "ROLE_PUBLIC" %}
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'stat_dem'}) }}">Statistiques sur les demandes</a>
+				</li>
+				<li class="nav-item bg-dark rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link fw-bold text-light" href="{{ path('main', {'dash_page': 'stat_paye'}) }}">Statistiques sur les paiements</a>
+				</li>
+				<li class="nav-item bg-warning rounded-top mx-1 mb-0 mt-1">
+					<a class="nav-link text-dark" href="{{ path('main', {'dash_page': 'cons_dem'}) }}">Consultation des demandes</a>
+				</li>
+				{% endif %}
+			</ul>
+
+			<div class="row m-1 pt-2">
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Mes Performances</h5>
+			</div>
+			<div class="row">
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande Soumise;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Soumis"] }}
+									</span>
+									<span class="text-light fw-light">Demandes soumises</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande Domestique;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Domestiques"] }}
+									</span>
+									<span class="text-light fw-light">Demandes Domestiques</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande Professionnelle;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Professionnelles"] }}
+									</span>
+									<span class="text-light fw-light">Demandes Professionnelles</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Demande ERP - ERT;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["ERP - ERT"] }}
+									</span>
+									<span class="text-light fw-light">Demandes ERP - ERT</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Paiement enregistré;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Paiement enregistré"] }}
+									</span>
+									<span class="text-light fw-light">Paiements enregistrés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Paiement validé;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Paiement validé"] }}
+									</span>
+									<span class="text-light fw-light">Paiements validés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Dossier validé;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Dossier validé"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers validés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Rapport Affecté;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Dossier affecté"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers affectés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Visite planifiée;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Visite planifiée"] }}
+									</span>
+									<span class="text-light fw-light">Visites planifiées</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Rapport élaboré;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Rapport élaboré"] }}
+									</span>
+									<span class="text-light fw-light">Rapports élaborés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 mt-2">
+					<div class="card bg-bleuf2 p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Rapport validé;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_stat["Rapport validé"] }}
+									</span>
+									<span class="text-light fw-light">Rapports validés</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<hr />
+			<div class="row mt-2">
+				<div class="col-md-3 mt-2">
+					<div class="card bg-red p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 5 jours;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_alerte["Hors délais 5 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-3 mt-2">
+					<div class="card bg-rougef p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 15 jours;' ~ app.user.id}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ mes_alerte["Hors délais 15 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr class="border-bottom border-secondary border-2" />
+
+			<div class="row m-1 mt-4 pt-2">
+				<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par type d'usage et passage visite</h5>
+			</div>
+			<div class="row">
+				<div class="col-md-4 mt-2">
+					<div class="card bg-dark p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'All'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">{{ les_stat["All"] }}</span>
+									<span class="text-light fw-light">Total des demandes</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end col -->
+				<div class="col-md-8 mt-2">
+					<div class="row">
+						<div class="col">
+							<div class="card bg-warning p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Domestiques'}) }}" title="Afficher la liste des demandes">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Domestiques"] }}</span>
+											<span class="fw-light">Demandes domestiques</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col">
+							<div class="card bg-primary bg-opacity-75 p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Professionnelles'}) }}" title="Afficher la liste des demandes">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["Professionnelles"] }}</span>
+											<span class="fw-light text-dark">Demandes professionnelles</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col">
+							<div class="card bg-primary p-2 card-stat">
+								<div class="un-stat d-flex">
+									<div class="">
+										<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'ERP - ERT'}) }}" title="Afficher la liste des demandes">
+											<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["ERP - ERT"] }}</span>
+											<span class="fw-light text-light">Demandes ERP - ERT</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-4">
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '1ère visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["1ère visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 1ère visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="card bg-primary p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': '2e visite'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-success">{{ les_stat["2e visite"] }}</span>
+									<span class="fw-light text-light">Demandes en 2e visite</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+
+				<!-- end col -->
+				<div class="row m-1 mt-4 pt-2">
+					<h5 class="text-dark fw-light pb-2 border-bottom border-secondary border-2">Demandes par état de traitement</h5>
+				</div>
+				<!-- end col -->
+				
+				{% set les_etat = ["Soumis"] %}
+				{% set les_col = ["danger"] %}
+				
+				{% if is_granted('ROLE_CAISSIER') or is_granted('ROLE_COMPTABLE') or is_granted('ROLE_DAF') %}
+					{% set les_etat = ["Paiement enregistré", "Paiement validé"] %}
+					{% set les_col = ["primary bg-opacity-25", "success bg-opacity-25"] %}
+				{% endif %}
+
+				{% if is_granted('ROLE_RFO') %}
+					{% set les_etat = ["Dossier validé"] %}
+					{% set les_col = ["success bg-opacity-25", ] %}
+				{% endif %}
+
+				{% if is_granted('ROLE_CONTROLEUR') %}
+					{% set les_etat = ["Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+					{% set les_col = [ "light", "red", "primary bg-opacity-75", "green"] %}
+				{% endif %}
+
+				{% if is_granted('ROLE_REFERENT') %}
+					{% set les_etat = ["Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+					{% set les_col = ["info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+				{% endif %}
+				
+				{% if is_granted('ROLE_ADMIN') %}
+					{% set les_etat = ["Soumis","Paiement enregistré", "Paiement validé","Dossier validé", "Dossier affecté", "Visite planifiée", "Rapport élaboré", "Rapport validé"] %}
+					{% set les_col = ["danger", "primary bg-opacity-25", "success bg-opacity-25", "info", "dark bg-opacity-50", "red", "primary bg-opacity-75", "green"] %}
+				{% endif %}
+
+				{% set ix = 0 %}
+				{% for etat in les_etat  %}
+					{% set col = les_col[ix] %}
+					<div class="col-md-4 mt-2">
+						<div class="card bg-{{col}} p-2 card-stat">
+							<div class="un-stat d-flex">
+								<div class="">
+									<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': etat}) }}" title="Afficher la liste des demandes">
+										<span class="number mb-0 fs-7 badge badge-danger">{{ les_stat[etat] }}</span>
+										<span class="fw-light">{{etat}}</span>
+									</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+					{% set ix = ix+1 %}
+				{% endfor %}
+			</div>
+			<!-- end row -->
+
+			<hr />
+			<div class="row mt-2">
+				<div class="col-md-3 mt-2">
+					<div class="card bg-red p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 5 jours'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ les_alerte["Hors délais 5 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 5j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-3 mt-2">
+					<div class="card bg-rougef p-2 card-stat">
+						<div class="un-stat d-flex">
+							<div class="">
+								<p class="mb-1 pt" data-bs-toggle="modal" data-bs-target="#modal2" href="{{ path('main_demandepop', {'restr': 'Hors délais 15 jours'}) }}" title="Afficher la liste des demandes">
+									<span class="number mb-0 fs-7 badge badge-warning">
+										{{ les_alerte["Hors délais 15 jours"] }}
+									</span>
+									<span class="text-light fw-light">Dossiers Hors délais 15j</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') or is_granted('ROLE_RFO') %}
+			<div class="row mt-50">
+				<div class="col-md-8">
+					<div class="card">
+						<div class="d-flex align-items-center justify-content-between">
+							<h4 class="fw-bold">Demandes en préparation ({{ les_install|length }})</h4>
+						</div>
+						<span class="divider">
+							<hr></span>
+            	{% if les_install|length == 0 %}
+                <div class="row pt-20">
+                    <div class="col-3"></div>
+                    <div class="col-6">
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 24 24">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Aucun enregistrement trouvé !
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				{% else %}
+				<table class="table table-striped table-hover table-sm pt-0 mt-0">
+				<thead>
+					<tr>
+						<th scope="col">N° demande</th> 
+						<th class="priority-3">Usage</th> 
+						<th>Localité</th>
+						<th>Type Construction</th>
+						<th>Statut demande</th>
+						{# <th scope="col">Agence</th> #}
+						{# <th class="text-center" scope="col">Départements</th>  #}
+					</tr>
+				</thead>
+				<tbody>
+					{% for ag in les_install %}
+						{% if ag.step < 7 %}
+							{% set badge_etat = "danger" %}
+						{% endif %}
+						{% if ag.step <= 7 %}
+							{% set badge_etat = "warning" %}
+						{% endif %}
+						<tr>
+							<td scope="row" class="fw-bold">
+								{% if ag.demandeCourante %}
+										{{ ag.demandeCourante.numero }}
+								{% else %}
+										<span>[{{ ag.id|strpad_left(9, '0') }}-{{ ag.createdAt|date("d/m/y") }}]</span>
+								{% endif %}
+							</td>
+							<td>
+                            {% if ag.usages == "domestique" %}
+                                <span class="text-warning fs-8 fw-bold">Domestique</span>
+                            {% elseif ag.usages == "non_domestique" %}
+                                <span class="text-primary fs-8 fw-bold">Professionnel</span>
+                            {% elseif ag.usages == "erp_ert" %}
+                                <span class="text-primary fs-8 fw-bold">ERP - ERT</span>
+                            {% endif %}
+							</td>
+							<td>
+								{% if ag.localite is not null %}
+									{{ ag.localite.nom }}
+								{% else %}
+									<span class="text-danger">-</span>
+								{% endif %}
+							</td>
+							<td>
+								{% if ag.typeconstruction is not null %}
+									{{ ag.typeconstruction.nom }}
+								{% else %}
+									<span class="text-danger">-</span>
+								{% endif %}
+							</td>
+							<td>
+									<span class="pt badge badge-info fs-8">{{ ag.etat }}</span>
+							</td>
+							{# <td>{{ ag.agence }}</td> #}
+							{# <td class="text-center">
+								{% if reg.departement.count >0 %}
+									<span class="badge bg-success text-light rounded-pill fw-normal">{{ reg.departement.count }}</span>
+								{% else %}
+									<code class="text-danger text-opacity-50">Aucun département</code>
+								{% endif %}
+							</td> #}
+						</tr>
+					{% endfor %}
+				</tbody>
+				</table>
+				{% endif %}
+					</div>
+
+				</div>
+				<div class="col-md-4">
+					<div class="card card-clients">
+						<h4 class="fw-bold">Derniers clients enregistrés</h4>
+						<span class="divider">
+							<hr></span>
+						<ul class="pl-0">
+							{% for ag in last_client %}
+							<li class="un-client d-flex align-items-center mt-3">
+								<div style="position:relative; top:-2px">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="gray" class="bi bi-plus-lg" viewBox="0 0 32 32">
+                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#file-person') }}"></use>
+                                </svg>
+								</div>
+								<div class="flex-grow-1 ms-2 d-flex flex-wrap align-items-center justify-content-between">
+									<div class="me-2">
+										<h5 class="mb-0">{{ ag.prenom }} {{ ag.nom }}</h5>
+										<p class="mb-0">
+										{% if ag.localite %}
+											{{ ag.localite.nom }}
+										{% else %}
+											-
+										{% endif %}
+										, {{ ag.adresse }}, {{ ag.telephone }}
+										</p>
+									</div>
+									<span class="badge badge-warning">Electricien</span>
+								</div>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+
+		</div>
+		<!-- ========== title-wrapper end ========== -->
+	{% else %}
+		<div class="col-8 mt-5 offset-2 alert alert-danger fs-4 text-center">
+			Votre adresse email n'a pas encore été confirmée !
+			Veuillez cliquer sur le lien envoyé sur votre boite mail pour valider votre inscription !
+		</div>
+	{% endif %}
+
+{% endblock %}

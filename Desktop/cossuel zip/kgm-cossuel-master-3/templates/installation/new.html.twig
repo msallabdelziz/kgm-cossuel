@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Soumission de demandes </span>
+            </a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-1" %}            
+            <div class="{{ offset }} col-lg-10 mb-2  p-3">
+
+                <div class="">
+                    <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
+                        <div class="container-fluid ps-4">
+                            <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                                <div class="col">
+                                    <svg class="bi" width="24" height="24" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                    </svg>
+                                    Saisie Nouvelle demande
+                                </div>
+                                <div class="col" align="right">
+                                        <span class="text-danger">[Etape 1 sur 6]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                    <div class="">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
+                            <div class="row">
+                                <!-- progressbar -->
+                                {% set curr_etat = 1 %}
+                                {{ include('installation/_progress_bar.html.twig') }}
+
+                            	<fieldset>
+                                <div class="card">
+                                    <h2 class="fs-title">Données de base de la demande</h2>
+                                    <div class="row">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.usages) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.alimente) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                            {{ form_row(installationForm.compteur) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                        {{ form_row(installationForm.abonnement) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 alimente1">
+                                            {{ form_row(installationForm.grstReseau) }}<br>
+                                        </div>
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.region) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.departement) }}<br>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.localite) }}<br>
+                                        </div>
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-12">
+                                        {{ form_row(installationForm.adresse) }}<br>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            {{ form_row(installationForm.habitation) }}<br>
+                                        </div>
+                                        {#                                         
+                                        <div class="col-lg-2">
+                                            {{ form_row(installationForm.lattitude) }}<br>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            {{ form_row(installationForm.longitude) }}<br>
+                                        </div> 
+                                        #}
+                                    </div>
+                                </div>
+                                <div align="right">
+                                    <a href="{{ path('app_installation_index') }}" class="me-3 next action-button btn btn-outline-secondary btn my-3">Annuler</a>
+                                    <button type="submit" class="next action-button btn btn-primary btn my-3">Etape Suivante</button>
+                                </div>
+                                </fieldset>
+                            </div>
+                            {# <div align="center">
+                                <a class="previous btn btn-secondary" href="{{ path('app_installation_index') }}">Annuler</a>
+                                <button type="button" class="next action-button btn btn-primary btn my-3">Enregistrer</button>
+                            </div> #}
+                        {{ form_end(installationForm) }}            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        $('.alimente0').show(); $('.alimente1').hide();
+        $('#form_abonnement').prop('required',false);
+        $('#form_compteur').prop('required',false);
+        $('#form_region').prop('required',true);
+        $('#form_usages').prop('required',true);
+        $('#form_departement').prop('required',true);
+        $('#form_localite').prop('required',true);
+        $('#form_adresse').prop('required',true);
+        optSel=$('input[type=radio][name="form[alimente]"]:checked');
+        valSel=optSel.val();
+        if (valSel==1) {
+            $('.alimente1').show(); $('.alimente0').hide();
+            $('#form_abonnement').prop('required',true);
+            $('#form_compteur').prop('required',true);
+        }
+
+        $('input[type=radio][name="form[alimente]"]').change(function() {
+            $('.alimente0').show(); $('.alimente1').hide();
+            $('#form_abonnement').prop('required',false);
+            $('#form_compteur').prop('required',false);
+            optSel=$('input[type=radio][name="form[alimente]"]:checked');
+            valSel=optSel.val();
+            if (valSel == 1) {
+                $('.alimente1').show(); $('.alimente0').hide();
+                $('#form_abonnement').prop('required',true);
+                $('#form_compteur').prop('required',true);
+            }
+        });
+
+        on_region_change();
+        on_departement_change();
+});
+
+    function on_departement_change() {
+        var $departement = $('#form_departement');
+        // When departement gets selected ...
+        $departement.change(function() {
+            // Simulate form data, but only include the selected departement value.
+            var data = {};
+            data['departement'] = $departement.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_localite_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
+    function on_region_change() {
+        var $region = $('#form_region');
+
+        // When region gets selected ...
+        $region.change(function() {
+            // Simulate form data, but only include the selected region value.
+            var data = {};
+            data['region'] = $region.val();
+            // Submit data via AJAX to the form's action path.
+            $.ajax({
+                url : '{{ path('app_departement_load') }}',
+                type: 'post',
+                data : data,
+                complete: function(html) {
+                // Replace current departement field ...
+                $('#form_departement').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_departement')
+                );
+                // Replace current loalite field ...
+                $('#form_localite').replaceWith(
+                    // ... with the returned one from the AJAX response.
+                    $(html.responseText).find('#form_localite')
+                );
+                on_departement_change();
+                // departement & localite field now displays the appropriate values.
+                } 
+            });
+        });
+    }
+
+</script>
+
+{% endblock %}
