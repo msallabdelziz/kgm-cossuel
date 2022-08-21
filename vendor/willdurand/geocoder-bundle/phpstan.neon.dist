@@ -1,0 +1,10 @@
+includes:
+	- phpstan-baseline.neon
+
+parameters:
+	paths:
+		- %currentWorkingDirectory%
+	excludePaths:
+		- ./vendor/
+		- ./Tests/
+	level: 7

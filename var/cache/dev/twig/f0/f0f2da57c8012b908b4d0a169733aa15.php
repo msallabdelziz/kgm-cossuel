@@ -1,0 +1,812 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+
+/* dossier/showattest0.html.twig */
+class __TwigTemplate_cf30c9ac1b7d71d46f6b90108de2cce7 extends Template
+{
+    private $source;
+    private $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->parent = false;
+
+        $this->blocks = [
+        ];
+    }
+
+    protected function doDisplay(array $context, array $blocks = [])
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "dossier/showattest0.html.twig"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "dossier/showattest0.html.twig"));
+
+        // line 1
+        $context["demande"] = twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 1, $this->source); })()), "demande", [], "any", false, false, false, 1);
+        // line 2
+        $context["installation"] = twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 2, $this->source); })()), "installation", [], "any", false, false, false, 2);
+        // line 3
+        $context["visite"] = twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 3, $this->source); })()), "visiteCourante", [], "any", false, false, false, 3);
+        // line 4
+        echo "
+";
+        // line 5
+        $context["proprietaire"] = twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 5, $this->source); })()), "proprietaire", [], "any", false, false, false, 5);
+        // line 6
+        $context["electricien"] = twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 6, $this->source); })()), "electricien", [], "any", false, false, false, 6);
+        // line 7
+        $context["typeConstruction"] = twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 7, $this->source); })()), "typeConstruction", [], "any", false, false, false, 7);
+        // line 8
+        echo "
+";
+        // line 9
+        $context["agence"] = twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 9, $this->source); })()), "localite", [], "any", false, false, false, 9), "agence", [], "any", false, false, false, 9);
+        // line 10
+        $context["referent"] = twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 10, $this->source); })()), "referent", [], "any", false, false, false, 10);
+        // line 11
+        echo "
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=\"utf-8\" />
+    <meta
+      name=\"viewport\"
+      content=\"width=device-width, initial-scale=1, shrink-to-fit=no\"
+    />
+
+    <!-- Bootstrap CSS -->
+
+    ";
+        // line 24
+        if ( !(twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, true, false, 24), "get", [0 => "menu"], "method", true, true, false, 24) && (twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 24, $this->source); })()), "session", [], "any", false, false, false, 24), "get", [0 => "menu"], "method", false, false, false, 24) == "statistiques"))) {
+            // line 25
+            echo "    <link
+      rel=\"stylesheet\"
+      href=\"https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css\"
+      integrity=\"sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn\"
+      crossorigin=\"anonymous\"
+    />
+    ";
+        }
+        // line 32
+        echo "    ";
+        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 32, $this->source); })()), "usages", [], "any", false, false, false, 32) == "domestique")) {
+            // line 33
+            echo "      <link rel=\"stylesheet\" href=\"";
+            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\HttpFoundationExtension']->generateAbsoluteUrl($this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/css/demande-A.css")), "html", null, true);
+            echo "\" />
+    ";
+        } else {
+            // line 35
+            echo "      <link rel=\"stylesheet\" href=\"";
+            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\HttpFoundationExtension']->generateAbsoluteUrl($this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/css/demande-B.css")), "html", null, true);
+            echo "\" />
+    ";
+        }
+        // line 37
+        echo "
+    <title>Bon de travaux - COSSUEL</title>
+  </head>
+  <body style=\"border:0px; background-color:#fff; padding:0px; margin:0px;\">
+    ";
+        // line 41
+        if ((twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, true, false, 41), "get", [0 => "menu"], "method", true, true, false, 41) && (twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 41, $this->source); })()), "session", [], "any", false, false, false, 41), "get", [0 => "menu"], "method", false, false, false, 41) == "statistiques"))) {
+            // line 42
+            echo "        <a data-bs-dismiss=\"modal\" class=\"closeModal float-end next action-button btn btn-sm btn-secondary \">Fermer</a>
+    ";
+        }
+        // line 44
+        echo "    <div id=\"demande\">
+    <div class=\"container\" style=\"width:850px; margin-left:auto; margin-right:auto;\">
+      <div class=\"invoice\">
+        <div class=\"row \">
+          <div class=\"col-12 logo \" style=\"text-align:center\">
+            <svg
+              width=\"303\"
+              height=\"90\"
+              viewBox=\"0 0 203 70\"
+              fill=\"none\"
+              xmlns=\"http://www.w3.org/2000/svg\"
+              xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+            >
+              <rect width=\"202.062\" height=\"70\" fill=\"url(#pattern0)\" />
+              <defs>
+                <pattern
+                  id=\"pattern0\"
+                  patternContentUnits=\"objectBoundingBox\"
+                  width=\"1\"
+                  height=\"1\"
+                >
+                  <use
+                    xlink:href=\"#image0_212_2254\"
+                    transform=\"translate(-0.117857 -0.206186) scale(0.00357143 0.0103093)\"
+                  />
+                </pattern>
+                <image
+                  id=\"image0_212_2254\"
+                  width=\"353\"
+                  height=\"135\"
+                  xlink:href=\"data:image/png;base64,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\"
+                />
+              </defs>
+            </svg>
+          </div>
+          <div class=\"col-12\">
+            <p class=\"document-type text-demande\">BON DE TRAVAUX</p>
+            <h5 class=\"text-center mb-4 \">
+              Usage 
+              ";
+        // line 83
+        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 83, $this->source); })()), "usages", [], "any", false, false, false, 83) == "domestique")) {
+            echo " domestique 
+              ";
+        } elseif ((twig_get_attribute($this->env, $this->source,         // line 84
+(isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 84, $this->source); })()), "usages", [], "any", false, false, false, 84) == "domestique")) {
+            echo " Professionnel 
+              ";
+        } elseif ((twig_get_attribute($this->env, $this->source,         // line 85
+(isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 85, $this->source); })()), "usages", [], "any", false, false, false, 85) == "erp_ert")) {
+            echo " ERP - ERT ";
+        }
+        // line 86
+        echo "            </h5> 
+
+          </div>
+        </div>
+        <div class=\"clear mt-4\"></div>
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-4\">
+            <div class=\"d-flex justify-content-between\">
+                Bon de travaux N°:
+                <span class=\"indentif\">";
+        // line 95
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 95, $this->source); })()), "numero", [], "any", false, false, false, 95), "html", null, true);
+        echo "</span>
+            </div>
+          </div>
+          <div class=\"col-4\">
+            <div class=\"d-flex justify-content-between\">
+                Délivré le :
+                <span class=\"indentif\">";
+        // line 101
+        echo twig_escape_filter($this->env, twig_date_format_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["visite"]) || array_key_exists("visite", $context) ? $context["visite"] : (function () { throw new RuntimeError('Variable "visite" does not exist.', 101, $this->source); })()), "dateAtteste", [], "any", false, false, false, 101), "d/m/Y"), "html", null, true);
+        echo "</span>
+            </div>
+          </div>
+          <div class=\"col-4\">
+              <div class=\"d-flex justify-content-between\">
+                  Expire le :
+                  <span class=\"indentif\">";
+        // line 107
+        echo twig_escape_filter($this->env, twig_date_format_filter($this->env, twig_date_modify_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["visite"]) || array_key_exists("visite", $context) ? $context["visite"] : (function () { throw new RuntimeError('Variable "visite" does not exist.', 107, $this->source); })()), "dateAtteste", [], "any", false, false, false, 107), "+1 year"), "d/m/Y"), "html", null, true);
+        echo "</span>
+              </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-12\">
+            <div class=\"d-flex\">
+                Installateur/Bureau Contrôle:
+                <span class=\"indentif\" style=\"margin-left:10px;\">";
+        // line 116
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 116, $this->source); })()), "nomComplet", [], "any", false, false, false, 116), "html", null, true);
+        echo "</span>
+            </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-6\">
+            <div class=\"d-flex\">
+                Téléphone :
+                <span class=\"indentif\" style=\"margin-left:10px;\">";
+        // line 126
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 126, $this->source); })()), "telephone", [], "any", false, false, false, 126), "html", null, true);
+        echo "</span>
+            </div>
+          </div>
+          <div class=\"col-6\">
+            <div class=\"d-flex\">
+                Numéro ";
+        // line 131
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 131, $this->source); })()), "typepiece", [], "any", false, false, false, 131), "html", null, true);
+        echo " :
+                <span class=\"indentif\" style=\"margin-left:10px;\">";
+        // line 132
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 132, $this->source); })()), "numPiece", [], "any", false, false, false, 132), "html", null, true);
+        echo "</span>
+            </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+
+
+        <div class=\"clear\"></div>
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">INSTALLATION ELECTRIQUE</div>
+            </div>
+            <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Propriètaire :</span>
+                  <span class=\"indentif\">";
+        // line 147
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 147, $this->source); })()), "nomComplet", [], "any", false, false, false, 147), "html", null, true);
+        echo "</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Numéro ";
+        // line 152
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 152, $this->source); })()), "typePiece", [], "any", false, false, false, 152), "html", null, true);
+        echo "</span>
+                  <span class=\"indentif\">";
+        // line 153
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 153, $this->source); })()), "numPiece", [], "any", false, false, false, 153), "html", null, true);
+        echo "</span>
+                </div>
+              </div>
+              <div class=\"col-12\">
+                <div class=\"d-flex mb-2\">
+                  <span>Adresse:</span>
+                  <span class=\"indentif\" style=\"margin-left:10px;\">";
+        // line 159
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 159, $this->source); })()), "adresse", [], "any", false, false, false, 159), "html", null, true);
+        echo "</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>
+                    Téléphone:</span>
+                  <span class=\"indentif\">";
+        // line 166
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 166, $this->source); })()), "telephone", [], "any", false, false, false, 166), "html", null, true);
+        echo "</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>
+                    Localité:</span>
+                  <span class=\"indentif\">
+                    ";
+        // line 174
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["proprietaire"]) || array_key_exists("proprietaire", $context) ? $context["proprietaire"] : (function () { throw new RuntimeError('Variable "proprietaire" does not exist.', 174, $this->source); })()), "localite", [], "any", false, false, false, 174), "html", null, true);
+        echo "</span>
+                </div>
+              </div>
+              <div class=\"col-12\">
+                      <div class=\"d-flex mb-2\">
+                          <span> Coordonnées GPS</span> 
+                          <span style=\"margin-left:20px\"> Latitude:</span> <span class=\"indentif\" style=\"margin-left:10px\">";
+        // line 180
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 180, $this->source); })()), "lattitude", [], "any", false, false, false, 180), "html", null, true);
+        echo "</span>
+                          <span style=\"margin-left:20px\"> Longitude:</span> <span class=\"indentif\" style=\"margin-left:10px\">";
+        // line 181
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 181, $this->source); })()), "longitude", [], "any", false, false, false, 181), "html", null, true);
+        echo "</span>
+                      </div>
+              </div>
+              <div class=\"col-12\">
+              <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Puissance Demandée :</span>
+                  <span class=\"indentif\">";
+        // line 187
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 187, $this->source); })()), "demandeCourante", [], "any", false, false, false, 187), "puissance", [], "any", false, false, false, 187), "html", null, true);
+        echo " Kw</span>
+                </div>
+              </div>
+       </div>
+
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">INFORMATIONS COSSUEL</div>
+            </div>
+            <div class=\"col-12\">
+                <div class=\"d-flex mb-2\">
+                  <span>Agence :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">";
+        // line 199
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["agence"]) || array_key_exists("agence", $context) ? $context["agence"] : (function () { throw new RuntimeError('Variable "agence" does not exist.', 199, $this->source); })()), "nom", [], "any", false, false, false, 199), "html", null, true);
+        echo "</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Numéro Demande :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">";
+        // line 205
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 205, $this->source); })()), "numero", [], "any", false, false, false, 205), "html", null, true);
+        echo "</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Code Client :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">";
+        // line 211
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 211, $this->source); })()), "typePiece", [], "any", false, false, false, 211), "html", null, true);
+        echo "-";
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 211, $this->source); })()), "numPiece", [], "any", false, false, false, 211), "html", null, true);
+        echo "</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Référent technique :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">";
+        // line 217
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 217, $this->source); })()), "referent", [], "any", false, false, false, 217), "html", null, true);
+        echo "</span>
+                </div>
+            </div>
+        </div>
+
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">TRAVAUX</div>
+            </div>
+
+                        ";
+        // line 227
+        $context["rub"] = "";
+        // line 228
+        echo "                        ";
+        $context["ix"] = 0;
+        // line 229
+        echo "                        ";
+        $context["les_detailverif"] = twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 229, $this->source); })()), "visiteCourante", [], "any", false, false, false, 229), "detailVerification", [], "any", false, false, false, 229);
+        // line 230
+        echo "                            ";
+        $context['_parent'] = $context;
+        $context['_seq'] = twig_ensure_traversable((isset($context["les_detailverif"]) || array_key_exists("les_detailverif", $context) ? $context["les_detailverif"] : (function () { throw new RuntimeError('Variable "les_detailverif" does not exist.', 230, $this->source); })()));
+        foreach ($context['_seq'] as $context["_key"] => $context["pt"]) {
+            // line 231
+            echo "                              ";
+            if (( !twig_get_attribute($this->env, $this->source, $context["pt"], "conclusion", [], "any", false, false, false, 231) &&  !twig_get_attribute($this->env, $this->source, $context["pt"], "sansobjet", [], "any", false, false, false, 231))) {
+                // line 232
+                echo "                                ";
+                if (((isset($context["rub"]) || array_key_exists("rub", $context) ? $context["rub"] : (function () { throw new RuntimeError('Variable "rub" does not exist.', 232, $this->source); })()) != twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointverification", [], "any", false, false, false, 232), "rubrique", [], "any", false, false, false, 232), "id", [], "any", false, false, false, 232))) {
+                    // line 233
+                    echo "                                    ";
+                    if ((isset($context["rub"]) || array_key_exists("rub", $context) ? $context["rub"] : (function () { throw new RuntimeError('Variable "rub" does not exist.', 233, $this->source); })())) {
+                        // line 234
+                        echo "                                        </div>
+                                    ";
+                    }
+                    // line 236
+                    echo "                                    <div class=\"col-12\" id=\"zrub_";
+                    echo twig_escape_filter($this->env, (isset($context["ix"]) || array_key_exists("ix", $context) ? $context["ix"] : (function () { throw new RuntimeError('Variable "ix" does not exist.', 236, $this->source); })()), "html", null, true);
+                    echo "\">
+                                        <h6 class=\"p-1 bg-dark text-light shadow border-bottom\"> ";
+                    // line 237
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointverification", [], "any", false, false, false, 237), "rubrique", [], "any", false, false, false, 237), "numero", [], "any", false, false, false, 237), "html", null, true);
+                    echo "- ";
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointverification", [], "any", false, false, false, 237), "rubrique", [], "any", false, false, false, 237), "libelle", [], "any", false, false, false, 237), "html", null, true);
+                    echo "</h6>
+                                    ";
+                    // line 238
+                    $context["rub"] = twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointverification", [], "any", false, false, false, 238), "rubrique", [], "any", false, false, false, 238), "id", [], "any", false, false, false, 238);
+                    // line 239
+                    echo "                                    ";
+                    $context["ix"] = ((isset($context["ix"]) || array_key_exists("ix", $context) ? $context["ix"] : (function () { throw new RuntimeError('Variable "ix" does not exist.', 239, $this->source); })()) + 1);
+                    // line 240
+                    echo "                                ";
+                }
+                // line 241
+                echo "                                <div class=\"shadow p-1 mb-2\" style=\"page-break-after:auto\">
+                                    <div class=\"border-bottom p-2 m-1 ms-0 ps-0 fs-6\" style=\"font-size:14px;\">
+                                        <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"#333\">
+                                            <use xlink:href=\"";
+                // line 244
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#caret-right"), "html", null, true);
+                echo "\"></use>
+                                        </svg> ";
+                // line 245
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointVerification", [], "any", false, false, false, 245), "objetVerification", [], "any", false, false, false, 245), "html", null, true);
+                echo "
+                                        <div class=\"float-end fw-bold mt-1\" style=\"font-size:14px;\">
+
+                                                <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"red\">
+                                                    <use xlink:href=\"";
+                // line 249
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#x"), "html", null, true);
+                echo "\"></use>
+                                                </svg>
+                                                <span class=\"text-danger\">";
+                // line 251
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointVerification", [], "any", false, false, false, 251), "libelleConclusion2", [], "any", false, false, false, 251), "html", null, true);
+                echo ": </span> 
+                                                ";
+                // line 252
+                if (twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointVerification", [], "any", false, false, false, 252), "pointnonconf", [], "any", false, false, false, 252)) {
+                    echo " <i class=\"text-dark\" style=\"font-size:11px;\">";
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, $context["pt"], "pointnonconf", [], "any", false, false, false, 252), "libelle", [], "any", false, false, false, 252), "html", null, true);
+                    echo "</i> ";
+                }
+                // line 253
+                echo "                                                
+                                        </div>
+                                    </div>
+                                      <div class=\"fw-light ms-4\" style=\"font-size:11px\">
+                                      Commentaire: <span class=\"text-danger\">";
+                // line 257
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["pt"], "commentaire", [], "any", false, false, false, 257), "html", null, true);
+                echo "</span>
+                                      </div>
+                                </div>
+                              ";
+            }
+            // line 261
+            echo "                            ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_iterated'], $context['_key'], $context['pt'], $context['_parent'], $context['loop']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 262
+        echo "                            </div>
+
+        </div>
+
+        <div class=\"row\">
+
+          <div class=\"col-12 mt-2\" style=\"font-size:14px; font-weight:bold\">
+            Le signataire reconnait avoir pris connaissance et accepte le réglement d'intervention du COSSUEL
+            </div>
+
+        </div>
+
+    <div class=\"clear m-4\"></div>
+    <br /><br /><br />
+        <p class=\"bottom-page text-center mt-4\">
+          <div class=\"text \">Comité Sénégalais pour la Sécurité des Usagers de l'Electricité
+            (COSSUEL) Organisme agréé par le Ministère chargé de l'Energie
+            suivant le decret No 0022609 du 22 Août 2019 Adresse: 2 Rue Wagane
+            Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL
+            Téléphone: (+221) 76 644 76 02/ 33 842 01 81 Email: cossuel@cossuel.sn</div>
+        </p>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>
+";
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+    }
+
+    public function getTemplateName()
+    {
+        return "dossier/showattest0.html.twig";
+    }
+
+    public function isTraitable()
+    {
+        return false;
+    }
+
+    public function getDebugInfo()
+    {
+        return array (  471 => 262,  465 => 261,  458 => 257,  452 => 253,  446 => 252,  442 => 251,  437 => 249,  430 => 245,  426 => 244,  421 => 241,  418 => 240,  415 => 239,  413 => 238,  407 => 237,  402 => 236,  398 => 234,  395 => 233,  392 => 232,  389 => 231,  384 => 230,  381 => 229,  378 => 228,  376 => 227,  363 => 217,  352 => 211,  343 => 205,  334 => 199,  319 => 187,  310 => 181,  306 => 180,  297 => 174,  286 => 166,  276 => 159,  267 => 153,  263 => 152,  255 => 147,  237 => 132,  233 => 131,  225 => 126,  212 => 116,  200 => 107,  191 => 101,  182 => 95,  171 => 86,  167 => 85,  163 => 84,  159 => 83,  118 => 44,  114 => 42,  112 => 41,  106 => 37,  100 => 35,  94 => 33,  91 => 32,  82 => 25,  80 => 24,  65 => 11,  63 => 10,  61 => 9,  58 => 8,  56 => 7,  54 => 6,  52 => 5,  49 => 4,  47 => 3,  45 => 2,  43 => 1,);
+    }
+
+    public function getSourceContext()
+    {
+        return new Source("{% set demande = dossier.demande %}
+{% set installation = demande.installation %}
+{% set visite = dossier.visiteCourante %}
+
+{% set proprietaire = installation.proprietaire %}
+{% set electricien = installation.electricien %}
+{% set typeConstruction = installation.typeConstruction %}
+
+{% set agence = installation.localite.agence %}
+{% set referent = dossier.referent %}
+
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset=\"utf-8\" />
+    <meta
+      name=\"viewport\"
+      content=\"width=device-width, initial-scale=1, shrink-to-fit=no\"
+    />
+
+    <!-- Bootstrap CSS -->
+
+    {% if not (app.session.get('menu') is defined and app.session.get('menu') == \"statistiques\") %}
+    <link
+      rel=\"stylesheet\"
+      href=\"https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css\"
+      integrity=\"sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn\"
+      crossorigin=\"anonymous\"
+    />
+    {% endif %}
+    {% if installation.usages == \"domestique\" %}
+      <link rel=\"stylesheet\" href=\"{{absolute_url(asset('assets/css/demande-A.css'))}}\" />
+    {% else %}
+      <link rel=\"stylesheet\" href=\"{{absolute_url(asset('assets/css/demande-B.css'))}}\" />
+    {% endif %}
+
+    <title>Bon de travaux - COSSUEL</title>
+  </head>
+  <body style=\"border:0px; background-color:#fff; padding:0px; margin:0px;\">
+    {% if app.session.get('menu') is defined and app.session.get('menu') == \"statistiques\" %}
+        <a data-bs-dismiss=\"modal\" class=\"closeModal float-end next action-button btn btn-sm btn-secondary \">Fermer</a>
+    {% endif %}
+    <div id=\"demande\">
+    <div class=\"container\" style=\"width:850px; margin-left:auto; margin-right:auto;\">
+      <div class=\"invoice\">
+        <div class=\"row \">
+          <div class=\"col-12 logo \" style=\"text-align:center\">
+            <svg
+              width=\"303\"
+              height=\"90\"
+              viewBox=\"0 0 203 70\"
+              fill=\"none\"
+              xmlns=\"http://www.w3.org/2000/svg\"
+              xmlns:xlink=\"http://www.w3.org/1999/xlink\"
+            >
+              <rect width=\"202.062\" height=\"70\" fill=\"url(#pattern0)\" />
+              <defs>
+                <pattern
+                  id=\"pattern0\"
+                  patternContentUnits=\"objectBoundingBox\"
+                  width=\"1\"
+                  height=\"1\"
+                >
+                  <use
+                    xlink:href=\"#image0_212_2254\"
+                    transform=\"translate(-0.117857 -0.206186) scale(0.00357143 0.0103093)\"
+                  />
+                </pattern>
+                <image
+                  id=\"image0_212_2254\"
+                  width=\"353\"
+                  height=\"135\"
+                  xlink:href=\"data:image/png;base64,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\"
+                />
+              </defs>
+            </svg>
+          </div>
+          <div class=\"col-12\">
+            <p class=\"document-type text-demande\">BON DE TRAVAUX</p>
+            <h5 class=\"text-center mb-4 \">
+              Usage 
+              {% if installation.usages == \"domestique\" %} domestique 
+              {% elseif installation.usages == \"domestique\" %} Professionnel 
+              {% elseif installation.usages == \"erp_ert\" %} ERP - ERT {% endif %}
+            </h5> 
+
+          </div>
+        </div>
+        <div class=\"clear mt-4\"></div>
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-4\">
+            <div class=\"d-flex justify-content-between\">
+                Bon de travaux N°:
+                <span class=\"indentif\">{{ demande.numero }}</span>
+            </div>
+          </div>
+          <div class=\"col-4\">
+            <div class=\"d-flex justify-content-between\">
+                Délivré le :
+                <span class=\"indentif\">{{ visite.dateAtteste | date(\"d/m/Y\") }}</span>
+            </div>
+          </div>
+          <div class=\"col-4\">
+              <div class=\"d-flex justify-content-between\">
+                  Expire le :
+                  <span class=\"indentif\">{{ visite.dateAtteste | date_modify(\"+1 year\") | date(\"d/m/Y\") }}</span>
+              </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-12\">
+            <div class=\"d-flex\">
+                Installateur/Bureau Contrôle:
+                <span class=\"indentif\" style=\"margin-left:10px;\">{{ electricien.nomComplet }}</span>
+            </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+
+        <div class=\"row mb-2 font-size:16px;\">
+          <div class=\"col-6\">
+            <div class=\"d-flex\">
+                Téléphone :
+                <span class=\"indentif\" style=\"margin-left:10px;\">{{ electricien.telephone }}</span>
+            </div>
+          </div>
+          <div class=\"col-6\">
+            <div class=\"d-flex\">
+                Numéro {{electricien.typepiece}} :
+                <span class=\"indentif\" style=\"margin-left:10px;\">{{ electricien.numPiece }}</span>
+            </div>
+          </div>
+          <div class=\"clear\"></div>
+        </div>
+
+
+        <div class=\"clear\"></div>
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">INSTALLATION ELECTRIQUE</div>
+            </div>
+            <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Propriètaire :</span>
+                  <span class=\"indentif\">{{proprietaire.nomComplet}}</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Numéro {{proprietaire.typePiece}}</span>
+                  <span class=\"indentif\">{{proprietaire.numPiece}}</span>
+                </div>
+              </div>
+              <div class=\"col-12\">
+                <div class=\"d-flex mb-2\">
+                  <span>Adresse:</span>
+                  <span class=\"indentif\" style=\"margin-left:10px;\">{{proprietaire.adresse}}</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>
+                    Téléphone:</span>
+                  <span class=\"indentif\">{{proprietaire.telephone}}</span>
+                </div>
+              </div>
+              <div class=\"col-6\">
+                <div class=\"d-flex justify-content-between mb-2\">
+                  <span>
+                    Localité:</span>
+                  <span class=\"indentif\">
+                    {{proprietaire.localite}}</span>
+                </div>
+              </div>
+              <div class=\"col-12\">
+                      <div class=\"d-flex mb-2\">
+                          <span> Coordonnées GPS</span> 
+                          <span style=\"margin-left:20px\"> Latitude:</span> <span class=\"indentif\" style=\"margin-left:10px\">{{installation.lattitude}}</span>
+                          <span style=\"margin-left:20px\"> Longitude:</span> <span class=\"indentif\" style=\"margin-left:10px\">{{installation.longitude}}</span>
+                      </div>
+              </div>
+              <div class=\"col-12\">
+              <div class=\"d-flex justify-content-between mb-2\">
+                  <span>Puissance Demandée :</span>
+                  <span class=\"indentif\">{{installation.demandeCourante.puissance}} Kw</span>
+                </div>
+              </div>
+       </div>
+
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">INFORMATIONS COSSUEL</div>
+            </div>
+            <div class=\"col-12\">
+                <div class=\"d-flex mb-2\">
+                  <span>Agence :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">{{agence.nom}}</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Numéro Demande :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">{{demande.numero}}</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Code Client :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">{{electricien.typePiece}}-{{electricien.numPiece}}</span>
+                </div>
+            </div>
+            <div class=\"col-12\">
+              <div class=\"d-flex mb-2\">
+                  <span>Référent technique :</span>
+                  <span style=\"margin-left:10px;\" class=\"indentif\">{{dossier.referent}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class=\"row border\" style=\"margin-top:20px; padding:0px;\">
+            <div class=\"col-12\" style=\"padding:0px;\">
+              <div class=\"bg-orange\">TRAVAUX</div>
+            </div>
+
+                        {% set rub = \"\" %}
+                        {% set ix = 0 %}
+                        {% set les_detailverif = dossier.visiteCourante.detailVerification %}
+                            {% for pt in les_detailverif %}
+                              {% if not pt.conclusion and not pt.sansobjet %}
+                                {% if rub != pt.pointverification.rubrique.id %}
+                                    {% if rub %}
+                                        </div>
+                                    {% endif %}
+                                    <div class=\"col-12\" id=\"zrub_{{ ix }}\">
+                                        <h6 class=\"p-1 bg-dark text-light shadow border-bottom\"> {{ pt.pointverification.rubrique.numero }}- {{ pt.pointverification.rubrique.libelle }}</h6>
+                                    {% set rub = pt.pointverification.rubrique.id %}
+                                    {% set ix = ix + 1 %}
+                                {% endif %}
+                                <div class=\"shadow p-1 mb-2\" style=\"page-break-after:auto\">
+                                    <div class=\"border-bottom p-2 m-1 ms-0 ps-0 fs-6\" style=\"font-size:14px;\">
+                                        <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"#333\">
+                                            <use xlink:href=\"{{ asset('assets/img/bootstrap-icons.svg#caret-right') }}\"></use>
+                                        </svg> {{ pt.pointVerification.objetVerification }}
+                                        <div class=\"float-end fw-bold mt-1\" style=\"font-size:14px;\">
+
+                                                <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"red\">
+                                                    <use xlink:href=\"{{ asset('assets/img/bootstrap-icons.svg#x') }}\"></use>
+                                                </svg>
+                                                <span class=\"text-danger\">{{ pt.pointVerification.libelleConclusion2 }}: </span> 
+                                                {% if pt.pointVerification.pointnonconf %} <i class=\"text-dark\" style=\"font-size:11px;\">{{ pt.pointnonconf.libelle }}</i> {% endif %}
+                                                
+                                        </div>
+                                    </div>
+                                      <div class=\"fw-light ms-4\" style=\"font-size:11px\">
+                                      Commentaire: <span class=\"text-danger\">{{pt.commentaire}}</span>
+                                      </div>
+                                </div>
+                              {% endif %}
+                            {% endfor %}
+                            </div>
+
+        </div>
+
+        <div class=\"row\">
+
+          <div class=\"col-12 mt-2\" style=\"font-size:14px; font-weight:bold\">
+            Le signataire reconnait avoir pris connaissance et accepte le réglement d'intervention du COSSUEL
+            </div>
+
+        </div>
+
+    <div class=\"clear m-4\"></div>
+    <br /><br /><br />
+        <p class=\"bottom-page text-center mt-4\">
+          <div class=\"text \">Comité Sénégalais pour la Sécurité des Usagers de l'Electricité
+            (COSSUEL) Organisme agréé par le Ministère chargé de l'Energie
+            suivant le decret No 0022609 du 22 Août 2019 Adresse: 2 Rue Wagane
+            Diouf, Immeuble Mame Alassane FALL, 7ème étage DAKAR SENEGAL
+            Téléphone: (+221) 76 644 76 02/ 33 842 01 81 Email: cossuel@cossuel.sn</div>
+        </p>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>
+", "dossier/showattest0.html.twig", "/Users/msallabdelaziz/Desktop/CossuelAppV2/kgm-cossuel-master-3/templates/dossier/showattest0.html.twig");
+    }
+}
