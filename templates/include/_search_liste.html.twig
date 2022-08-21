@@ -1,0 +1,9 @@
+    <form method="post" id="form_rech_list">
+            <input type="hidden" id="val_rech" type="text" name="val_rech" value="">
+        {% for inp in ["localite", "agence", "usage", "passage", "statut", "controleur", "referent", "profil", "modep", "typep" ] %}
+            <input type="hidden" id="val_{{inp}}" name="val_{{inp}}" value="">
+        {% endfor %}
+        <input type="hidden" id="val_deb" type="text" name="val_deb" value="">
+        <input type="hidden" id="val_fin" type="text" name="val_fin" value="">
+
+    </form>

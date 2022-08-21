@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New TypeConstruction{% endblock %}
+
+{% block body %}
+    <h1>Create new TypeConstruction</h1>
+
+    {{ include('type_construction/_form.html.twig') }}
+
+    <a href="{{ path('app_type_construction_index') }}">back to list</a>
+{% endblock %}

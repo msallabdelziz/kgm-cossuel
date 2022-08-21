@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/region" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des départements</span>
+            </a>
+            <a href="{{ path('app_region_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Régions</a>
+        </header>
+        <div class="row">
+            <div class="col-lg-5 mb-2 shadow border border-light card0 p-3 me-4 priority-4">
+                <nav class="navbar text-secondary  my-2 p-1">
+                    <div class="container-fluid">
+                        <span class="navbar-brand mb-0 h1">Région de {{ departement.region.nom }}</span>
+                    </div>
+                </nav>
+                <div class="container">
+                    <div class="row p-2 bg-light bg-opacity-25 border rounded">
+                        <div class="col-4">
+                            <label class="fw-light fs-7">Code</label>
+                            <div class="ms-4">{{ departement.region.code }}</div>
+                        </div>
+                        <div class="col-8">
+                            <label class="fw-light fs-7">Nom</label>
+                            <div class="ms-4">{{ departement.region.nom }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container mt-4">
+                    <div class="row">
+                        <table class="table table-striped table-hover table-sm pt-0 mt-0">
+                        <caption align="top" class="fs-5 mt-0 pt-0">
+                            Liste des départements de {{ departement.region.nom }} ({{ departement.region.departement|length }})
+                        </caption>
+                        {% if departement.region.departement.count %}
+                        <thead>
+                            <tr>
+                                <th width="20%" scope="col">Code</th> 
+                                <th scope="col">Nom</th> 
+                                <th scope="col" width="1%" align="center">Localités</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dep in departement.region.departement %}
+                                {% set cur='' %}
+                                {% if departement.id==dep.id %}
+                                    {% set cur='bg-warning text-dark bg-opacity-25' %}
+                                {% endif %}
+                                <tr class="{{ cur }}">
+                                    <td scope="row"><a href="{{ path('app_departement_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.code }}</a></td>
+                                    <td><a href="{{ path('app_departement_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
+                                    <td align="center">
+                                    {% if dep.localite.count >0 %}
+                                        <a href="{{ path('app_departement_show', {'id': dep.id }) }}" class="badge bg-success text-decoration-none text-light rounded-pill fw-normal">{{ dep.localite.count }}</a>
+                                    {% else %}
+                                        <code class="text-danger text-opacity-50">-</code>
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% else %}
+                            <tr class=""><td colspan="2" class=" text-center"><span class="text-danger fs-7">Aucun département !</span></td></tr>
+                        {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-2 shadow border border-light card p-3">
+                <div class="container">
+                    <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
+                        <div class="container-fluid">
+                            <span class="navbar-brand mb-0 h1">Edition du département {{ departement.code }}</span>
+                        </div>
+                    </nav>
+                    <div class="container">
+                        {{ form_start(departementForm) }}
+                            {{ form_row(departementForm.region) }}
+                            {{ form_row(departementForm.code) }}
+                            {{ form_row(departementForm.nom) }}
+                            <div align="center">
+                                <a class="btn btn-secondary" href="{{ path('app_departement_show', { 'id': departement.id }) }}">Annuler</a>
+                                <button type="submit" class="btn btn-primary btn my-3">Enregistrer</button>
+                            </div>
+                        {{ form_end(departementForm) }}            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+

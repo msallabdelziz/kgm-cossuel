@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}NatureBatiment index{% endblock %}
+
+{% block body %}
+    <h1>NatureBatiment index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for nature_batiment in nature_batiments %}
+            <tr>
+                <td>{{ nature_batiment.id }}</td>
+                <td>{{ nature_batiment.code }}</td>
+                <td>{{ nature_batiment.nom }}</td>
+                <td>
+                    <a href="{{ path('app_nature_batiment_show', {'id': nature_batiment.id}) }}">show</a>
+                    <a href="{{ path('app_nature_batiment_edit', {'id': nature_batiment.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_nature_batiment_add') }}">Create new</a>
+{% endblock %}

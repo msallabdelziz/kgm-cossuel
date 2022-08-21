@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/rapport" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des rapports</span>
+            </a>
+            <a href="{{ path('app_rapport_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des rapports</a>
+        </header>
+        <div class="row">
+            <div class="mb-2 shadow border border-light card p-3">
+                <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
+                    <div class="container-fluid">
+                        <span class="navbar-brand mb-0 h1">Aperçu Rapport {{ rapport.libelle }}</span>
+                        <div class="float-end">
+                                <a href="{{ path('app_rapport_show', {'id': rapport.id }) }}" class="action-button2 btn-secondary py-0 btn-sm fs-7" title="Retour">
+                                    <svg class="bi" width="16" height="16" fill="orange">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#arrow-return-left') }}"></use>
+                                    </svg> Retour
+                                </a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="container mt-4">
+                    <div class="row">
+                        {% if rapport.rubriques.count %}
+                        <div>
+                        {% for rub in rapport.rubriques %}
+                            <div class="mb-3">
+                                <h5 class="p-2 bg-dark text-light shadow border-bottom">{{ rub.numero }}- {{ rub.libelle }}</h5>
+                                {% if rub.pointverification.count %}
+                                    <div class="p-2 ps-4 border shadow border-dark">
+                                    {% for pt in rub.pointverification %}
+                                        <div class="py-2 border-bottom mb-2">{{ pt.numero }}- {{ pt.objetVerification }}</div>
+                                        <div class="row p-2 ps-4">
+                                            <div class="col-5 border fw-light border-light shadow p-2">
+                                                <svg class="bi" width="24" height="24" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check') }}"></use>
+                                                </svg>
+                                                {{ pt.libelleConclusion1 }}
+                                                <div class="float-end">
+                                                    <svg class="bi" width="24" height="24" fill="gray">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="col-5 offset-1 fw-light border border-light shadow p-2">
+                                                <svg class="bi" width="24" height="24" fill="red">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#x') }}"></use>
+                                                </svg>
+                                                {{ pt.libelleConclusion2 }}
+                                                <div class="float-end">
+                                                    <svg class="bi" width="24" height="24" fill="gray">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#square') }}"></use>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="col-11 mt-2 border fw-light border-light shadow border-opacity-25 pb-5 pt-1 ps-2 fs-8 text-secondary">
+                                                Commentaire: 
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class=" text-center"><span class="text-danger fs-7">Aucun point de vérification !</span></div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        </div>
+                        {% else %}
+                            <div class=" text-center"><span class="text-danger fs-7">Aucune rubrique !</span></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des installations</span>
+            </a>
+            <a href="{{ path('app_installation_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Installations</a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-3" %}            
+            <div class="{{ offset }} col-lg-6 mb-2 shadow border border-light card p-3">
+
+                <div class="">
+                    <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
+                        <div class="container-fluid">
+                            <span class="navbar-brand mb-0 h1">Edition d'Installation</span>
+                        </div>
+                    </nav>
+                    <div class="">
+                        {{ form_start(installationForm) }}
+                            <div class="row">
+                                <div class="col-lg-5">
+                                    {{ form_row(installationForm.code) }}<br>
+                                </div>
+                                <div class="col-lg-7">
+                                    {{ form_row(installationForm.nom) }}<br>
+                                </div>
+                                <div class="col-lg-12">
+                                {{ form_row(installationForm.localite) }}<br>
+                                </div>
+                                <div class="col-lg-12">
+                                    {{ form_row(installationForm.adresse) }}<br>
+                                </div>
+                                <div class="col-lg-5">
+                                    {{ form_row(installationForm.telephone) }}<br>
+                                </div>
+                                <div class="col-lg-7">
+                                    {{ form_row(installationForm.email) }}<br>
+                                </div>
+                            </div>
+                            <div align="center">
+                                <a class="btn btn-secondary" href="{{ path('app_installation_index') }}">Annuler</a>
+                                <button type="submit" class="btn btn-primary btn my-3">Enregistrer</button>
+                            </div>
+                        {{ form_end(installationForm) }}            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

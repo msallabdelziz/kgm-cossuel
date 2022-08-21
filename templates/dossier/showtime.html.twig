@@ -1,0 +1,320 @@
+{% extends 'base_modal.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <style>
+
+#tm ul, #tm li{
+  list-style: none;
+  padding: 0;
+}
+
+#tm .container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+}
+#tm .wrapper{
+}
+#tm h1{
+  font-size: 1.1rem;
+}
+#tm .sessions{
+  position: relative;
+  width:400px;
+}
+#tm li{
+  padding-top:0px;
+  padding-bottom: 1.5rem;
+  border-left: 1px solid black;
+  position: relative;
+  padding-left: 25px;
+  margin-left: 10px;
+}
+  #tm li:last-child{
+    {# border: 0px;
+    padding-bottom: 0; #}
+  }
+  #tm li:before{
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: black;
+    border: 2px solid orange;
+    border-radius: 50%;
+    position: absolute;
+    left: -10px;
+    top: 0px;
+  }
+
+#tm .time{
+  color: #2a2839;
+  font-weight: 500;
+  font-size:14px;
+  @include mobile-and-up{
+    font-size: .9rem;
+  }
+  @include mobile-only{
+    margin-bottom: .3rem;
+    font-size: 0.85rem;
+  }
+
+}
+
+#tm .delai {
+    float: left;
+    position:relative; 
+    left:-70px;
+    top:-20px;
+    font-style:italic;
+    color:red;
+    padding:1px 4px;
+    line-height:14px;
+    font-size:12px;
+
+}
+
+#tm p{
+  color: #4f4f4f;
+  font-size:12px;
+  margin-top:1px;
+  margin-left:4px;
+  @include mobile-only{
+    font-size: .9rem;
+  }
+}
+    </style>
+
+    {% set action_demande = "Validation" %}
+    {% if demande is not defined and dossier is defined %}
+        {% set demande = dossier.demande %}
+    {% endif %}
+    {% set paiement = demande.paiement %}
+    {% set installation = demande.installation %}
+    
+    <section class="">
+         <div class="row">
+
+            <div class="mb-2">
+                <div class="p-1" id="tm">
+                    <h2 class="fs-title">Historique Demande
+                        <a data-bs-dismiss="modal" class="float-end next action-button btn btn-sm btn-secondary ">Fermer</a>
+                    </h2>
+                    <hr />
+                    {# TIMELINE #}
+
+                    <div class="container">
+                        <div class="wrapper">
+                            <ul class="sessions" align="left">
+                                <li>
+                                    <div class="time">{{ demande.createdAt | date('d-m-Y à H:i:s') }}
+                                    </div>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Création de la demande</p>
+                                    {% if demande.createdBy %}
+                                        <div class="float-end fw-light fs-8">
+                                            {{ tools.getUtilisateur(demande.createdBy).nomComplet}}
+                                            <svg class="bi" width="16" height="16" fill="green">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                            </svg>
+                                        </div>
+                                        <div class="clear mb-2"></div>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    <div class="time">{{ demande.dateCreation | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((demande.createdAt | date('d-m-Y')), (demande.dateCreation | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Soumission de la demande</p>
+                                        {% if demande.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(demande.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% if paiement is defined and paiement is not null %}
+                                {% if paiement.dateSaisie %}
+                                <li>
+                                    <div class="time">{{ paiement.dateSaisie | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((demande.dateCreation | date('d-m-Y')), (paiement.dateSaisie | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Enregistrement du Paiement de la demande</p>
+                                        {% if paiement.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(paiement.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% endif %}
+                                {% if paiement.datePaiement %}
+                                <li>
+                                    <div class="time">{{ paiement.datePaiement | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((paiement.dateSaisie | date('d-m-Y')), (paiement.datePaiement | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Validation du Paiement de la demande</p>
+                                        {% if paiement.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(paiement.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% endif %}
+                                {% endif %}
+                                {% if dossier is defined %}
+                                <li>
+                                    <div class="time">{{ dossier.dateCreation | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((paiement.dateSaisie | date('d-m-Y')), (dossier.dateCreation | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Création du dossier et affectation</p>
+                                        {% if dossier.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(dossier.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% for vv in dossier.visites %}
+                                    {% if vv.id != dossier.visiteCourante.id %}
+                                    <li>
+                                        <div class="time">{{ vv.createdAt | date('d-m-Y à H:i:s') }}</div>
+                                        <p class="delai" >{{ tools.nbjours_entre((dossier.dateCreation | date('d-m-Y')), (vv.createdAt | date('d-m-Y'))) }} j</p>
+                                        <p class="fw-light fs-7">
+                                            <svg class="bi" width="24" height="24" fill="black">
+                                                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                            </svg>
+                                            Planification inspection installation <font style="font-size:11px; color:green">({{vv.datePlanifie|date('d/m/Y')}})</font> <br /><span style="font-size:11px; color:red">[Reporté]</span>
+                                            <span style="font-size:11px; font-style:italic; color:#900">{{vv.commentaire}}</span>
+                                            </p>
+                                            {% if vv.createdBy %}
+                                                <div class="float-end fw-light fs-8">
+                                                    {{ tools.getUtilisateur(vv.createdBy).nomComplet}}
+                                                    <svg class="bi" width="16" height="16" fill="green">
+                                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                    </svg>
+                                                </div>
+                                                <div class="clear mb-2"></div>
+                                            {% endif %}
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if dossier.visiteCourante %}
+                                <li>
+                                    <div class="time">{{ dossier.visiteCourante.createdAt | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((dossier.dateCreation | date('d-m-Y')), (dossier.visiteCourante.createdAt | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Planification inspection installation  <span style="font-size:11px; color:green">({{dossier.visiteCourante.datePlanifie|date('d/m/Y')}})</span></p>
+                                        {% if dossier.visiteCourante.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(dossier.visiteCourante.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% if dossier.visiteCourante.dateRealise %}
+                                <li>
+                                    <div class="time">{{ dossier.visiteCourante.dateRealise | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((dossier.visiteCourante.datePlanifie | date('d-m-Y')), (dossier.visiteCourante.dateRealise | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Réalisation de l'inspection de l'installation</p>
+                                        {% if dossier.visiteCourante.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(dossier.visiteCourante.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% endif %}
+                                {% if dossier.visiteCourante.dateRapporte %}
+                                <li>
+                                    <div class="time">{{ dossier.visiteCourante.dateRapporte | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((dossier.visiteCourante.dateRealise | date('d-m-Y')), (dossier.visiteCourante.dateRapporte | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Elaboration du rapport de l'inspection</p>
+                                        {% if dossier.visiteCourante.createdBy %}
+                                            <div class="float-end fw-light fs-8">
+                                                {{ tools.getUtilisateur(dossier.visiteCourante.createdBy).nomComplet}}
+                                                <svg class="bi" width="16" height="16" fill="green">
+                                                    <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#person') }}"></use>
+                                                </svg>
+                                            </div>
+                                            <div class="clear mb-2"></div>
+                                        {% endif %}
+                                </li>
+                                {% endif %}
+                                {% if dossier.visiteCourante.dateAtteste %}
+                                <li>
+                                    <div class="time">{{ dossier.visiteCourante.dateAtteste | date('d-m-Y à H:i:s') }}</div>
+                                    <p class="delai" >{{ tools.nbjours_entre((dossier.visiteCourante.dateRapporte | date('d-m-Y')), (dossier.visiteCourante.dateAtteste | date('d-m-Y'))) }} j</p>
+                                    <p class="fw-light fs-7">
+                                        <svg class="bi" width="24" height="24" fill="black">
+                                            <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#check2') }}"></use>
+                                        </svg>
+                                        Attestation et Cloture de la demande</p>
+                                </li>
+                                {% endif %}
+                                {% endif %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>                     
+
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+            
+    });
+</script>
+{% endblock %}
