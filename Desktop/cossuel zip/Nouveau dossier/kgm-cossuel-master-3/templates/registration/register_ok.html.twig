@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL:: Inscription{% endblock %}
+
+{% block body %}
+    <main class="login-page bg-yellow">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12 mb-4">
+                    <div class="text-center logo-intro">
+                        <img src="{{ asset('assets/img/logo-cossuel-black.png') }}" alt="LOGO COSSUEL">
+                    </div>
+                </div>
+                <div class="col-md-6 offset-md-3">
+                    <div class="form-signup card text-center">
+                        <h4 class="fw-bold text-success text-uppercase mb-5">Votre inscription a été effectuée avec
+                            succès !</h4>
+                        <h3 class="fw-bold mb-1">Encore une étape :</h3>
+                        <p class="small text-black-50 fw-light mb-5">Veuillez valider votre compte. Un mail vous vous a été envoyé
+                            avec le lien d'activation</p>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <a href="{{ path('app_login') }}" class="btn btn-primary mx-2">Se connecter</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}

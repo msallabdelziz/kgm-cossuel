@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="/region" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Gestion des Agences</span>
+            </a>
+            <a href="{{ path('app_region_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Régions</a>
+        </header>
+        <div class="row">
+            <div class="col-12 shadow border border-light">
+                <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
+                    <div class="container-fluid">
+                        <span class="navbar-brand mb-0 h1"> Ajout Agence</span>
+                    </div>
+                </nav>
+                <div class="container">
+                <form type="POST" action="{{ path('app_affecter_create', {'id': ag.id }) }}" >
+                    <select name="agence">
+                        {% for ag in agence %}
+                        <option value='{{ ag.id }}'>{{ ag.nom }}</option>
+                        {% endfor %}
+                    </select><br><br>
+                    <input type='submit' class='btn btn btn-sm py-0 fs-7 btn-secondary' />
+                </form>            
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

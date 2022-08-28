@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Client{% endblock %}
+
+{% block body %}
+    <h1>Client</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ client.id }}</td>
+            </tr>
+            <tr>
+                <th>Prenom</th>
+                <td>{{ client.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ client.nom }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ client.type }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ client.adresse }}</td>
+            </tr>
+            <tr>
+                <th>Telephone</th>
+                <td>{{ client.telephone }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ client.email }}</td>
+            </tr>
+            <tr>
+                <th>TypePiece</th>
+                <td>{{ client.typePiece }}</td>
+            </tr>
+            <tr>
+                <th>NumPiece</th>
+                <td>{{ client.numPiece }}</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>{{ client.role }}</td>
+            </tr>
+            <tr>
+                <th>Created_at</th>
+                <td>{{ client.createdAt ? client.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Created_by</th>
+                <td>{{ client.createdBy }}</td>
+            </tr>
+            <tr>
+                <th>Updated_at</th>
+                <td>{{ client.updatedAt ? client.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated_by</th>
+                <td>{{ client.updatedBy }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_client_index') }}">back to list</a>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
+        {{ include('client/_delete_form.html.twig') }}
+    {% endif %}
+{% endblock %}

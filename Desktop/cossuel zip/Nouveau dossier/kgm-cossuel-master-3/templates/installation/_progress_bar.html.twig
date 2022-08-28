@@ -1,0 +1,58 @@
+
+{% set les_etat = [] %}
+{% set les_link = [] %}
+{% set les_coul = [] %}
+{% set les_lib = ["Données de base", "Données sur le Site", "Données Installation", "Données Electricien", "Données Propriétaire", "Soumission demande"] %}
+{% set les_icon = ["lightbulb", "house-door", "gear", "person", "person-check", "check"] %}
+{% set coul0="gray" %}
+{% set coulX="" %}
+{% for i in 1..6 %}
+    {% if installation.step >= i %}
+        {% if i==1 %}
+            {% set les_link = les_link|merge(["app_installation_add"]) %}
+        {% else %}
+            {% set les_link = les_link|merge(["app_installation_add" ~ i]) %}
+        {% endif %}
+        {% set les_etat = les_etat|merge(["active"]) %}
+    {% else %}
+        {% set les_link = les_link|merge([""]) %}
+        {% set les_etat = les_etat|merge([""]) %}
+    {% endif %}
+
+    {% set coul0="gray" %}
+    
+    {% if installation.step >= i %}
+        {% set coul0="#fff" %}
+    {% endif %}
+
+    {% if i == curr_etat %}
+        {% set coul0="#ffc328" %}
+        {% set coulX="#ffc328" %}
+    {% endif %}
+
+    {% set les_coul = les_coul|merge([coul0]) %}
+
+{% endfor %}
+{# Etape: {{ installation.step }} - Courant: {{ curr_etat }} : Couleur: {{ coulX }} #}
+<div>
+    <!-- progressbar -->
+    <ul id="progressbar" class="row priority-3">
+    {% for i in 0..5 %}
+        {% set id_install = 0 %}
+        {% if installation.id %}
+            {% set id_install = installation.id %}
+        {% endif %}
+        <li class="step {{ les_etat[i] }}">
+        {% if les_link[i] %}
+            <svg onclick="location.href = '{{ path(les_link[i] , {'id': id_install}) }}'" class="pt bi" width="16%" height="24" fill="{{ les_coul[i] }}" style="position:relative; left:42%; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#' ~ les_icon[i]) }}"></use>
+            </svg>
+        {% else %}
+            <svg class="bi" width="24" height="24" fill="{{ les_coul[i] }}" style="position:relative; left:43%; top:-48px;">
+                <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#' ~ les_icon[i]) }}"></use>
+            </svg>
+        {% endif %}
+            {{les_lib[i]}}
+        </li>
+    {% endfor %}
+    </ul>

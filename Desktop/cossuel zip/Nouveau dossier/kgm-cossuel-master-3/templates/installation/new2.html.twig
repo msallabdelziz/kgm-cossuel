@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}COSSUEL{% endblock %}
+{% block body %}
+    <section class="">
+        <header class="hstack pb-2 mb-2 border-bottom">
+            <a href="" class="align-items-center text-dark text-decoration-none">
+                <span class="fs-4">Soumission de demandes </span>
+            </a>
+        </header>
+        <div class="row">
+        {% set offset="offset-md-1" %}            
+            <div class="{{ offset }} col-lg-10 mb-2  p-3">
+
+                <div class="">
+                    <nav class="navbar shadow bg-warning border border-dark my-2 mb-2 p-0">
+                        <div class="container-fluid ps-4">
+                            <div class="navbar-brand mb-0 fs-4 fw-400 row col">
+                                <div class="col">
+                                    <svg class="bi" width="24" height="24" fill="black">
+                                        <use xlink:href="{{ asset('assets/img/bootstrap-icons.svg#lightbulb') }}"></use>
+                                    </svg>
+                                    Saisie Nouvelle demande
+                                </div>
+                                <div class="col" align="right">
+                                        <span class="text-danger">[Etape 2 sur 6]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                    <div class="">
+                        {{ form_start(installationForm, {'attr': {'id': 'formInstall'}}) }}
+                            <div class="row">
+                            {% set curr_etat = 2 %}
+                            {{ include('installation/_progress_bar.html.twig') }}
+                            	<fieldset>
+                                <div class="card">
+                                    <h2 class="fs-title">Caractéristiques du site</h2>
+                                    <div class="row">
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-4">
+                                            {{ form_row(installationForm.collectif) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 collectif1">
+                                            {{ form_row(installationForm.nomSite) }}<br>
+                                        </div>
+                                        <div class="col-lg-4 collectif1">
+                                            {{ form_row(installationForm.logement) }}<br>
+                                        </div>
+                                        <hr class="mb-3" />
+                                        <div class="col-lg-6">
+                                            {{ form_row(installationForm.typeConstruction) }}<br>
+                                        </div>
+                                        <div class="col-lg-3 typeConstruction1">
+                                            {{ form_row(installationForm.niveau) }}<br>
+                                        </div>
+                                        <div class="col-lg-6 typeConstruction3">
+                                            {{ form_row(installationForm.activite) }}<br>
+                                        </div>
+                                        <div class="col-lg-3 typeConstruction1 typeConstruction2">
+                                            {{ form_row(installationForm.priece) }}<br>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% include "installation/_actions_new.html.twig" %}
+                                </fieldset>
+                            </div>
+                            {# <div align="center">
+                                <a class="previous btn btn-secondary" href="{{ path('app_installation_index') }}">Annuler</a>
+                                <button type="button" class="next action-button btn btn-primary btn my-3">Enregistrer</button>
+                            </div> #}
+                        {{ form_end(installationForm) }}            
+                        {% include "installation/_delete_form.html.twig" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block javascripts %}
+<script>
+    $(document).ready(function () {
+        $('#form_typeConstruction').prop('required',true);
+    
+        $('.collectif0').show(); $('.collectif1').hide();
+        optSel=$('input[type=radio][name="form[collectif]"]:checked');
+        valSel=optSel.val();
+        if (valSel==1) {
+            $('.collectif1').show(); $('.collectif0').hide();
+            $('#form_nomSite').prop('required',true);
+            $('#form_logement').prop('required',true);
+        }
+        $('input[type=radio][name="form[collectif]"]').change(function() {
+            optSel=$('input[type=radio][name="form[collectif]"]:checked');
+            valSel=optSel.val();
+            if (valSel==1) {
+                $('.collectif1').show(); $('.collectif0').hide();
+                $('#form_nomSite').prop('required',true);
+                $('#form_logement').prop('required',true);
+            }
+            else if (valSel==0) {
+                $('.collectif0').show(); $('.collectif1').hide();
+                $('#form_nomSite').prop('required',false);
+                $('#form_logement').prop('required',false);
+            }
+        });
+
+        $('.typeConstruction1').hide(); $('.typeConstruction2').hide();  $('.typeConstruction3').hide();
+        optSel=$('select[name="form[typeConstruction]"]').find("option:selected");
+        valSel=optSel.text();
+        if (valSel == "Maison" || valSel == "IGH (Immeuble de Grande Hauteur)") {
+            $('.typeConstruction1').show(); 
+            $('#form_niveau').prop('required',true); 
+            {% if installation.usages != "erp_ert" %}
+                $('#form_niveau').prop('max', 4);
+            {% else %}
+                $('#form_niveau').prop('min', 5);
+            {% endif %}
+            $('#form_priece').prop('required',true);
+        }
+        else if (valSel == "Appartement" || valSel == "Foyer Logement" || valSel == "Dépendance") {
+            $('.typeConstruction2').show();
+            $('#form_priece').prop('required',true);
+        }
+        else if (valSel == "Etablissement Recevant du Public (ERP)" || valSel == "Etablissement Recevant des Travailleurs (ERT)") {
+            $('.typeConstruction3').show(); 
+            $('#form_activite').prop('required',true);
+        }
+
+        $('select[name="form[typeConstruction]"]').on('change', function() {
+            $('.typeConstruction1').hide(); $('.typeConstruction2').hide(); $('.typeConstruction3').hide();
+            optSel=$('select[name="form[typeConstruction]"]').find("option:selected");
+            valSel=optSel.text();
+            $('#form_niveau').prop('required',false);
+            $('#form_priece').prop('required',false);
+            $('#form_activite').prop('required',false);
+            if (valSel == "Maison" || valSel == "IGH (Immeuble de Grande Hauteur)") {
+                $('.typeConstruction1').show(); 
+                $('#form_niveau').prop('required',true); 
+                {% if installation.usages != "erp_ert" %}
+                    $('#form_niveau').prop('max', 4);
+                {% else %}
+                    $('#form_niveau').prop('min', 5);
+                {% endif %}
+                $('#form_priece').prop('required',true);
+            }
+            else if (valSel == "Appartement" || valSel == "Foyer Logement" || valSel == "Dépendance") {
+                $('.typeConstruction2').show();
+                $('#form_priece').prop('required',true);
+            }
+            else if (valSel == "Etablissement Recevant du Public (ERP)" || valSel == "Etablissement Recevant des Travailleurs (ERT)") {
+                $('.typeConstruction3').show(); 
+                $('#form_activite').prop('required',true);
+            }
+        });
+    });
+</script>
+
+{% endblock %}
