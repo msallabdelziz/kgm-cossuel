@@ -314,7 +314,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label >Téléphone</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ demande.installation.electricien.telephone }}">
+                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ demande.installation.electricien.telephone }} / {{ demande.installation.electricien.autreNumTelephone }}">
                             </div>
                             <div class="col-lg-4">
                                 <label >Email</label>
@@ -442,7 +442,7 @@
                         <div class="col-md-5">
                             <div class="mb-1">
                                 <label class="fs-7" >Tél Electricien</label>
-                                <input type="text" disabled readonly class=" form-control text-dark form-control fw-bold py-0 fs-6" value="{{ dossier.demande.installation.electricien.telephone }}">
+                                <input type="text" disabled readonly class=" form-control text-dark form-control fw-bold py-0 fs-6" value="{{ dossier.demande.installation.electricien.telephone }} {{ dossier.demande.installation.electricien.autreNumTelephone }}">
                             </div>
                         </div>
                         <hr class="my-2 mb-3" />

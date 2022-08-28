@@ -392,6 +392,8 @@ class __TwigTemplate_e80a335cdaec94597a52898e0aa5d583 extends Template
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
             // line 165
             echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 165, $this->source); })()), "electricien", [], "any", false, false, false, 165), "telephone", [], "any", false, false, false, 165), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 165, $this->source); })()), "electricien", [], "any", false, false, false, 165), "autreNumTelephone", [], "any", false, false, false, 165), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
@@ -474,7 +476,7 @@ class __TwigTemplate_e80a335cdaec94597a52898e0aa5d583 extends Template
 
     public function getDebugInfo()
     {
-        return array (  447 => 192,  441 => 189,  437 => 187,  432 => 185,  427 => 183,  424 => 182,  422 => 181,  415 => 177,  408 => 173,  401 => 169,  394 => 165,  387 => 161,  380 => 157,  373 => 153,  366 => 149,  358 => 143,  355 => 142,  350 => 138,  344 => 135,  337 => 131,  333 => 129,  331 => 128,  326 => 126,  319 => 122,  312 => 118,  307 => 115,  301 => 112,  294 => 108,  287 => 104,  283 => 102,  281 => 101,  272 => 99,  265 => 95,  257 => 89,  255 => 88,  247 => 83,  240 => 79,  233 => 75,  226 => 71,  216 => 66,  213 => 65,  211 => 64,  202 => 57,  194 => 55,  186 => 53,  184 => 52,  176 => 47,  165 => 40,  162 => 39,  159 => 38,  156 => 37,  153 => 36,  150 => 35,  148 => 34,  144 => 33,  137 => 29,  133 => 28,  126 => 23,  124 => 22,  121 => 21,  118 => 20,  115 => 19,  112 => 18,  109 => 17,  106 => 16,  103 => 15,  100 => 14,  98 => 13,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  449 => 192,  443 => 189,  439 => 187,  434 => 185,  429 => 183,  426 => 182,  424 => 181,  417 => 177,  410 => 173,  403 => 169,  394 => 165,  387 => 161,  380 => 157,  373 => 153,  366 => 149,  358 => 143,  355 => 142,  350 => 138,  344 => 135,  337 => 131,  333 => 129,  331 => 128,  326 => 126,  319 => 122,  312 => 118,  307 => 115,  301 => 112,  294 => 108,  287 => 104,  283 => 102,  281 => 101,  272 => 99,  265 => 95,  257 => 89,  255 => 88,  247 => 83,  240 => 79,  233 => 75,  226 => 71,  216 => 66,  213 => 65,  211 => 64,  202 => 57,  194 => 55,  186 => 53,  184 => 52,  176 => 47,  165 => 40,  162 => 39,  159 => 38,  156 => 37,  153 => 36,  150 => 35,  148 => 34,  144 => 33,  137 => 29,  133 => 28,  126 => 23,  124 => 22,  121 => 21,  118 => 20,  115 => 19,  112 => 18,  109 => 17,  106 => 16,  103 => 15,  100 => 14,  98 => 13,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -643,7 +645,7 @@ class __TwigTemplate_e80a335cdaec94597a52898e0aa5d583 extends Template
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Téléphone</label>
-                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }}\">
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }} / {{installation.electricien.autreNumTelephone}}\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Email</label>

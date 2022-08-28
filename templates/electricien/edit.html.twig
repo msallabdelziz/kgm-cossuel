@@ -43,7 +43,7 @@
                             {% set cur='bg-warning text-dark bg-opacity-25' %}
                         {% endif %}
                         <tr class="{{ cur }}">
-                            <td scope="row"><a href="{{ path('app_electricien_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.telephone }}</a></td>
+                            <td scope="row"><a href="{{ path('app_electricien_show', {'id': reg.id }) }}" class="text-dark text-decoration-none fw-bold">{{ reg.telephone }} / {{ reg.autreNumTelephone }}</a></td>
                             <td><a href="{{ path('app_electricien_show', {'id': reg.id }) }}" class="text-dark text-decoration-none">{{ reg.nom }}</a></td>
                             <td><a href="{{ path('app_electricien_show', {'id': reg.id }) }}" class="text-dark text-decoration-none">{{ reg.prenom }}</a></td>
                             {# <td align="center">
@@ -84,6 +84,9 @@
                                 </div>
                                 <div class="col-5">
                                     {{ form_row(electricienForm.telephone) }}
+                                </div>
+                                <div class="col-5">
+                                    {{ form_row(electricienForm.autreNumTelephone) }}
                                 </div>
                                 <div class="col-7">
                                     {{ form_row(electricienForm.email) }}

@@ -215,6 +215,8 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 82)]), "html", null, true);
                 echo "\" class=\"text-dark text-decoration-none fw-bold\">";
                 echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "telephone", [], "any", false, false, false, 82), "html", null, true);
+                echo " / ";
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "autreNumTelephone", [], "any", false, false, false, 82), "html", null, true);
                 echo "</a></td>
                         <td>";
                 // line 83
@@ -381,7 +383,7 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
 
     public function getDebugInfo()
     {
-        return array (  361 => 142,  351 => 138,  346 => 136,  342 => 135,  335 => 134,  331 => 133,  326 => 130,  316 => 129,  304 => 125,  297 => 122,  295 => 121,  290 => 118,  282 => 115,  275 => 111,  271 => 109,  268 => 108,  261 => 104,  255 => 102,  253 => 101,  247 => 98,  242 => 96,  239 => 95,  237 => 88,  233 => 86,  229 => 85,  225 => 84,  221 => 83,  215 => 82,  212 => 81,  208 => 80,  202 => 76,  200 => 75,  189 => 66,  186 => 65,  169 => 50,  167 => 49,  159 => 44,  154 => 42,  149 => 40,  141 => 37,  137 => 35,  122 => 33,  118 => 32,  109 => 25,  97 => 10,  89 => 4,  79 => 3,  60 => 2,  37 => 1,);
+        return array (  363 => 142,  353 => 138,  348 => 136,  344 => 135,  337 => 134,  333 => 133,  328 => 130,  318 => 129,  306 => 125,  299 => 122,  297 => 121,  292 => 118,  284 => 115,  277 => 111,  273 => 109,  270 => 108,  263 => 104,  257 => 102,  255 => 101,  249 => 98,  244 => 96,  241 => 95,  239 => 88,  235 => 86,  231 => 85,  227 => 84,  223 => 83,  215 => 82,  212 => 81,  208 => 80,  202 => 76,  200 => 75,  189 => 66,  186 => 65,  169 => 50,  167 => 49,  159 => 44,  154 => 42,  149 => 40,  141 => 37,  137 => 35,  122 => 33,  118 => 32,  109 => 25,  97 => 10,  89 => 4,  79 => 3,  60 => 2,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -467,7 +469,7 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
             <tbody>
                 {% for ag in les_electricien %}
                     <tr>
-                        <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': ag.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ ag.telephone }}</a></td>
+                        <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': ag.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ ag.telephone }} / {{ag.autreNumTelephone}}</a></td>
                         <td>{{ ag.nom }}</td>
                         <td>{{ ag.prenom }}</td>
                         <td class=\"priority-4\">{{ ag.localite }}</td>

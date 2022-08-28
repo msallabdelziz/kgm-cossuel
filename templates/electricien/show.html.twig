@@ -17,7 +17,7 @@
             <a href="/electricien" class="align-items-center text-dark text-decoration-none">
                 <span class="fs-4">Gestion des Electriciens</span>
             </a>
-            <a href="{{ path('app_electricien_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Electriciens</a>
+            <a href="{{ path('app_electricien_index') }}" class="btn btn-sm fs-7 btn-secondary ms-auto">Liste des Electriciensss</a>
         </header>
         <div class="row">
             <div class="col-lg-5 mb-2 shadow border border-light card0 p-3 me-4 priority-4">
@@ -43,7 +43,7 @@
                                     {% set cur='bg-warning text-dark bg-opacity-25' %}
                                 {% endif %}
                                 <tr class="{{ cur }}">
-                                    <td scope="row"><a href="{{ path('app_electricien_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.telephone }}</a></td>
+                                    <td scope="row"><a href="{{ path('app_electricien_show', {'id': dep.id }) }}" class="text-dark text-decoration-none fw-bold">{{ dep.telephone }} {{ dep.autreNumTelephone }}</a></td>
                                     <td><a href="{{ path('app_electricien_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.nom }}</a></td>
                                     <td><a href="{{ path('app_electricien_show', {'id': dep.id }) }}" class="text-dark text-decoration-none">{{ dep.prenom }}</a></td>
 {#                                     
@@ -68,7 +68,7 @@
             <div class="col-lg-6 mb-2 shadow border border-light card p-3">
                 <nav class="navbar bg-warning text-black border border-dark my-2 p-1">
                     <div class="container-fluid">
-                        <span class="navbar-brand mb-0 h1">Détails du electricien {{ electricien }}</span>
+                        <span class="navbar-brand mb-0 h1">Détails de l'electricien {{ electricien }}</span>
                     </div>
                 </nav>
                 <div class="container">
@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-5 mb-2">
                             <label class="fw-light fs-7">Téléphone</label>
-                            <div class="ms-4">{{ electricien.telephone }}</div>
+                            <div class="ms-4">{{ electricien.telephone }} </br> {{ electricien.autreNumTelephone }}</div> 
                         </div>
                         <div class="col-7 mb-2">
                             <label class="fw-light fs-7">Email</label>
