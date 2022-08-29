@@ -165,111 +165,118 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
         echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 56, $this->source); })()), "nom", [], "any", false, false, false, 56), 'row');
         echo "
                                         </div>
+
                                         <div class=\"col-lg-5\">
                                         ";
-        // line 59
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 59, $this->source); })()), "prenom", [], "any", false, false, false, 59), 'row');
+        // line 60
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 60, $this->source); })()), "prenom", [], "any", false, false, false, 60), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             ";
-        // line 62
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 62, $this->source); })()), "localite", [], "any", false, false, false, 62), 'row');
+        // line 63
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 63, $this->source); })()), "localite", [], "any", false, false, false, 63), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-8\">
                                             ";
-        // line 65
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 65, $this->source); })()), "adresse", [], "any", false, false, false, 65), 'row');
+        // line 66
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 66, $this->source); })()), "adresse", [], "any", false, false, false, 66), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             ";
-        // line 68
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 68, $this->source); })()), "telephone", [], "any", false, false, false, 68), 'row');
+        // line 69
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 69, $this->source); })()), "telephone", [], "any", false, false, false, 69), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             ";
-        // line 71
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 71, $this->source); })()), "email", [], "any", false, false, false, 71), 'row');
+        // line 72
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 72, $this->source); })()), "autreNumTelephone", [], "any", false, false, false, 72), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             ";
-        // line 74
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 74, $this->source); })()), "typePiece", [], "any", false, false, false, 74), 'row');
+        // line 75
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 75, $this->source); })()), "email", [], "any", false, false, false, 75), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             ";
-        // line 77
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 77, $this->source); })()), "numPiece", [], "any", false, false, false, 77), 'row');
+        // line 78
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 78, $this->source); })()), "typePiece", [], "any", false, false, false, 78), 'row');
+        echo "
+                                        </div>
+                                        <div class=\"col-lg-4\">
+                                            ";
+        // line 81
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 81, $this->source); })()), "numPiece", [], "any", false, false, false, 81), 'row');
         echo "
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label for=\"\">PJ Electricien</label>
                                             ";
-        // line 81
-        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 81, $this->source); })()), "PJElectricien", [], "any", false, false, false, 81)) {
-            // line 82
+        // line 85
+        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 85, $this->source); })()), "PJElectricien", [], "any", false, false, false, 85)) {
+            // line 86
             echo "                                                <div class=\"form-control\">
                                                     <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"gray\">
                                                         <use xlink:href=\"";
-            // line 84
+            // line 88
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#file-pdf"), "html", null, true);
             echo "\"></use>
                                                     </svg>
                                                     <span class=\"text-success pt fs-8\">";
-            // line 86
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 86, $this->source); })()), "PJElectricien", [], "any", false, false, false, 86), "fichier", [], "any", false, false, false, 86), "html", null, true);
+            // line 90
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 90, $this->source); })()), "PJElectricien", [], "any", false, false, false, 90), "fichier", [], "any", false, false, false, 90), "html", null, true);
             echo " </span>
                                                     <svg class=\"bi float-end pt\" width=\"16\" height=\"16\" fill=\"red\" onclick=\"\$('.z_pj').show()\">
                                                         <use xlink:href=\"";
-            // line 88
+            // line 92
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
             echo "\"></use>
                                                     </svg>
                                                 </div>
                                             ";
         } else {
-            // line 92
+            // line 96
             echo "                                                <div class=\"form-control\">
                                                     <span class=\"text-danger pt fs-8\">Aucune pièce jointe</span>
                                                     <svg class=\"bi float-end pt\" width=\"16\" height=\"16\" fill=\"red\" onclick=\"\$('.z_pj').show()\">
                                                         <use xlink:href=\"";
-            // line 95
+            // line 99
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
             echo "\"></use>
                                                     </svg>
                                                 </div>
                                             ";
         }
-        // line 99
+        // line 103
         echo "                                        </div>
                                         <div class=\"col-lg-8 z_pj\">
                                             ";
-        // line 101
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 101, $this->source); })()), "pj", [], "any", false, false, false, 101), 'row');
+        // line 105
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 105, $this->source); })()), "pj", [], "any", false, false, false, 105), 'row');
         echo "
                                         </div>
                                     </div>
                                 </div>
                                 ";
-        // line 105
-        $this->loadTemplate("installation/_actions_new.html.twig", "installation/new4.html.twig", 105)->display($context);
-        // line 106
+        // line 109
+        $this->loadTemplate("installation/_actions_new.html.twig", "installation/new4.html.twig", 109)->display($context);
+        // line 110
         echo "                                </fieldset>
                             </div>
                             ";
-        // line 112
+        // line 116
         echo "                        ";
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 112, $this->source); })()), 'form_end');
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 116, $this->source); })()), 'form_end');
         echo "            
                         ";
-        // line 113
-        $this->loadTemplate("installation/_delete_form.html.twig", "installation/new4.html.twig", 113)->display($context);
-        // line 114
+        // line 117
+        $this->loadTemplate("installation/_delete_form.html.twig", "installation/new4.html.twig", 117)->display($context);
+        // line 118
         echo "                    </div>
                 </div>
             </div>
@@ -284,7 +291,7 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
 
     }
 
-    // line 121
+    // line 125
     public function block_javascripts($context, array $blocks = [])
     {
         $macros = $this->macros;
@@ -294,7 +301,7 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 122
+        // line 126
         echo "<script>
     \$(document).ready(function() {
         \$(\"#electricien_localite\").prop('required',true);
@@ -302,14 +309,14 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
         \$('.z_pj').hide();
 
         ";
-        // line 128
-        if ( !twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 128, $this->source); })()), "PJElectricien", [], "any", false, false, false, 128)) {
-            // line 129
+        // line 132
+        if ( !twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 132, $this->source); })()), "PJElectricien", [], "any", false, false, false, 132)) {
+            // line 133
             echo "            \$('.z_pj').show();
             \$(\"#electricien_pj\").prop('required',true);
         ";
         }
-        // line 132
+        // line 136
         echo "
         \$(\"#electricien_typePiece\").change(function(e) {
             \$(\"#electricien_numPiece\").focus();
@@ -420,7 +427,7 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
 
     public function getDebugInfo()
     {
-        return array (  313 => 132,  308 => 129,  306 => 128,  298 => 122,  288 => 121,  273 => 114,  271 => 113,  266 => 112,  262 => 106,  260 => 105,  253 => 101,  249 => 99,  242 => 95,  237 => 92,  230 => 88,  225 => 86,  220 => 84,  216 => 82,  214 => 81,  207 => 77,  201 => 74,  195 => 71,  189 => 68,  183 => 65,  177 => 62,  171 => 59,  165 => 56,  143 => 38,  141 => 37,  135 => 34,  132 => 33,  130 => 32,  117 => 22,  106 => 14,  102 => 13,  96 => 10,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  320 => 136,  315 => 133,  313 => 132,  305 => 126,  295 => 125,  280 => 118,  278 => 117,  273 => 116,  269 => 110,  267 => 109,  260 => 105,  256 => 103,  249 => 99,  244 => 96,  237 => 92,  232 => 90,  227 => 88,  223 => 86,  221 => 85,  214 => 81,  208 => 78,  202 => 75,  196 => 72,  190 => 69,  184 => 66,  178 => 63,  172 => 60,  165 => 56,  143 => 38,  141 => 37,  135 => 34,  132 => 33,  130 => 32,  117 => 22,  106 => 14,  102 => 13,  96 => 10,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -482,6 +489,7 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
                                         <div class=\"col-lg-3\">
                                         {{ form_row(installationForm.nom) }}
                                         </div>
+
                                         <div class=\"col-lg-5\">
                                         {{ form_row(installationForm.prenom) }}
                                         </div>
@@ -493,6 +501,9 @@ class __TwigTemplate_f4448ff3ad4f9599d6b5b8512e70364b extends Template
                                         </div>
                                         <div class=\"col-lg-4\">
                                             {{ form_row(installationForm.telephone) }}
+                                        </div>
+                                        <div class=\"col-lg-4\">
+                                            {{ form_row(installationForm.autreNumTelephone) }}
                                         </div>
                                         <div class=\"col-lg-4\">
                                             {{ form_row(installationForm.email) }}

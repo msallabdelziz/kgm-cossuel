@@ -164,6 +164,8 @@ class __TwigTemplate_8184861a42857d3c8e1237ecb9a24c22 extends Template
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["reg"], "id", [], "any", false, false, false, 46)]), "html", null, true);
                 echo "\" class=\"text-dark text-decoration-none fw-bold\">";
                 echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["reg"], "telephone", [], "any", false, false, false, 46), "html", null, true);
+                echo " / ";
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["reg"], "autreNumTelephone", [], "any", false, false, false, 46), "html", null, true);
                 echo "</a></td>
                             <td><a href=\"";
                 // line 47
@@ -238,35 +240,41 @@ class __TwigTemplate_8184861a42857d3c8e1237ecb9a24c22 extends Template
         echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 86, $this->source); })()), "telephone", [], "any", false, false, false, 86), 'row');
         echo "
                                 </div>
-                                <div class=\"col-7\">
+                                <div class=\"col-5\">
                                     ";
         // line 89
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 89, $this->source); })()), "email", [], "any", false, false, false, 89), 'row');
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 89, $this->source); })()), "autreNumTelephone", [], "any", false, false, false, 89), 'row');
+        echo "
+                                </div>
+                                <div class=\"col-7\">
+                                    ";
+        // line 92
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 92, $this->source); })()), "email", [], "any", false, false, false, 92), 'row');
         echo "
                                 </div>
                                 <div class=\"col-5\">
                                     ";
-        // line 92
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 92, $this->source); })()), "typePiece", [], "any", false, false, false, 92), 'row');
+        // line 95
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 95, $this->source); })()), "typePiece", [], "any", false, false, false, 95), 'row');
         echo "
                                 </div>
                                 <div class=\"col-7\">
                                     ";
-        // line 95
-        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 95, $this->source); })()), "numPiece", [], "any", false, false, false, 95), 'row');
+        // line 98
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 98, $this->source); })()), "numPiece", [], "any", false, false, false, 98), 'row');
         echo "
                                 </div>
                             </div>
                             <div align=\"center\">
                                 <a class=\"btn btn-secondary\" href=\"";
-        // line 99
+        // line 102
         echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_index");
         echo "\">Annuler</a>
                                 <button type=\"submit\" class=\"btn btn-primary btn my-3\">Enregistrer</button>
                             </div>
                         ";
-        // line 102
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 102, $this->source); })()), 'form_end');
+        // line 105
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["electricienForm"]) || array_key_exists("electricienForm", $context) ? $context["electricienForm"] : (function () { throw new RuntimeError('Variable "electricienForm" does not exist.', 105, $this->source); })()), 'form_end');
         echo "            
                     </div>
                 </div>
@@ -294,7 +302,7 @@ class __TwigTemplate_8184861a42857d3c8e1237ecb9a24c22 extends Template
 
     public function getDebugInfo()
     {
-        return array (  269 => 102,  263 => 99,  256 => 95,  250 => 92,  244 => 89,  238 => 86,  232 => 83,  226 => 80,  220 => 77,  214 => 74,  208 => 71,  195 => 62,  189 => 58,  182 => 56,  176 => 48,  170 => 47,  164 => 46,  159 => 45,  156 => 44,  153 => 43,  150 => 42,  147 => 41,  143 => 40,  138 => 37,  128 => 29,  120 => 25,  118 => 24,  114 => 23,  108 => 20,  96 => 11,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  277 => 105,  271 => 102,  264 => 98,  258 => 95,  252 => 92,  246 => 89,  240 => 86,  234 => 83,  228 => 80,  222 => 77,  216 => 74,  210 => 71,  197 => 62,  191 => 58,  184 => 56,  178 => 48,  172 => 47,  164 => 46,  159 => 45,  156 => 44,  153 => 43,  150 => 42,  147 => 41,  143 => 40,  138 => 37,  128 => 29,  120 => 25,  118 => 24,  114 => 23,  108 => 20,  96 => 11,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -344,7 +352,7 @@ class __TwigTemplate_8184861a42857d3c8e1237ecb9a24c22 extends Template
                             {% set cur='bg-warning text-dark bg-opacity-25' %}
                         {% endif %}
                         <tr class=\"{{ cur }}\">
-                            <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': reg.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ reg.telephone }}</a></td>
+                            <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': reg.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ reg.telephone }} / {{ reg.autreNumTelephone }}</a></td>
                             <td><a href=\"{{ path('app_electricien_show', {'id': reg.id }) }}\" class=\"text-dark text-decoration-none\">{{ reg.nom }}</a></td>
                             <td><a href=\"{{ path('app_electricien_show', {'id': reg.id }) }}\" class=\"text-dark text-decoration-none\">{{ reg.prenom }}</a></td>
                             {# <td align=\"center\">
@@ -385,6 +393,9 @@ class __TwigTemplate_8184861a42857d3c8e1237ecb9a24c22 extends Template
                                 </div>
                                 <div class=\"col-5\">
                                     {{ form_row(electricienForm.telephone) }}
+                                </div>
+                                <div class=\"col-5\">
+                                    {{ form_row(electricienForm.autreNumTelephone) }}
                                 </div>
                                 <div class=\"col-7\">
                                     {{ form_row(electricienForm.email) }}

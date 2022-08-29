@@ -622,6 +622,8 @@ class __TwigTemplate_7a8f036e9151c1ec4dd3ec6af4d04c34 extends Template
                                 <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
             // line 317
             echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 317, $this->source); })()), "installation", [], "any", false, false, false, 317), "electricien", [], "any", false, false, false, 317), "telephone", [], "any", false, false, false, 317), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 317, $this->source); })()), "installation", [], "any", false, false, false, 317), "electricien", [], "any", false, false, false, 317), "autreNumTelephone", [], "any", false, false, false, 317), "html", null, true);
             echo "\">
                             </div>
                             <div class=\"col-lg-4\">
@@ -834,6 +836,8 @@ class __TwigTemplate_7a8f036e9151c1ec4dd3ec6af4d04c34 extends Template
                                 <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"";
         // line 445
         echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 445, $this->source); })()), "demande", [], "any", false, false, false, 445), "installation", [], "any", false, false, false, 445), "electricien", [], "any", false, false, false, 445), "telephone", [], "any", false, false, false, 445), "html", null, true);
+        echo " ";
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 445, $this->source); })()), "demande", [], "any", false, false, false, 445), "installation", [], "any", false, false, false, 445), "electricien", [], "any", false, false, false, 445), "autreNumTelephone", [], "any", false, false, false, 445), "html", null, true);
         echo "\">
                             </div>
                         </div>
@@ -1071,7 +1075,7 @@ class __TwigTemplate_7a8f036e9151c1ec4dd3ec6af4d04c34 extends Template
 
     public function getDebugInfo()
     {
-        return array (  1043 => 593,  1033 => 586,  1012 => 567,  1004 => 561,  997 => 557,  981 => 544,  974 => 540,  963 => 532,  954 => 526,  948 => 522,  945 => 521,  942 => 520,  932 => 519,  916 => 512,  910 => 509,  901 => 503,  895 => 500,  891 => 499,  885 => 496,  881 => 495,  872 => 489,  867 => 486,  864 => 460,  860 => 458,  854 => 456,  852 => 455,  845 => 451,  836 => 445,  825 => 439,  817 => 434,  804 => 429,  795 => 423,  786 => 417,  777 => 411,  768 => 405,  759 => 399,  747 => 390,  743 => 389,  734 => 382,  727 => 378,  720 => 374,  713 => 370,  706 => 366,  699 => 362,  692 => 358,  685 => 354,  678 => 350,  667 => 342,  660 => 337,  657 => 336,  653 => 333,  645 => 329,  638 => 325,  631 => 321,  624 => 317,  617 => 313,  610 => 309,  603 => 305,  596 => 301,  585 => 293,  578 => 288,  575 => 287,  572 => 285,  564 => 280,  557 => 276,  549 => 271,  544 => 269,  537 => 265,  532 => 263,  525 => 259,  520 => 257,  513 => 253,  502 => 245,  495 => 240,  492 => 239,  489 => 237,  481 => 232,  474 => 228,  467 => 224,  460 => 220,  452 => 215,  445 => 211,  434 => 207,  423 => 199,  416 => 194,  413 => 193,  405 => 187,  398 => 183,  391 => 179,  384 => 175,  377 => 171,  369 => 166,  362 => 162,  355 => 158,  344 => 154,  337 => 150,  326 => 142,  319 => 137,  314 => 133,  308 => 130,  304 => 128,  302 => 127,  297 => 125,  290 => 121,  283 => 117,  269 => 106,  262 => 102,  255 => 98,  248 => 94,  238 => 89,  223 => 77,  215 => 72,  202 => 62,  196 => 58,  193 => 57,  190 => 56,  187 => 55,  184 => 54,  182 => 53,  179 => 52,  176 => 51,  173 => 50,  170 => 49,  167 => 48,  164 => 47,  161 => 46,  158 => 45,  155 => 44,  152 => 43,  149 => 42,  146 => 41,  143 => 40,  140 => 39,  137 => 38,  134 => 37,  131 => 36,  128 => 35,  125 => 34,  122 => 33,  119 => 32,  117 => 31,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  1047 => 593,  1037 => 586,  1016 => 567,  1008 => 561,  1001 => 557,  985 => 544,  978 => 540,  967 => 532,  958 => 526,  952 => 522,  949 => 521,  946 => 520,  936 => 519,  920 => 512,  914 => 509,  905 => 503,  899 => 500,  895 => 499,  889 => 496,  885 => 495,  876 => 489,  871 => 486,  868 => 460,  864 => 458,  858 => 456,  856 => 455,  849 => 451,  838 => 445,  827 => 439,  819 => 434,  806 => 429,  797 => 423,  788 => 417,  779 => 411,  770 => 405,  761 => 399,  749 => 390,  745 => 389,  736 => 382,  729 => 378,  722 => 374,  715 => 370,  708 => 366,  701 => 362,  694 => 358,  687 => 354,  680 => 350,  669 => 342,  662 => 337,  659 => 336,  655 => 333,  647 => 329,  640 => 325,  633 => 321,  624 => 317,  617 => 313,  610 => 309,  603 => 305,  596 => 301,  585 => 293,  578 => 288,  575 => 287,  572 => 285,  564 => 280,  557 => 276,  549 => 271,  544 => 269,  537 => 265,  532 => 263,  525 => 259,  520 => 257,  513 => 253,  502 => 245,  495 => 240,  492 => 239,  489 => 237,  481 => 232,  474 => 228,  467 => 224,  460 => 220,  452 => 215,  445 => 211,  434 => 207,  423 => 199,  416 => 194,  413 => 193,  405 => 187,  398 => 183,  391 => 179,  384 => 175,  377 => 171,  369 => 166,  362 => 162,  355 => 158,  344 => 154,  337 => 150,  326 => 142,  319 => 137,  314 => 133,  308 => 130,  304 => 128,  302 => 127,  297 => 125,  290 => 121,  283 => 117,  269 => 106,  262 => 102,  255 => 98,  248 => 94,  238 => 89,  223 => 77,  215 => 72,  202 => 62,  196 => 58,  193 => 57,  190 => 56,  187 => 55,  184 => 54,  182 => 53,  179 => 52,  176 => 51,  173 => 50,  170 => 49,  167 => 48,  164 => 47,  161 => 46,  158 => 45,  155 => 44,  152 => 43,  149 => 42,  146 => 41,  143 => 40,  140 => 39,  137 => 38,  134 => 37,  131 => 36,  128 => 35,  125 => 34,  122 => 33,  119 => 32,  117 => 31,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -1392,7 +1396,7 @@ class __TwigTemplate_7a8f036e9151c1ec4dd3ec6af4d04c34 extends Template
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Téléphone</label>
-                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }} / {{ demande.installation.electricien.autreNumTelephone }}\">
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Email</label>
@@ -1520,7 +1524,7 @@ class __TwigTemplate_7a8f036e9151c1ec4dd3ec6af4d04c34 extends Template
                         <div class=\"col-md-5\">
                             <div class=\"mb-1\">
                                 <label class=\"fs-7\" >Tél Electricien</label>
-                                <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"{{ dossier.demande.installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"{{ dossier.demande.installation.electricien.telephone }} {{ dossier.demande.installation.electricien.autreNumTelephone }}\">
                             </div>
                         </div>
                         <hr class=\"my-2 mb-3\" />

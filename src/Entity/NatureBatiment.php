@@ -20,6 +20,9 @@ class NatureBatiment
     #[ORM\Column(type: 'string', length: 255)]
     private $nom;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $NumeroMaison = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,18 @@ class NatureBatiment
     public function setNom(string $nom): self
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getNumeroMaison(): ?string
+    {
+        return $this->NumeroMaison;
+    }
+
+    public function setNumeroMaison(?string $NumeroMaison): self
+    {
+        $this->NumeroMaison = $NumeroMaison;
 
         return $this;
     }

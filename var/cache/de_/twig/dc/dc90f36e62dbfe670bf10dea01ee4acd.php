@@ -571,6 +571,8 @@ class __TwigTemplate_4db66fb93c4b21683909b7c7480979b3 extends Template
                                 <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
             // line 300
             echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 300, $this->source); })()), "installation", [], "any", false, false, false, 300), "electricien", [], "any", false, false, false, 300), "telephone", [], "any", false, false, false, 300), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 300, $this->source); })()), "installation", [], "any", false, false, false, 300), "electricien", [], "any", false, false, false, 300), "autreNumTelephone", [], "any", false, false, false, 300), "html", null, true);
             echo "\">
                             </div>
                             <div class=\"col-lg-4\">
@@ -783,6 +785,8 @@ class __TwigTemplate_4db66fb93c4b21683909b7c7480979b3 extends Template
                                 <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"";
         // line 428
         echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["dossier"]) || array_key_exists("dossier", $context) ? $context["dossier"] : (function () { throw new RuntimeError('Variable "dossier" does not exist.', 428, $this->source); })()), "demande", [], "any", false, false, false, 428), "installation", [], "any", false, false, false, 428), "electricien", [], "any", false, false, false, 428), "telephone", [], "any", false, false, false, 428), "html", null, true);
+        echo " / ";
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 428, $this->source); })()), "installation", [], "any", false, false, false, 428), "electricien", [], "any", false, false, false, 428), "autreNumTelephone", [], "any", false, false, false, 428), "html", null, true);
         echo "\">
                             </div>
                         </div>
@@ -992,7 +996,7 @@ class __TwigTemplate_4db66fb93c4b21683909b7c7480979b3 extends Template
 
     public function getDebugInfo()
     {
-        return array (  964 => 540,  954 => 533,  933 => 514,  925 => 508,  918 => 504,  902 => 491,  895 => 487,  884 => 479,  875 => 473,  869 => 469,  866 => 468,  863 => 467,  853 => 466,  837 => 459,  831 => 456,  822 => 450,  816 => 447,  812 => 446,  803 => 440,  794 => 434,  785 => 428,  774 => 422,  766 => 417,  753 => 412,  744 => 406,  735 => 400,  726 => 394,  717 => 388,  708 => 382,  696 => 373,  692 => 372,  683 => 365,  676 => 361,  669 => 357,  662 => 353,  655 => 349,  648 => 345,  641 => 341,  634 => 337,  627 => 333,  616 => 325,  609 => 320,  606 => 319,  602 => 316,  594 => 312,  587 => 308,  580 => 304,  573 => 300,  566 => 296,  559 => 292,  552 => 288,  545 => 284,  534 => 276,  527 => 271,  524 => 270,  521 => 268,  513 => 263,  506 => 259,  498 => 254,  493 => 252,  486 => 248,  481 => 246,  474 => 242,  469 => 240,  462 => 236,  451 => 228,  444 => 223,  441 => 222,  438 => 220,  430 => 215,  423 => 211,  416 => 207,  409 => 203,  401 => 198,  394 => 194,  383 => 190,  372 => 182,  365 => 177,  362 => 176,  354 => 170,  347 => 166,  340 => 162,  333 => 158,  326 => 154,  318 => 149,  311 => 145,  304 => 141,  293 => 137,  286 => 133,  275 => 125,  268 => 120,  263 => 116,  257 => 113,  253 => 111,  251 => 110,  246 => 108,  239 => 104,  232 => 100,  218 => 89,  211 => 85,  204 => 81,  197 => 77,  187 => 72,  172 => 60,  164 => 55,  151 => 45,  145 => 41,  142 => 40,  139 => 39,  136 => 38,  133 => 37,  131 => 36,  128 => 35,  125 => 34,  122 => 33,  119 => 32,  117 => 31,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  968 => 540,  958 => 533,  937 => 514,  929 => 508,  922 => 504,  906 => 491,  899 => 487,  888 => 479,  879 => 473,  873 => 469,  870 => 468,  867 => 467,  857 => 466,  841 => 459,  835 => 456,  826 => 450,  820 => 447,  816 => 446,  807 => 440,  798 => 434,  787 => 428,  776 => 422,  768 => 417,  755 => 412,  746 => 406,  737 => 400,  728 => 394,  719 => 388,  710 => 382,  698 => 373,  694 => 372,  685 => 365,  678 => 361,  671 => 357,  664 => 353,  657 => 349,  650 => 345,  643 => 341,  636 => 337,  629 => 333,  618 => 325,  611 => 320,  608 => 319,  604 => 316,  596 => 312,  589 => 308,  582 => 304,  573 => 300,  566 => 296,  559 => 292,  552 => 288,  545 => 284,  534 => 276,  527 => 271,  524 => 270,  521 => 268,  513 => 263,  506 => 259,  498 => 254,  493 => 252,  486 => 248,  481 => 246,  474 => 242,  469 => 240,  462 => 236,  451 => 228,  444 => 223,  441 => 222,  438 => 220,  430 => 215,  423 => 211,  416 => 207,  409 => 203,  401 => 198,  394 => 194,  383 => 190,  372 => 182,  365 => 177,  362 => 176,  354 => 170,  347 => 166,  340 => 162,  333 => 158,  326 => 154,  318 => 149,  311 => 145,  304 => 141,  293 => 137,  286 => 133,  275 => 125,  268 => 120,  263 => 116,  257 => 113,  253 => 111,  251 => 110,  246 => 108,  239 => 104,  232 => 100,  218 => 89,  211 => 85,  204 => 81,  197 => 77,  187 => 72,  172 => 60,  164 => 55,  151 => 45,  145 => 41,  142 => 40,  139 => 39,  136 => 38,  133 => 37,  131 => 36,  128 => 35,  125 => 34,  122 => 33,  119 => 32,  117 => 31,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -1296,7 +1300,7 @@ class __TwigTemplate_4db66fb93c4b21683909b7c7480979b3 extends Template
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Téléphone</label>
-                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }} / {{ demande.installation.electricien.autreNumTelephone }}\">
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Email</label>
@@ -1424,7 +1428,7 @@ class __TwigTemplate_4db66fb93c4b21683909b7c7480979b3 extends Template
                         <div class=\"col-md-5\">
                             <div class=\"mb-1\">
                                 <label class=\"fs-7\" >Tél Electricien</label>
-                                <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"{{ dossier.demande.installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\" form-control text-dark form-control fw-bold py-0 fs-6\" value=\"{{ dossier.demande.installation.electricien.telephone }} / {{ demande.installation.electricien.autreNumTelephone }}\">
                             </div>
                         </div>
                         <hr class=\"my-2 mb-3\" />

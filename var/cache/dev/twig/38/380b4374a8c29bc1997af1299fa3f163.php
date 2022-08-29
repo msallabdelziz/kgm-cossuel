@@ -248,110 +248,126 @@ class __TwigTemplate_539b8ba45f7209202aca383bc3a1a59f extends Template
                         </div>
                         <div class=\"col-5 mb-2\">
                             <label class=\"fw-light fs-7\">Téléphone</label>
-                            <div class=\"ms-4\">";
+                            ";
         // line 95
-        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 95, $this->source); })()), "telephone", [], "any", false, false, false, 95), "html", null, true);
-        echo "</div>
-                        </div>
+        if (((twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 95, $this->source); })()), "type", [], "any", false, false, false, 95) == "electricien") && (twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 95, $this->source); })()), "autreNumTelephone", [], "any", false, false, false, 95) != null))) {
+            // line 96
+            echo "                               <div class=\"ms-4\">";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 96, $this->source); })()), "telephone", [], "any", false, false, false, 96), "html", null, true);
+            echo "</div>
+                               <div class=\"ms-4\">";
+            // line 97
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 97, $this->source); })()), "autreNumTelephone", [], "any", false, false, false, 97), "html", null, true);
+            echo "</div> 
+                            ";
+        } else {
+            // line 99
+            echo "                                <div class=\"ms-4\">";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 99, $this->source); })()), "telephone", [], "any", false, false, false, 99), "html", null, true);
+            echo "</div>
+                            ";
+        }
+        // line 101
+        echo "                        </div>
                         <div class=\"col-7 mb-2\">
                             <label class=\"fw-light fs-7\">Email</label>
                             <div class=\"ms-4\">";
-        // line 99
-        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 99, $this->source); })()), "email", [], "any", false, false, false, 99), "html", null, true);
+        // line 104
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 104, $this->source); })()), "email", [], "any", false, false, false, 104), "html", null, true);
         echo "</div>
                         </div>
                     </div>
                     <div class=\"col pt-2\" align=\"right\">
                             ";
-        // line 103
+        // line 108
         if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-            // line 104
+            // line 109
             echo "                            <a href=\"";
-            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_resetpass", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 104, $this->source); })()), "id", [], "any", false, false, false, 104)]), "html", null, true);
+            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_resetpass", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 109, $this->source); })()), "id", [], "any", false, false, false, 109)]), "html", null, true);
             echo "\" class=\"mx-2 float-start btn btn-secondary btn-sm\" title=\"Reset mot de passe\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"white\">
                                     <use xlink:href=\"";
-            // line 106
+            // line 111
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#arrow-clockwise"), "html", null, true);
             echo "\"></use>
                                 </svg> Réinitialiser mot de passe
                             </a>
                                 ";
-            // line 109
-            if ((twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 109, $this->source); })()), "id", [], "any", false, false, false, 109) != twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 109, $this->source); })()), "user", [], "any", false, false, false, 109), "id", [], "any", false, false, false, 109))) {
-                // line 110
+            // line 114
+            if ((twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 114, $this->source); })()), "id", [], "any", false, false, false, 114) != twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 114, $this->source); })()), "user", [], "any", false, false, false, 114), "id", [], "any", false, false, false, 114))) {
+                // line 115
                 echo "                                <a href=\"";
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_activer", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 110, $this->source); })()), "id", [], "any", false, false, false, 110)]), "html", null, true);
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_activer", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 115, $this->source); })()), "id", [], "any", false, false, false, 115)]), "html", null, true);
                 echo "\" class=\"mx-2 float-start btn btn-danger btn-sm\" title=\"Activer/Désavtiver le compte\">
                                     <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"white\">
                                         <use xlink:href=\"";
-                // line 112
+                // line 117
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#check"), "html", null, true);
                 echo "\"></use>
                                     </svg> 
                                     ";
-                // line 114
-                if ( !twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 114, $this->source); })()), "isActif", [], "any", false, false, false, 114)) {
-                    // line 115
+                // line 119
+                if ( !twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 119, $this->source); })()), "isActif", [], "any", false, false, false, 119)) {
+                    // line 120
                     echo "                                        Activer le compte
                                     ";
                 } else {
-                    // line 117
+                    // line 122
                     echo "                                        Désactiver le compte
                                     ";
                 }
-                // line 119
+                // line 124
                 echo "                                    
                                 </a>
                                 ";
             }
-            // line 122
+            // line 127
             echo "                            ";
         }
-        // line 123
+        // line 128
         echo "
                             <a href=\"";
-        // line 124
+        // line 129
         echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_index");
         echo "\" class=\"mx-2\" title=\"Retour\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"black\">
                                     <use xlink:href=\"";
-        // line 126
+        // line 131
         echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#arrow-return-left"), "html", null, true);
         echo "\"></use>
                                 </svg>
                             </a>
                             ";
-        // line 129
+        // line 134
         if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-            // line 130
+            // line 135
             echo "                            <a href=\"";
-            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_edit", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 130, $this->source); })()), "id", [], "any", false, false, false, 130)]), "html", null, true);
+            echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_utilisateur_edit", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["utilisateur"]) || array_key_exists("utilisateur", $context) ? $context["utilisateur"] : (function () { throw new RuntimeError('Variable "utilisateur" does not exist.', 135, $this->source); })()), "id", [], "any", false, false, false, 135)]), "html", null, true);
             echo "\" class=\"mx-2\" title=\"Modifier\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"black\">
                                     <use xlink:href=\"";
-            // line 132
+            // line 137
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
             echo "\"></use>
                                 </svg>
                             </a>
                             ";
         }
-        // line 136
+        // line 141
         echo "                            ";
         if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-            // line 137
+            // line 142
             echo "                            <a href=\"\" class=\"mx-2\" title=\"Supprimer\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"red\">
                                     <use xlink:href=\"";
-            // line 139
+            // line 144
             echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#trash"), "html", null, true);
             echo "\"></use>
                                 </svg>
                             </a>
                             ";
         }
-        // line 143
+        // line 148
         echo "                    </div>
                 </div>
 
@@ -379,7 +395,7 @@ class __TwigTemplate_539b8ba45f7209202aca383bc3a1a59f extends Template
 
     public function getDebugInfo()
     {
-        return array (  355 => 143,  348 => 139,  344 => 137,  341 => 136,  334 => 132,  328 => 130,  326 => 129,  320 => 126,  315 => 124,  312 => 123,  309 => 122,  304 => 119,  300 => 117,  296 => 115,  294 => 114,  289 => 112,  283 => 110,  281 => 109,  275 => 106,  269 => 104,  267 => 103,  260 => 99,  253 => 95,  246 => 91,  239 => 87,  232 => 83,  225 => 79,  218 => 75,  206 => 68,  196 => 60,  192 => 58,  188 => 56,  181 => 54,  175 => 45,  169 => 44,  163 => 43,  158 => 42,  155 => 41,  152 => 40,  149 => 39,  146 => 38,  142 => 37,  137 => 34,  130 => 28,  128 => 27,  125 => 26,  118 => 22,  112 => 20,  110 => 19,  106 => 18,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  371 => 148,  364 => 144,  360 => 142,  357 => 141,  350 => 137,  344 => 135,  342 => 134,  336 => 131,  331 => 129,  328 => 128,  325 => 127,  320 => 124,  316 => 122,  312 => 120,  310 => 119,  305 => 117,  299 => 115,  297 => 114,  291 => 111,  285 => 109,  283 => 108,  276 => 104,  271 => 101,  265 => 99,  260 => 97,  255 => 96,  253 => 95,  246 => 91,  239 => 87,  232 => 83,  225 => 79,  218 => 75,  206 => 68,  196 => 60,  192 => 58,  188 => 56,  181 => 54,  175 => 45,  169 => 44,  163 => 43,  158 => 42,  155 => 41,  152 => 40,  149 => 39,  146 => 38,  142 => 37,  137 => 34,  130 => 28,  128 => 27,  125 => 26,  118 => 22,  112 => 20,  110 => 19,  106 => 18,  95 => 10,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -478,7 +494,12 @@ class __TwigTemplate_539b8ba45f7209202aca383bc3a1a59f extends Template
                         </div>
                         <div class=\"col-5 mb-2\">
                             <label class=\"fw-light fs-7\">Téléphone</label>
-                            <div class=\"ms-4\">{{ utilisateur.telephone }}</div>
+                            {% if utilisateur.type == 'electricien' and utilisateur.autreNumTelephone != null %}
+                               <div class=\"ms-4\">{{ utilisateur.telephone }}</div>
+                               <div class=\"ms-4\">{{ utilisateur.autreNumTelephone }}</div> 
+                            {% else %}
+                                <div class=\"ms-4\">{{ utilisateur.telephone }}</div>
+                            {% endif %}
                         </div>
                         <div class=\"col-7 mb-2\">
                             <label class=\"fw-light fs-7\">Email</label>

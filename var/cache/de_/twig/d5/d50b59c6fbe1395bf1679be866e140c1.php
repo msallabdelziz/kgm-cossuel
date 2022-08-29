@@ -106,7 +106,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
             <a href=\"";
         // line 20
         echo $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_index");
-        echo "\" class=\"btn btn-sm fs-7 btn-secondary ms-auto\">Liste des Electriciens</a>
+        echo "\" class=\"btn btn-sm fs-7 btn-secondary ms-auto\">Liste des Electriciensss</a>
         </header>
         <div class=\"row\">
             <div class=\"col-lg-5 mb-2 shadow border border-light card0 p-3 me-4 priority-4\">
@@ -159,6 +159,8 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["dep"], "id", [], "any", false, false, false, 46)]), "html", null, true);
                 echo "\" class=\"text-dark text-decoration-none fw-bold\">";
                 echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["dep"], "telephone", [], "any", false, false, false, 46), "html", null, true);
+                echo " ";
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["dep"], "autreNumTelephone", [], "any", false, false, false, 46), "html", null, true);
                 echo "</a></td>
                                     <td><a href=\"";
                 // line 47
@@ -197,7 +199,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
             <div class=\"col-lg-6 mb-2 shadow border border-light card p-3\">
                 <nav class=\"navbar bg-warning text-black border border-dark my-2 p-1\">
                     <div class=\"container-fluid\">
-                        <span class=\"navbar-brand mb-0 h1\">Détails du electricien ";
+                        <span class=\"navbar-brand mb-0 h1\">Détails de l'electricien ";
         // line 71
         echo twig_escape_filter($this->env, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 71, $this->source); })()), "html", null, true);
         echo "</span>
@@ -238,7 +240,9 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
                             <div class=\"ms-4\">";
         // line 94
         echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 94, $this->source); })()), "telephone", [], "any", false, false, false, 94), "html", null, true);
-        echo "</div>
+        echo " </br> ";
+        echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["electricien"]) || array_key_exists("electricien", $context) ? $context["electricien"] : (function () { throw new RuntimeError('Variable "electricien" does not exist.', 94, $this->source); })()), "autreNumTelephone", [], "any", false, false, false, 94), "html", null, true);
+        echo "</div> 
                         </div>
                         <div class=\"col-7 mb-2\">
                             <label class=\"fw-light fs-7\">Email</label>
@@ -624,7 +628,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
 
     public function getDebugInfo()
     {
-        return array (  596 => 260,  591 => 257,  584 => 255,  582 => 248,  579 => 246,  573 => 243,  570 => 242,  564 => 239,  559 => 238,  557 => 237,  552 => 235,  548 => 234,  540 => 231,  537 => 230,  534 => 229,  531 => 228,  528 => 227,  525 => 226,  522 => 225,  519 => 224,  516 => 223,  513 => 222,  510 => 221,  508 => 220,  502 => 218,  499 => 217,  496 => 216,  493 => 215,  490 => 214,  487 => 213,  484 => 212,  481 => 211,  475 => 209,  472 => 208,  469 => 207,  466 => 206,  463 => 205,  461 => 204,  457 => 203,  452 => 202,  449 => 201,  446 => 200,  444 => 199,  440 => 198,  436 => 197,  433 => 196,  431 => 195,  424 => 191,  419 => 189,  416 => 188,  410 => 186,  404 => 184,  402 => 183,  398 => 181,  395 => 180,  392 => 179,  389 => 178,  386 => 177,  383 => 176,  380 => 175,  376 => 174,  371 => 171,  369 => 170,  359 => 161,  344 => 148,  342 => 147,  338 => 145,  330 => 140,  326 => 139,  323 => 138,  321 => 137,  316 => 135,  308 => 129,  301 => 125,  297 => 123,  294 => 122,  287 => 118,  281 => 116,  279 => 115,  273 => 112,  268 => 110,  261 => 106,  254 => 102,  247 => 98,  240 => 94,  233 => 90,  226 => 86,  219 => 82,  212 => 78,  202 => 71,  192 => 63,  188 => 61,  184 => 59,  177 => 57,  171 => 48,  165 => 47,  159 => 46,  154 => 45,  151 => 44,  148 => 43,  145 => 42,  142 => 41,  138 => 40,  133 => 37,  126 => 31,  124 => 30,  119 => 28,  108 => 20,  96 => 11,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
+        return array (  600 => 260,  595 => 257,  588 => 255,  586 => 248,  583 => 246,  577 => 243,  574 => 242,  568 => 239,  563 => 238,  561 => 237,  556 => 235,  552 => 234,  544 => 231,  541 => 230,  538 => 229,  535 => 228,  532 => 227,  529 => 226,  526 => 225,  523 => 224,  520 => 223,  517 => 222,  514 => 221,  512 => 220,  506 => 218,  503 => 217,  500 => 216,  497 => 215,  494 => 214,  491 => 213,  488 => 212,  485 => 211,  479 => 209,  476 => 208,  473 => 207,  470 => 206,  467 => 205,  465 => 204,  461 => 203,  456 => 202,  453 => 201,  450 => 200,  448 => 199,  444 => 198,  440 => 197,  437 => 196,  435 => 195,  428 => 191,  423 => 189,  420 => 188,  414 => 186,  408 => 184,  406 => 183,  402 => 181,  399 => 180,  396 => 179,  393 => 178,  390 => 177,  387 => 176,  384 => 175,  380 => 174,  375 => 171,  373 => 170,  363 => 161,  348 => 148,  346 => 147,  342 => 145,  334 => 140,  330 => 139,  327 => 138,  325 => 137,  320 => 135,  312 => 129,  305 => 125,  301 => 123,  298 => 122,  291 => 118,  285 => 116,  283 => 115,  277 => 112,  272 => 110,  265 => 106,  258 => 102,  251 => 98,  242 => 94,  235 => 90,  228 => 86,  221 => 82,  214 => 78,  204 => 71,  194 => 63,  190 => 61,  186 => 59,  179 => 57,  173 => 48,  167 => 47,  159 => 46,  154 => 45,  151 => 44,  148 => 43,  145 => 42,  142 => 41,  138 => 40,  133 => 37,  126 => 31,  124 => 30,  119 => 28,  108 => 20,  96 => 11,  88 => 5,  78 => 4,  59 => 3,  36 => 1,);
     }
 
     public function getSourceContext()
@@ -648,7 +652,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
             <a href=\"/electricien\" class=\"align-items-center text-dark text-decoration-none\">
                 <span class=\"fs-4\">Gestion des Electriciens</span>
             </a>
-            <a href=\"{{ path('app_electricien_index') }}\" class=\"btn btn-sm fs-7 btn-secondary ms-auto\">Liste des Electriciens</a>
+            <a href=\"{{ path('app_electricien_index') }}\" class=\"btn btn-sm fs-7 btn-secondary ms-auto\">Liste des Electriciensss</a>
         </header>
         <div class=\"row\">
             <div class=\"col-lg-5 mb-2 shadow border border-light card0 p-3 me-4 priority-4\">
@@ -674,7 +678,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
                                     {% set cur='bg-warning text-dark bg-opacity-25' %}
                                 {% endif %}
                                 <tr class=\"{{ cur }}\">
-                                    <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': dep.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ dep.telephone }}</a></td>
+                                    <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': dep.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ dep.telephone }} {{ dep.autreNumTelephone }}</a></td>
                                     <td><a href=\"{{ path('app_electricien_show', {'id': dep.id }) }}\" class=\"text-dark text-decoration-none\">{{ dep.nom }}</a></td>
                                     <td><a href=\"{{ path('app_electricien_show', {'id': dep.id }) }}\" class=\"text-dark text-decoration-none\">{{ dep.prenom }}</a></td>
 {#                                     
@@ -699,7 +703,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
             <div class=\"col-lg-6 mb-2 shadow border border-light card p-3\">
                 <nav class=\"navbar bg-warning text-black border border-dark my-2 p-1\">
                     <div class=\"container-fluid\">
-                        <span class=\"navbar-brand mb-0 h1\">Détails du electricien {{ electricien }}</span>
+                        <span class=\"navbar-brand mb-0 h1\">Détails de l'electricien {{ electricien }}</span>
                     </div>
                 </nav>
                 <div class=\"container\">
@@ -722,7 +726,7 @@ class __TwigTemplate_09f0a0386a4f6e51cc59533321ff16fd extends Template
                         </div>
                         <div class=\"col-5 mb-2\">
                             <label class=\"fw-light fs-7\">Téléphone</label>
-                            <div class=\"ms-4\">{{ electricien.telephone }}</div>
+                            <div class=\"ms-4\">{{ electricien.telephone }} </br> {{ electricien.autreNumTelephone }}</div> 
                         </div>
                         <div class=\"col-7 mb-2\">
                             <label class=\"fw-light fs-7\">Email</label>

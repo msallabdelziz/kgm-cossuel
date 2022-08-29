@@ -92,7 +92,12 @@
                         </div>
                         <div class="col-5 mb-2">
                             <label class="fw-light fs-7">Téléphone</label>
-                            <div class="ms-4">{{ utilisateur.telephone }}</div>
+                            {% if utilisateur.type == 'electricien' and utilisateur.autreNumTelephone != null %}
+                               <div class="ms-4">{{ utilisateur.telephone }}</div>
+                               <div class="ms-4">{{ utilisateur.autreNumTelephone }}</div> 
+                            {% else %}
+                                <div class="ms-4">{{ utilisateur.telephone }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-7 mb-2">
                             <label class="fw-light fs-7">Email</label>

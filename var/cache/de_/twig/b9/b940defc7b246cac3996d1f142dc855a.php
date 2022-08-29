@@ -250,6 +250,8 @@ class __TwigTemplate_27cb1ea256a885f6191607878d887a8b extends Template
                                 <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
             // line 110
             echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 110, $this->source); })()), "installation", [], "any", false, false, false, 110), "electricien", [], "any", false, false, false, 110), "telephone", [], "any", false, false, false, 110), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["demande"]) || array_key_exists("demande", $context) ? $context["demande"] : (function () { throw new RuntimeError('Variable "demande" does not exist.', 110, $this->source); })()), "installation", [], "any", false, false, false, 110), "electricien", [], "any", false, false, false, 110), "autreNumTelephone", [], "any", false, false, false, 110), "html", null, true);
             echo "\">
                             </div>
                             <div class=\"col-lg-4\">
@@ -635,7 +637,7 @@ class __TwigTemplate_27cb1ea256a885f6191607878d887a8b extends Template
 
     public function getDebugInfo()
     {
-        return array (  592 => 302,  582 => 301,  567 => 295,  561 => 292,  553 => 287,  547 => 284,  540 => 280,  530 => 273,  524 => 269,  516 => 264,  509 => 260,  502 => 256,  495 => 252,  488 => 248,  481 => 244,  474 => 240,  467 => 236,  456 => 228,  449 => 223,  446 => 222,  443 => 220,  435 => 215,  428 => 211,  420 => 206,  415 => 204,  408 => 200,  403 => 198,  396 => 194,  391 => 192,  384 => 188,  373 => 180,  366 => 175,  363 => 174,  360 => 172,  352 => 167,  345 => 163,  338 => 159,  331 => 155,  323 => 150,  316 => 146,  305 => 142,  294 => 134,  287 => 129,  284 => 128,  281 => 126,  273 => 122,  266 => 118,  259 => 114,  252 => 110,  245 => 106,  238 => 102,  231 => 98,  224 => 94,  216 => 88,  213 => 87,  205 => 81,  198 => 77,  191 => 73,  184 => 69,  174 => 64,  162 => 54,  154 => 48,  141 => 38,  135 => 34,  132 => 33,  129 => 32,  126 => 31,  123 => 30,  120 => 29,  117 => 28,  114 => 27,  112 => 26,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  594 => 302,  584 => 301,  569 => 295,  563 => 292,  555 => 287,  549 => 284,  542 => 280,  532 => 273,  526 => 269,  518 => 264,  511 => 260,  504 => 256,  497 => 252,  490 => 248,  483 => 244,  476 => 240,  469 => 236,  458 => 228,  451 => 223,  448 => 222,  445 => 220,  437 => 215,  430 => 211,  422 => 206,  417 => 204,  410 => 200,  405 => 198,  398 => 194,  393 => 192,  386 => 188,  375 => 180,  368 => 175,  365 => 174,  362 => 172,  354 => 167,  347 => 163,  340 => 159,  333 => 155,  325 => 150,  318 => 146,  307 => 142,  296 => 134,  289 => 129,  286 => 128,  283 => 126,  275 => 122,  268 => 118,  261 => 114,  252 => 110,  245 => 106,  238 => 102,  231 => 98,  224 => 94,  216 => 88,  213 => 87,  205 => 81,  198 => 77,  191 => 73,  184 => 69,  174 => 64,  162 => 54,  154 => 48,  141 => 38,  135 => 34,  132 => 33,  129 => 32,  126 => 31,  123 => 30,  120 => 29,  117 => 28,  114 => 27,  112 => 26,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -749,7 +751,7 @@ class __TwigTemplate_27cb1ea256a885f6191607878d887a8b extends Template
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Téléphone</label>
-                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ demande.installation.electricien.telephone }} / {{ demande.installation.electricien.autreNumTelephone }}\">
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Email</label>

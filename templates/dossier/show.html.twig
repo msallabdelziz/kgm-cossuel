@@ -300,10 +300,23 @@
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.logement }}" id="form_logement">
                             </div>
                             <hr class="my-3" />
-                            <div class="col-lg-6">
-                                <label for="form_typeConstruction" >Type de construction</label>
-                                <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_typeConstruction">
-                            </div>
+                                {% if installation.typeConstruction.nom == "Maison"%}
+                                    <div class="col-lg-8">
+                                        <label for="form_typeConstruction" >Type de construction</label>
+                                        <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_usage">
+                                    </div>
+                                   {% if installation.numeroMaison != NULL or installation.numeroMaison == " "  %} 
+                                    <div class="col-lg-4">
+                                        <label for="form_typeConstruction" >Numero de Maison</label>
+                                        <input type="text" disabled readonly class="form-controls form-control-sm py-1" value="{{ installation.numeroMaison }}" id="form_usage">
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="col-lg-8">
+                                        <label for="form_typeConstruction" >Type de construction</label>
+                                        <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_usage">
+                                    </div>
+                                {% endif %}
                             <div class="col-lg-3 typeConstruction1">
                                 <label for="form_niveau" >Nombre de niveaux</label>
                                 <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.niveau }}" id="form_niveau">

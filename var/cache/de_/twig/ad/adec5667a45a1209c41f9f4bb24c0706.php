@@ -182,23 +182,29 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
         echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 61, $this->source); })()), "priece", [], "any", false, false, false, 61), 'row');
         echo "<br>
                                         </div>
+                                        <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
+                                            ";
+        // line 64
+        echo $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(twig_get_attribute($this->env, $this->source, (isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 64, $this->source); })()), "numeroMaison", [], "any", false, false, false, 64), 'row');
+        echo "<br>
+                                        </div>
                                     </div>
                                 </div>
                                 ";
-        // line 65
-        $this->loadTemplate("installation/_actions_new.html.twig", "installation/new2.html.twig", 65)->display($context);
-        // line 66
+        // line 68
+        $this->loadTemplate("installation/_actions_new.html.twig", "installation/new2.html.twig", 68)->display($context);
+        // line 69
         echo "                                </fieldset>
                             </div>
                             ";
-        // line 72
+        // line 75
         echo "                        ";
-        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 72, $this->source); })()), 'form_end');
+        echo         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["installationForm"]) || array_key_exists("installationForm", $context) ? $context["installationForm"] : (function () { throw new RuntimeError('Variable "installationForm" does not exist.', 75, $this->source); })()), 'form_end');
         echo "            
                         ";
-        // line 73
-        $this->loadTemplate("installation/_delete_form.html.twig", "installation/new2.html.twig", 73)->display($context);
-        // line 74
+        // line 76
+        $this->loadTemplate("installation/_delete_form.html.twig", "installation/new2.html.twig", 76)->display($context);
+        // line 77
         echo "                    </div>
                 </div>
             </div>
@@ -213,7 +219,7 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
 
     }
 
-    // line 80
+    // line 83
     public function block_javascripts($context, array $blocks = [])
     {
         $macros = $this->macros;
@@ -223,7 +229,7 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 81
+        // line 84
         echo "<script>
     \$(document).ready(function () {
         \$('#form_typeConstruction').prop('required',true);
@@ -258,17 +264,17 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
             \$('.typeConstruction1').show(); 
             \$('#form_niveau').prop('required',true); 
             ";
-        // line 114
-        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 114, $this->source); })()), "usages", [], "any", false, false, false, 114) != "erp_ert")) {
-            // line 115
+        // line 117
+        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 117, $this->source); })()), "usages", [], "any", false, false, false, 117) != "erp_ert")) {
+            // line 118
             echo "                \$('#form_niveau').prop('max', 4);
             ";
         } else {
-            // line 117
+            // line 120
             echo "                \$('#form_niveau').prop('min', 5);
             ";
         }
-        // line 119
+        // line 122
         echo "            \$('#form_priece').prop('required',true);
         }
         else if (valSel == \"Appartement\" || valSel == \"Foyer Logement\" || valSel == \"Dépendance\") {
@@ -291,17 +297,17 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
                 \$('.typeConstruction1').show(); 
                 \$('#form_niveau').prop('required',true); 
                 ";
-        // line 140
-        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 140, $this->source); })()), "usages", [], "any", false, false, false, 140) != "erp_ert")) {
-            // line 141
+        // line 143
+        if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 143, $this->source); })()), "usages", [], "any", false, false, false, 143) != "erp_ert")) {
+            // line 144
             echo "                    \$('#form_niveau').prop('max', 4);
                 ";
         } else {
-            // line 143
+            // line 146
             echo "                    \$('#form_niveau').prop('min', 5);
                 ";
         }
-        // line 145
+        // line 148
         echo "                \$('#form_priece').prop('required',true);
             }
             else if (valSel == \"Appartement\" || valSel == \"Foyer Logement\" || valSel == \"Dépendance\") {
@@ -337,7 +343,7 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
 
     public function getDebugInfo()
     {
-        return array (  305 => 145,  301 => 143,  297 => 141,  295 => 140,  272 => 119,  268 => 117,  264 => 115,  262 => 114,  227 => 81,  217 => 80,  202 => 74,  200 => 73,  195 => 72,  191 => 66,  189 => 65,  182 => 61,  176 => 58,  170 => 55,  164 => 52,  157 => 48,  151 => 45,  145 => 42,  134 => 35,  132 => 34,  127 => 32,  113 => 21,  102 => 13,  98 => 12,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  311 => 148,  307 => 146,  303 => 144,  301 => 143,  278 => 122,  274 => 120,  270 => 118,  268 => 117,  233 => 84,  223 => 83,  208 => 77,  206 => 76,  201 => 75,  197 => 69,  195 => 68,  188 => 64,  182 => 61,  176 => 58,  170 => 55,  164 => 52,  157 => 48,  151 => 45,  145 => 42,  134 => 35,  132 => 34,  127 => 32,  113 => 21,  102 => 13,  98 => 12,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -403,6 +409,9 @@ class __TwigTemplate_843ab41d78c647129582b4d5435c9e11 extends Template
                                         </div>
                                         <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
                                             {{ form_row(installationForm.priece) }}<br>
+                                        </div>
+                                        <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
+                                            {{ form_row(installationForm.numeroMaison) }}<br>
                                         </div>
                                     </div>
                                 </div>

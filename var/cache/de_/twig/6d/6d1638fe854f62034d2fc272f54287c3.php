@@ -466,6 +466,8 @@ class __TwigTemplate_ba8e8a79205ac9f8224d7d9ab864a8b6 extends Template
                                 <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
             // line 237
             echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 237, $this->source); })()), "electricien", [], "any", false, false, false, 237), "telephone", [], "any", false, false, false, 237), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 237, $this->source); })()), "electricien", [], "any", false, false, false, 237), "autreNumTelephone", [], "any", false, false, false, 237), "html", null, true);
             echo "\">
                             </div>
                             <div class=\"col-lg-4\">
@@ -683,7 +685,7 @@ class __TwigTemplate_ba8e8a79205ac9f8224d7d9ab864a8b6 extends Template
 
     public function getDebugInfo()
     {
-        return array (  619 => 320,  609 => 319,  594 => 313,  585 => 307,  575 => 300,  568 => 295,  561 => 291,  554 => 287,  547 => 283,  540 => 279,  533 => 275,  526 => 271,  519 => 267,  512 => 263,  504 => 257,  501 => 256,  497 => 253,  489 => 249,  482 => 245,  475 => 241,  468 => 237,  461 => 233,  454 => 229,  447 => 225,  440 => 221,  432 => 215,  429 => 214,  426 => 212,  418 => 207,  411 => 203,  403 => 198,  398 => 196,  391 => 192,  386 => 190,  379 => 186,  374 => 184,  367 => 180,  359 => 174,  356 => 173,  353 => 171,  345 => 166,  338 => 162,  331 => 158,  324 => 154,  316 => 149,  309 => 145,  298 => 141,  290 => 135,  287 => 134,  279 => 128,  272 => 124,  265 => 120,  258 => 116,  251 => 112,  243 => 107,  236 => 103,  229 => 99,  218 => 95,  211 => 91,  203 => 85,  195 => 79,  188 => 75,  181 => 71,  174 => 67,  164 => 62,  145 => 46,  129 => 32,  126 => 31,  123 => 30,  120 => 29,  117 => 28,  114 => 27,  112 => 26,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  621 => 320,  611 => 319,  596 => 313,  587 => 307,  577 => 300,  570 => 295,  563 => 291,  556 => 287,  549 => 283,  542 => 279,  535 => 275,  528 => 271,  521 => 267,  514 => 263,  506 => 257,  503 => 256,  499 => 253,  491 => 249,  484 => 245,  477 => 241,  468 => 237,  461 => 233,  454 => 229,  447 => 225,  440 => 221,  432 => 215,  429 => 214,  426 => 212,  418 => 207,  411 => 203,  403 => 198,  398 => 196,  391 => 192,  386 => 190,  379 => 186,  374 => 184,  367 => 180,  359 => 174,  356 => 173,  353 => 171,  345 => 166,  338 => 162,  331 => 158,  324 => 154,  316 => 149,  309 => 145,  298 => 141,  290 => 135,  287 => 134,  279 => 128,  272 => 124,  265 => 120,  258 => 116,  251 => 112,  243 => 107,  236 => 103,  229 => 99,  218 => 95,  211 => 91,  203 => 85,  195 => 79,  188 => 75,  181 => 71,  174 => 67,  164 => 62,  145 => 46,  129 => 32,  126 => 31,  123 => 30,  120 => 29,  117 => 28,  114 => 27,  112 => 26,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -924,7 +926,7 @@ class __TwigTemplate_ba8e8a79205ac9f8224d7d9ab864a8b6 extends Template
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Téléphone</label>
-                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }}\">
+                                <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }} / {{ installation.electricien.autreNumTelephone }}\">
                             </div>
                             <div class=\"col-lg-4\">
                                 <label >Email</label>

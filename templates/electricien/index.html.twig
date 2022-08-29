@@ -79,7 +79,19 @@
             <tbody>
                 {% for ag in les_electricien %}
                     <tr>
-                        <td scope="row"><a href="{{ path('app_electricien_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">{{ ag.telephone }} / {{ag.autreNumTelephone}}</a></td>
+                        {% if ag.autreNumTelephone != NULL  %}
+                        <td scope="row">
+                                <a href="{{ path('app_electricien_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">
+                                    {{ ag.telephone }} / {{ag.autreNumTelephone}}
+                                </a>
+                        </td>
+                        {% else %}
+                        <td scope="row">
+                                <a href="{{ path('app_electricien_show', {'id': ag.id }) }}" class="text-dark text-decoration-none fw-bold">
+                                    {{ ag.telephone }}
+                                </a>
+                        </td>
+                        {% endif %}
                         <td>{{ ag.nom }}</td>
                         <td>{{ ag.prenom }}</td>
                         <td class="priority-4">{{ ag.localite }}</td>

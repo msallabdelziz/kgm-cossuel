@@ -532,45 +532,97 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
             echo "\" id=\"form_logement\">
                                         </div>
                                         <hr class=\"my-3\" />
-                                        <div class=\"col-lg-6\">
+                                        ";
+            // line 222
+            if ((twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 222, $this->source); })()), "typeConstruction", [], "any", false, false, false, 222), "nom", [], "any", false, false, false, 222) == "Maison")) {
+                // line 223
+                echo "                                        <div class=\"col-lg-3\">
                                             <label for=\"form_typeConstruction\" >Type de construction</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 224
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 224, $this->source); })()), "typeConstruction", [], "any", false, false, false, 224), "nom", [], "any", false, false, false, 224), "html", null, true);
-            echo "\" id=\"form_typeConstruction\">
+                // line 225
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 225, $this->source); })()), "typeConstruction", [], "any", false, false, false, 225), "nom", [], "any", false, false, false, 225), "html", null, true);
+                echo "\" id=\"form_typeConstruction\">
                                         </div>
-                                        <div class=\"col-lg-3 typeConstruction1\">
+                                            ";
+                // line 227
+                if (((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 227, $this->source); })()), "numeroMaison", [], "any", false, false, false, 227) != null) || (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 227, $this->source); })()), "numeroMaison", [], "any", false, false, false, 227) == " "))) {
+                    echo "   
+                                                <div class=\"col-lg-3\">
+                                                    <label for=\"form_typeConstruction\" >Numero Maison</label>
+                                                    <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
+                    // line 230
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 230, $this->source); })()), "numeroMaison", [], "any", false, false, false, 230), "html", null, true);
+                    echo "\" id=\"form_typeConstruction\">
+                                                </div>
+                                            ";
+                }
+                // line 233
+                echo "                                        <div class=\"col-lg-3 typeConstruction1\">
                                             <label for=\"form_niveau\" >Nombre de niveaux</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 228
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 228, $this->source); })()), "niveau", [], "any", false, false, false, 228), "html", null, true);
-            echo "\" id=\"form_niveau\">
+                // line 235
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 235, $this->source); })()), "niveau", [], "any", false, false, false, 235), "html", null, true);
+                echo "\" id=\"form_niveau\">
                                         </div>
-                                        <div class=\"col-lg-6 typeConstruction3\">
+                                        <div class=\"col-lg-3 typeConstruction3\">
                                             <label for=\"form_activite\" >Activités</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 232
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 232, $this->source); })()), "activite", [], "any", false, false, false, 232), "html", null, true);
-            echo "\" id=\"form_activite\">
+                // line 239
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 239, $this->source); })()), "activite", [], "any", false, false, false, 239), "html", null, true);
+                echo "\" id=\"form_activite\">
                                         </div>
                                         <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
                                             <label for=\"form_priece\" >Nombre de pièces</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 236
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 236, $this->source); })()), "priece", [], "any", false, false, false, 236), "html", null, true);
-            echo "\" id=\"form_priece\">
+                // line 243
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 243, $this->source); })()), "priece", [], "any", false, false, false, 243), "html", null, true);
+                echo "\" id=\"form_priece\">
                                         </div>
-                                    </div>
+                                        ";
+            } else {
+                // line 246
+                echo "                                          <div class=\"col-lg-6\">
+                                            <label for=\"form_typeConstruction\" >Type de construction</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
+                // line 248
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 248, $this->source); })()), "typeConstruction", [], "any", false, false, false, 248), "nom", [], "any", false, false, false, 248), "html", null, true);
+                echo "\" id=\"form_typeConstruction\">
+                                        </div>   
+                                        <div class=\"col-lg-3 typeConstruction1\">
+                                            <label for=\"form_niveau\" >Nombre de niveaux</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
+                // line 252
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 252, $this->source); })()), "niveau", [], "any", false, false, false, 252), "html", null, true);
+                echo "\" id=\"form_niveau\">
+                                        </div>
+                                        <div class=\"col-lg-6 typeConstruction3\">
+                                            <label for=\"form_activite\" >Activités</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
+                // line 256
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 256, $this->source); })()), "activite", [], "any", false, false, false, 256), "html", null, true);
+                echo "\" id=\"form_activite\">
+                                        </div>
+                                        <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
+                                            <label for=\"form_priece\" >Nombre de pièces</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
+                // line 260
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 260, $this->source); })()), "priece", [], "any", false, false, false, 260), "html", null, true);
+                echo "\" id=\"form_priece\">
+                                        </div>
+                                        ";
+            }
+            // line 263
+            echo "                                    </div>
                                 </div>
                                 ";
         }
-        // line 241
+        // line 266
         echo "
                                 ";
-        // line 243
+        // line 268
         echo "                                ";
-        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 243, $this->source); })()), "natureTravaux", [], "any", false, false, false, 243)) {
-            // line 244
+        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 268, $this->source); })()), "natureTravaux", [], "any", false, false, false, 268)) {
+            // line 269
             echo "                                <div class=\"card mb-2\">
                                     <h2 class=\"fs-title\">Caractéristiques de l'installation</h2>
                                     <div class=\"row\">
@@ -578,336 +630,338 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
                                         <div class=\"col-lg-6\">
                                             <label for=\"form_natureTravaux\" >Nature des travaux</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 250
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 250, $this->source); })()), "natureTravaux", [], "any", false, false, false, 250), "html", null, true);
+            // line 275
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 275, $this->source); })()), "natureTravaux", [], "any", false, false, false, 275), "html", null, true);
             echo "\" id=\"form_natureTravaux\">
                                         </div>
                                         <div class=\"col-lg-2 natureTravaux1\">
                                             <label for=\"form_neuf15\" >Neufs_15</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 254
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 254, $this->source); })()), "neuf15", [], "any", false, false, false, 254), "html", null, true);
+            // line 279
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 279, $this->source); })()), "neuf15", [], "any", false, false, false, 279), "html", null, true);
             echo "\" id=\"form_neufs_15\">
                                             <label for=\"form_existant15\" >Existants_15</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 256
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 256, $this->source); })()), "existant15", [], "any", false, false, false, 256), "html", null, true);
+            // line 281
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 281, $this->source); })()), "existant15", [], "any", false, false, false, 281), "html", null, true);
             echo "\" id=\"form_existant15\">
                                         </div>
                                         <div class=\"col-lg-2 natureTravaux1\">
                                             <label for=\"form_neuf25\" >Neufs_25</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 260
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 260, $this->source); })()), "neuf25", [], "any", false, false, false, 260), "html", null, true);
+            // line 285
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 285, $this->source); })()), "neuf25", [], "any", false, false, false, 285), "html", null, true);
             echo "\" id=\"form_neuf25\">
                                             <label for=\"form_existant25\" >Existants_25</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 262
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 262, $this->source); })()), "existant25", [], "any", false, false, false, 262), "html", null, true);
+            // line 287
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 287, $this->source); })()), "existant25", [], "any", false, false, false, 287), "html", null, true);
             echo "\" id=\"form_existant25\">
                                         </div>
                                         <div class=\"col-lg-2 natureTravaux1\">
                                             <label for=\"form_neufAutre\" >Neufs_Autres</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 266
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 266, $this->source); })()), "neufAutre", [], "any", false, false, false, 266), "html", null, true);
+            // line 291
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 291, $this->source); })()), "neufAutre", [], "any", false, false, false, 291), "html", null, true);
             echo "\" id=\"form_neufAutre\">
                                             <label for=\"form_existantAutre\" >Existants_Autres</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 268
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 268, $this->source); })()), "existantAutre", [], "any", false, false, false, 268), "html", null, true);
+            // line 293
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 293, $this->source); })()), "existantAutre", [], "any", false, false, false, 293), "html", null, true);
             echo "\" id=\"form_existantAutre\">
                                         </div>
                                         <hr class=\"my-3\" />
                                         <div class=\"col-lg-4 intervenantAutre1\">
                                             <label for=\"form_intervenantAutre\" >Autres intervenants ?</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 273
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 273, $this->source); })()), "intervenantAutre", [], "any", false, false, false, 273), "html", null, true);
+            // line 298
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 298, $this->source); })()), "intervenantAutre", [], "any", false, false, false, 298), "html", null, true);
             echo "\" id=\"form_intervenantAutre\">
                                         </div>
                                         <div class=\"col-lg-8 intervenantAutre1\">
                                             <label for=\"form_intervenant\" >Intervenants</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 277
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 277, $this->source); })()), "intervenant", [], "any", false, false, false, 277), "html", null, true);
+            // line 302
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 302, $this->source); })()), "intervenant", [], "any", false, false, false, 302), "html", null, true);
             echo "\" id=\"form_intervenant\">
                                         </div>
                                     </div>
                                 </div>
                                 ";
         }
-        // line 282
+        // line 307
         echo "
                                 ";
-        // line 284
+        // line 309
         echo "                                ";
-        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 284, $this->source); })()), "electricien", [], "any", false, false, false, 284)) {
-            // line 285
+        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 309, $this->source); })()), "electricien", [], "any", false, false, false, 309)) {
+            // line 310
             echo "                                <div class=\"card mb-2\">
                                     <h2 class=\"fs-title\">
                                     Informations sur l'électricien
                                     ";
-            // line 288
+            // line 313
             if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-                // line 289
+                // line 314
                 echo "                                        <a data-bs-toggle=\"modal\" data-bs-target=\"#modal2\" href=\"";
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_edit2", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 289, $this->source); })()), "id", [], "any", false, false, false, 289)]), "html", null, true);
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_edit2", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 314, $this->source); })()), "id", [], "any", false, false, false, 314)]), "html", null, true);
                 echo "\" class=\" pt fs-8 text-dark\">
                                         <svg class=\"bi mb-1 ms-2\" width=\"16\" height=\"16\" fill=\"red\" title=\"Modifier les informations\">
                                             <use xlink:href=\"";
-                // line 291
+                // line 316
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
                 echo "\"></use>
                                         </svg>
                                         </a>
                                     ";
             }
-            // line 295
+            // line 320
             echo "                                    </h2>
                                     <div class=\"row\">
                                         <hr class=\"mb-3\" />
                                         <div class=\"col-lg-3\">
                                             <label >Nom</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 300
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 300, $this->source); })()), "electricien", [], "any", false, false, false, 300), "nom", [], "any", false, false, false, 300), "html", null, true);
+            // line 325
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 325, $this->source); })()), "electricien", [], "any", false, false, false, 325), "nom", [], "any", false, false, false, 325), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-5\">
                                             <label >Prénom</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 304
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 304, $this->source); })()), "electricien", [], "any", false, false, false, 304), "prenom", [], "any", false, false, false, 304), "html", null, true);
+            // line 329
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 329, $this->source); })()), "electricien", [], "any", false, false, false, 329), "prenom", [], "any", false, false, false, 329), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Localité</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 308
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 308, $this->source); })()), "electricien", [], "any", false, false, false, 308), "localite", [], "any", false, false, false, 308), "html", null, true);
+            // line 333
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 333, $this->source); })()), "electricien", [], "any", false, false, false, 333), "localite", [], "any", false, false, false, 333), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-8\">
                                             <label >Adresse</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 312
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 312, $this->source); })()), "electricien", [], "any", false, false, false, 312), "adresse", [], "any", false, false, false, 312), "html", null, true);
+            // line 337
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 337, $this->source); })()), "electricien", [], "any", false, false, false, 337), "adresse", [], "any", false, false, false, 337), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Téléphone</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 316
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 316, $this->source); })()), "electricien", [], "any", false, false, false, 316), "telephone", [], "any", false, false, false, 316), "html", null, true);
+            // line 341
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 341, $this->source); })()), "electricien", [], "any", false, false, false, 341), "telephone", [], "any", false, false, false, 341), "html", null, true);
+            echo " / ";
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 341, $this->source); })()), "electricien", [], "any", false, false, false, 341), "autreNumTelephone", [], "any", false, false, false, 341), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Email</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 320
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 320, $this->source); })()), "electricien", [], "any", false, false, false, 320), "email", [], "any", false, false, false, 320), "html", null, true);
+            // line 345
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 345, $this->source); })()), "electricien", [], "any", false, false, false, 345), "email", [], "any", false, false, false, 345), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Type de pièce</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 324
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 324, $this->source); })()), "electricien", [], "any", false, false, false, 324), "typePiece", [], "any", false, false, false, 324), "html", null, true);
+            // line 349
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 349, $this->source); })()), "electricien", [], "any", false, false, false, 349), "typePiece", [], "any", false, false, false, 349), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Numéro Pièce</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 328
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 328, $this->source); })()), "electricien", [], "any", false, false, false, 328), "numPiece", [], "any", false, false, false, 328), "html", null, true);
+            // line 353
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 353, $this->source); })()), "electricien", [], "any", false, false, false, 353), "numPiece", [], "any", false, false, false, 353), "html", null, true);
             echo "\">
                                         </div>
 
                                         <div class=\"col-lg-4 mt-2\">
                                         <label >Scan CNI Electricien</label><br />
                                         ";
-            // line 333
-            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 333, $this->source); })()), "PJElectricien", [], "any", false, false, false, 333)) {
-                // line 334
+            // line 358
+            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 358, $this->source); })()), "PJElectricien", [], "any", false, false, false, 358)) {
+                // line 359
                 echo "                                                <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"gray\">
                                                     <use xlink:href=\"";
-                // line 335
+                // line 360
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#file-pdf"), "html", null, true);
                 echo "\"></use>
                                                 </svg>
                                                 <span onclick=\"window.open('";
-                // line 337
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 337, $this->source); })()), "id", [], "any", false, false, false, 337), "type" => "electricien"]), "html", null, true);
+                // line 362
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 362, $this->source); })()), "id", [], "any", false, false, false, 362), "type" => "electricien"]), "html", null, true);
                 echo "')\" class=\"text-success pt fs-7\">";
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 337, $this->source); })()), "PJElectricien", [], "any", false, false, false, 337), "fichier", [], "any", false, false, false, 337), "html", null, true);
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 362, $this->source); })()), "PJElectricien", [], "any", false, false, false, 362), "fichier", [], "any", false, false, false, 362), "html", null, true);
                 echo " </span>
                                         ";
             } else {
-                // line 339
+                // line 364
                 echo "                                                <span class=\"text-danger pt fs-8\">N/D</span>
                                         ";
             }
-            // line 341
+            // line 366
             echo "                                        </div>
 
                                     </div>
                                 </div>
                                 ";
         }
-        // line 345
+        // line 370
         echo "                                
 
                                 ";
-        // line 348
+        // line 373
         echo "                                ";
-        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 348, $this->source); })()), "proprietaire", [], "any", false, false, false, 348)) {
-            // line 349
+        if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 373, $this->source); })()), "proprietaire", [], "any", false, false, false, 373)) {
+            // line 374
             echo "                                <div class=\"card mb-2\">
                                     <h2 class=\"fs-title\">
                                     Informations sur le propriétaire de l'installation
                                     ";
-            // line 352
+            // line 377
             if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-                // line 353
+                // line 378
                 echo "                                        <a data-bs-toggle=\"modal\" data-bs-target=\"#modal2\" href=\"";
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_edit3", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 353, $this->source); })()), "id", [], "any", false, false, false, 353)]), "html", null, true);
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_edit3", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 378, $this->source); })()), "id", [], "any", false, false, false, 378)]), "html", null, true);
                 echo "\" class=\" pt fs-8 text-dark\">
                                         <svg class=\"bi mb-1 ms-2\" width=\"16\" height=\"16\" fill=\"red\" title=\"Modifier les informations\">
                                             <use xlink:href=\"";
-                // line 355
+                // line 380
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
                 echo "\"></use>
                                         </svg>
                                         </a>
                                     ";
             }
-            // line 359
+            // line 384
             echo "                                    </h2>
                                     <div class=\"row\">
                                         <hr class=\"mb-3\" />
                                         <div class=\"col-lg-3\">
                                             <label >Nom</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 364
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 364, $this->source); })()), "proprietaire", [], "any", false, false, false, 364), "nom", [], "any", false, false, false, 364), "html", null, true);
+            // line 389
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 389, $this->source); })()), "proprietaire", [], "any", false, false, false, 389), "nom", [], "any", false, false, false, 389), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-5\">
                                             <label >Prénom</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 368
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 368, $this->source); })()), "proprietaire", [], "any", false, false, false, 368), "prenom", [], "any", false, false, false, 368), "html", null, true);
+            // line 393
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 393, $this->source); })()), "proprietaire", [], "any", false, false, false, 393), "prenom", [], "any", false, false, false, 393), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Localité</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 372
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 372, $this->source); })()), "proprietaire", [], "any", false, false, false, 372), "localite", [], "any", false, false, false, 372), "html", null, true);
+            // line 397
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 397, $this->source); })()), "proprietaire", [], "any", false, false, false, 397), "localite", [], "any", false, false, false, 397), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-8\">
                                             <label >Adresse</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 376
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 376, $this->source); })()), "proprietaire", [], "any", false, false, false, 376), "adresse", [], "any", false, false, false, 376), "html", null, true);
+            // line 401
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 401, $this->source); })()), "proprietaire", [], "any", false, false, false, 401), "adresse", [], "any", false, false, false, 401), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Téléphone</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 380
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 380, $this->source); })()), "proprietaire", [], "any", false, false, false, 380), "telephone", [], "any", false, false, false, 380), "html", null, true);
+            // line 405
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 405, $this->source); })()), "proprietaire", [], "any", false, false, false, 405), "telephone", [], "any", false, false, false, 405), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Email</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 384
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 384, $this->source); })()), "proprietaire", [], "any", false, false, false, 384), "email", [], "any", false, false, false, 384), "html", null, true);
+            // line 409
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 409, $this->source); })()), "proprietaire", [], "any", false, false, false, 409), "email", [], "any", false, false, false, 409), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Type de pièce</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 388
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 388, $this->source); })()), "proprietaire", [], "any", false, false, false, 388), "typePiece", [], "any", false, false, false, 388), "html", null, true);
+            // line 413
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 413, $this->source); })()), "proprietaire", [], "any", false, false, false, 413), "typePiece", [], "any", false, false, false, 413), "html", null, true);
             echo "\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Numéro Pièce</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"";
-            // line 392
-            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 392, $this->source); })()), "proprietaire", [], "any", false, false, false, 392), "numPiece", [], "any", false, false, false, 392), "html", null, true);
+            // line 417
+            echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 417, $this->source); })()), "proprietaire", [], "any", false, false, false, 417), "numPiece", [], "any", false, false, false, 417), "html", null, true);
             echo "\">
                                         </div>
 
                                         <div class=\"col-lg-4 mt-2\">
                                             <label >Scan CNI Propriétaire</label><br />
                                         ";
-            // line 397
-            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 397, $this->source); })()), "PJProprietaire", [], "any", false, false, false, 397)) {
-                // line 398
+            // line 422
+            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 422, $this->source); })()), "PJProprietaire", [], "any", false, false, false, 422)) {
+                // line 423
                 echo "                                                <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"gray\">
                                                     <use xlink:href=\"";
-                // line 399
+                // line 424
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#file-pdf"), "html", null, true);
                 echo "\"></use>
                                                 </svg>
                                                 <span onclick=\"window.open('";
-                // line 401
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 401, $this->source); })()), "id", [], "any", false, false, false, 401), "type" => "proprietaire"]), "html", null, true);
+                // line 426
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 426, $this->source); })()), "id", [], "any", false, false, false, 426), "type" => "proprietaire"]), "html", null, true);
                 echo "')\" class=\"text-success pt fs-7\">";
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 401, $this->source); })()), "PJProprietaire", [], "any", false, false, false, 401), "fichier", [], "any", false, false, false, 401), "html", null, true);
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 426, $this->source); })()), "PJProprietaire", [], "any", false, false, false, 426), "fichier", [], "any", false, false, false, 426), "html", null, true);
                 echo " </span>
                                         ";
             } else {
-                // line 403
+                // line 428
                 echo "                                                <span class=\"text-danger pt fs-8\">N/D</span>
                                         ";
             }
-            // line 405
+            // line 430
             echo "                                        </div>
 
                                         <div class=\"col-lg-4 mt-2\">
                                         <label >";
-            // line 408
-            if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 408, $this->source); })()), "usages", [], "any", false, false, false, 408) != "erp_ert")) {
+            // line 433
+            if ((twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 433, $this->source); })()), "usages", [], "any", false, false, false, 433) != "erp_ert")) {
                 echo "Titre de propriété";
             } else {
                 echo "Documents Techniques";
             }
             echo "</label><br />
                                         ";
-            // line 409
-            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 409, $this->source); })()), "PJDossierTechnique", [], "any", false, false, false, 409)) {
-                // line 410
+            // line 434
+            if (twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 434, $this->source); })()), "PJDossierTechnique", [], "any", false, false, false, 434)) {
+                // line 435
                 echo "                                                <svg class=\"bi\" width=\"24\" height=\"24\" fill=\"gray\">
                                                     <use xlink:href=\"";
-                // line 411
+                // line 436
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#file-pdf"), "html", null, true);
                 echo "\"></use>
                                                 </svg>
                                                 <span onclick=\"window.open('";
-                // line 413
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 413, $this->source); })()), "id", [], "any", false, false, false, 413), "type" => "dosstech"]), "html", null, true);
+                // line 438
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_installation_downloadpj", ["id" => twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 438, $this->source); })()), "id", [], "any", false, false, false, 438), "type" => "dosstech"]), "html", null, true);
                 echo "')\" class=\"text-success pt fs-7\">";
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 413, $this->source); })()), "PJDossierTechnique", [], "any", false, false, false, 413), "fichier", [], "any", false, false, false, 413), "html", null, true);
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, twig_get_attribute($this->env, $this->source, (isset($context["installation"]) || array_key_exists("installation", $context) ? $context["installation"] : (function () { throw new RuntimeError('Variable "installation" does not exist.', 438, $this->source); })()), "PJDossierTechnique", [], "any", false, false, false, 438), "fichier", [], "any", false, false, false, 438), "html", null, true);
                 echo " </span>
                                         ";
             } else {
-                // line 415
+                // line 440
                 echo "                                                <span class=\"text-danger pt fs-8\">N/D</span>
                                         ";
             }
-            // line 417
+            // line 442
             echo "                                        </div>
 
                                     </div>
                                 ";
         }
-        // line 421
+        // line 446
         echo "                                </div>
                                 </fieldset>
                             </div>
@@ -925,7 +979,7 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
 
     }
 
-    // line 431
+    // line 456
     public function block_javascripts($context, array $blocks = [])
     {
         $macros = $this->macros;
@@ -935,7 +989,7 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 432
+        // line 457
         echo "<script>
     \$(document).ready(function() {
 
@@ -1006,7 +1060,7 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
 
     public function getDebugInfo()
     {
-        return array (  939 => 432,  929 => 431,  911 => 421,  905 => 417,  901 => 415,  894 => 413,  889 => 411,  886 => 410,  884 => 409,  876 => 408,  871 => 405,  867 => 403,  860 => 401,  855 => 399,  852 => 398,  850 => 397,  842 => 392,  835 => 388,  828 => 384,  821 => 380,  814 => 376,  807 => 372,  800 => 368,  793 => 364,  786 => 359,  779 => 355,  773 => 353,  771 => 352,  766 => 349,  763 => 348,  759 => 345,  752 => 341,  748 => 339,  741 => 337,  736 => 335,  733 => 334,  731 => 333,  723 => 328,  716 => 324,  709 => 320,  702 => 316,  695 => 312,  688 => 308,  681 => 304,  674 => 300,  667 => 295,  660 => 291,  654 => 289,  652 => 288,  647 => 285,  644 => 284,  641 => 282,  633 => 277,  626 => 273,  618 => 268,  613 => 266,  606 => 262,  601 => 260,  594 => 256,  589 => 254,  582 => 250,  574 => 244,  571 => 243,  568 => 241,  560 => 236,  553 => 232,  546 => 228,  539 => 224,  531 => 219,  524 => 215,  513 => 211,  505 => 205,  502 => 204,  494 => 198,  487 => 194,  480 => 190,  473 => 186,  466 => 182,  458 => 177,  451 => 173,  444 => 169,  433 => 165,  426 => 161,  419 => 156,  412 => 152,  406 => 150,  404 => 149,  399 => 146,  397 => 145,  389 => 140,  382 => 136,  375 => 132,  368 => 128,  361 => 123,  354 => 119,  348 => 117,  345 => 116,  341 => 115,  338 => 114,  332 => 112,  329 => 111,  327 => 110,  321 => 108,  318 => 107,  315 => 106,  310 => 101,  307 => 100,  304 => 99,  300 => 94,  295 => 93,  292 => 92,  286 => 90,  284 => 89,  279 => 88,  276 => 87,  273 => 86,  267 => 84,  264 => 83,  261 => 82,  258 => 81,  255 => 80,  252 => 79,  249 => 78,  247 => 77,  244 => 76,  238 => 73,  234 => 72,  231 => 71,  228 => 70,  226 => 69,  217 => 62,  209 => 60,  201 => 58,  199 => 57,  191 => 52,  179 => 44,  176 => 43,  173 => 42,  170 => 41,  167 => 40,  164 => 39,  162 => 38,  158 => 37,  151 => 33,  145 => 29,  142 => 28,  139 => 27,  137 => 26,  134 => 25,  131 => 24,  128 => 23,  125 => 22,  122 => 21,  119 => 20,  116 => 19,  113 => 18,  110 => 17,  107 => 16,  104 => 15,  101 => 14,  99 => 13,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
+        return array (  993 => 457,  983 => 456,  965 => 446,  959 => 442,  955 => 440,  948 => 438,  943 => 436,  940 => 435,  938 => 434,  930 => 433,  925 => 430,  921 => 428,  914 => 426,  909 => 424,  906 => 423,  904 => 422,  896 => 417,  889 => 413,  882 => 409,  875 => 405,  868 => 401,  861 => 397,  854 => 393,  847 => 389,  840 => 384,  833 => 380,  827 => 378,  825 => 377,  820 => 374,  817 => 373,  813 => 370,  806 => 366,  802 => 364,  795 => 362,  790 => 360,  787 => 359,  785 => 358,  777 => 353,  770 => 349,  763 => 345,  754 => 341,  747 => 337,  740 => 333,  733 => 329,  726 => 325,  719 => 320,  712 => 316,  706 => 314,  704 => 313,  699 => 310,  696 => 309,  693 => 307,  685 => 302,  678 => 298,  670 => 293,  665 => 291,  658 => 287,  653 => 285,  646 => 281,  641 => 279,  634 => 275,  626 => 269,  623 => 268,  620 => 266,  615 => 263,  609 => 260,  602 => 256,  595 => 252,  588 => 248,  584 => 246,  578 => 243,  571 => 239,  564 => 235,  560 => 233,  554 => 230,  548 => 227,  543 => 225,  539 => 223,  537 => 222,  531 => 219,  524 => 215,  513 => 211,  505 => 205,  502 => 204,  494 => 198,  487 => 194,  480 => 190,  473 => 186,  466 => 182,  458 => 177,  451 => 173,  444 => 169,  433 => 165,  426 => 161,  419 => 156,  412 => 152,  406 => 150,  404 => 149,  399 => 146,  397 => 145,  389 => 140,  382 => 136,  375 => 132,  368 => 128,  361 => 123,  354 => 119,  348 => 117,  345 => 116,  341 => 115,  338 => 114,  332 => 112,  329 => 111,  327 => 110,  321 => 108,  318 => 107,  315 => 106,  310 => 101,  307 => 100,  304 => 99,  300 => 94,  295 => 93,  292 => 92,  286 => 90,  284 => 89,  279 => 88,  276 => 87,  273 => 86,  267 => 84,  264 => 83,  261 => 82,  258 => 81,  255 => 80,  252 => 79,  249 => 78,  247 => 77,  244 => 76,  238 => 73,  234 => 72,  231 => 71,  228 => 70,  226 => 69,  217 => 62,  209 => 60,  201 => 58,  199 => 57,  191 => 52,  179 => 44,  176 => 43,  173 => 42,  170 => 41,  167 => 40,  164 => 39,  162 => 38,  158 => 37,  151 => 33,  145 => 29,  142 => 28,  139 => 27,  137 => 26,  134 => 25,  131 => 24,  128 => 23,  125 => 22,  122 => 21,  119 => 20,  116 => 19,  113 => 18,  110 => 17,  107 => 16,  104 => 15,  101 => 14,  99 => 13,  89 => 5,  79 => 4,  60 => 3,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -1232,10 +1286,34 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.logement }}\" id=\"form_logement\">
                                         </div>
                                         <hr class=\"my-3\" />
-                                        <div class=\"col-lg-6\">
+                                        {% if installation.typeConstruction.nom == 'Maison' %}
+                                        <div class=\"col-lg-3\">
                                             <label for=\"form_typeConstruction\" >Type de construction</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.typeConstruction.nom }}\" id=\"form_typeConstruction\">
                                         </div>
+                                            {% if installation.numeroMaison != NULL or installation.numeroMaison == \" \" %}   
+                                                <div class=\"col-lg-3\">
+                                                    <label for=\"form_typeConstruction\" >Numero Maison</label>
+                                                    <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.numeroMaison }}\" id=\"form_typeConstruction\">
+                                                </div>
+                                            {% endif %}
+                                        <div class=\"col-lg-3 typeConstruction1\">
+                                            <label for=\"form_niveau\" >Nombre de niveaux</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.niveau }}\" id=\"form_niveau\">
+                                        </div>
+                                        <div class=\"col-lg-3 typeConstruction3\">
+                                            <label for=\"form_activite\" >Activités</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.activite }}\" id=\"form_activite\">
+                                        </div>
+                                        <div class=\"col-lg-3 typeConstruction1 typeConstruction2\">
+                                            <label for=\"form_priece\" >Nombre de pièces</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.priece }}\" id=\"form_priece\">
+                                        </div>
+                                        {% else %}
+                                          <div class=\"col-lg-6\">
+                                            <label for=\"form_typeConstruction\" >Type de construction</label>
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.typeConstruction.nom }}\" id=\"form_typeConstruction\">
+                                        </div>   
                                         <div class=\"col-lg-3 typeConstruction1\">
                                             <label for=\"form_niveau\" >Nombre de niveaux</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.niveau }}\" id=\"form_niveau\">
@@ -1248,6 +1326,7 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
                                             <label for=\"form_priece\" >Nombre de pièces</label>
                                             <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.priece }}\" id=\"form_priece\">
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 {% endif %}
@@ -1326,7 +1405,7 @@ class __TwigTemplate_543d491abb6e58d749fce261c9e7f454 extends Template
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Téléphone</label>
-                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }}\">
+                                            <input type=\"text\" disabled readonly class=\"form-control form-control-sm py-1\" value=\"{{ installation.electricien.telephone }} / {{ installation.electricien.autreNumTelephone }}\">
                                         </div>
                                         <div class=\"col-lg-4\">
                                             <label >Email</label>

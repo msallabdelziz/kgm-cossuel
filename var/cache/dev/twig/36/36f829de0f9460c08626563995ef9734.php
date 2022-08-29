@@ -45,7 +45,7 @@ class __TwigTemplate_57357826077548bc25f52c415d745ec3 extends Template
             <div class=\"card\">
                 <div class=\"d-flex align-items-center justify-content-between\">
                     <div>
-                        <h4 class=\"fw-bold\">Tousss les Dossiers</h4>
+                        <h4 class=\"fw-bold\">Tous les Dossiers</h4>
                         ";
         // line 11
         echo "                    </div>
@@ -599,7 +599,7 @@ class __TwigTemplate_57357826077548bc25f52c415d745ec3 extends Template
             <div class=\"card\">
                 <div class=\"d-flex align-items-center justify-content-between\">
                     <div>
-                        <h4 class=\"fw-bold\">Tousss les Dossiers</h4>
+                        <h4 class=\"fw-bold\">Tous les Dossiers</h4>
                         {# <select name=\"val_affichage_demande\" id=\"val_affichage_demande\" class=\"bg-warning bg-opacity-50 form-select-sm\">
                             <option {% if affichage == 'listing' %} selected=\"selected\" {% endif %} value=\"listing\">Affichage en Listing</option>
                             <option {% if affichage == 'bloc' %} selected=\"selected\" {% endif %} value=\"bloc\">Affichage en Blocs</option>

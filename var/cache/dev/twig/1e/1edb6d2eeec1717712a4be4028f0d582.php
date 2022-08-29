@@ -210,77 +210,102 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
             foreach ($context['_seq'] as $context["_key"] => $context["ag"]) {
                 // line 81
                 echo "                    <tr>
-                        <td scope=\"row\"><a href=\"";
+                        ";
                 // line 82
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 82)]), "html", null, true);
-                echo "\" class=\"text-dark text-decoration-none fw-bold\">";
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "telephone", [], "any", false, false, false, 82), "html", null, true);
-                echo " / ";
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "autreNumTelephone", [], "any", false, false, false, 82), "html", null, true);
-                echo "</a></td>
-                        <td>";
-                // line 83
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "nom", [], "any", false, false, false, 83), "html", null, true);
+                if ((twig_get_attribute($this->env, $this->source, $context["ag"], "autreNumTelephone", [], "any", false, false, false, 82) != null)) {
+                    // line 83
+                    echo "                        <td scope=\"row\">
+                                <a href=\"";
+                    // line 84
+                    echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 84)]), "html", null, true);
+                    echo "\" class=\"text-dark text-decoration-none fw-bold\">
+                                    ";
+                    // line 85
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "telephone", [], "any", false, false, false, 85), "html", null, true);
+                    echo " / ";
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "autreNumTelephone", [], "any", false, false, false, 85), "html", null, true);
+                    echo "
+                                </a>
+                        </td>
+                        ";
+                } else {
+                    // line 89
+                    echo "                        <td scope=\"row\">
+                                <a href=\"";
+                    // line 90
+                    echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 90)]), "html", null, true);
+                    echo "\" class=\"text-dark text-decoration-none fw-bold\">
+                                    ";
+                    // line 91
+                    echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "telephone", [], "any", false, false, false, 91), "html", null, true);
+                    echo "
+                                </a>
+                        </td>
+                        ";
+                }
+                // line 95
+                echo "                        <td>";
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "nom", [], "any", false, false, false, 95), "html", null, true);
                 echo "</td>
                         <td>";
-                // line 84
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "prenom", [], "any", false, false, false, 84), "html", null, true);
+                // line 96
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "prenom", [], "any", false, false, false, 96), "html", null, true);
                 echo "</td>
                         <td class=\"priority-4\">";
-                // line 85
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "localite", [], "any", false, false, false, 85), "html", null, true);
+                // line 97
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "localite", [], "any", false, false, false, 97), "html", null, true);
                 echo "</td>
                         <td class=\"priority-5\">";
-                // line 86
-                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "adresse", [], "any", false, false, false, 86), "html", null, true);
+                // line 98
+                echo twig_escape_filter($this->env, twig_get_attribute($this->env, $this->source, $context["ag"], "adresse", [], "any", false, false, false, 98), "html", null, true);
                 echo "</td>
                         ";
-                // line 88
+                // line 100
                 echo "                        ";
-                // line 95
+                // line 107
                 echo "                        <td class=\"text-end\">
                             <a href=\"";
-                // line 96
-                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 96)]), "html", null, true);
+                // line 108
+                echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_show", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 108)]), "html", null, true);
                 echo "\" class=\"mx-1\" title=\"Afficher les détails\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"black\">
                                     <use xlink:href=\"";
-                // line 98
+                // line 110
                 echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#search"), "html", null, true);
                 echo "\"></use>
                                 </svg>
                             </a>
                             ";
-                // line 101
+                // line 113
                 if ($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN")) {
-                    // line 102
+                    // line 114
                     echo "                            <a href=\"";
-                    echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_edit", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 102)]), "html", null, true);
+                    echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_electricien_edit", ["id" => twig_get_attribute($this->env, $this->source, $context["ag"], "id", [], "any", false, false, false, 114)]), "html", null, true);
                     echo "\" class=\"mx-1\" title=\"Modifier\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"black\">
                                     <use xlink:href=\"";
-                    // line 104
+                    // line 116
                     echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#pencil-square"), "html", null, true);
                     echo "\"></use>
                                 </svg>
                             </a>
                             ";
                 }
-                // line 108
+                // line 120
                 echo "                            ";
                 if (($this->extensions['Symfony\Bridge\Twig\Extension\SecurityExtension']->isGranted("ROLE_ADMIN") && 0)) {
-                    // line 109
+                    // line 121
                     echo "                            <a href=\"\" class=\"mx-1\" title=\"Supprimer\">
                                 <svg class=\"bi\" width=\"16\" height=\"16\" fill=\"red\">
                                     <use xlink:href=\"";
-                    // line 111
+                    // line 123
                     echo twig_escape_filter($this->env, $this->extensions['Symfony\Bridge\Twig\Extension\AssetExtension']->getAssetUrl("assets/img/bootstrap-icons.svg#trash"), "html", null, true);
                     echo "\"></use>
                                 </svg>
                             </a>
                             ";
                 }
-                // line 115
+                // line 127
                 echo "                        </td>
                     </tr>
                 ";
@@ -288,21 +313,21 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
             $_parent = $context['_parent'];
             unset($context['_seq'], $context['_iterated'], $context['_key'], $context['ag'], $context['_parent'], $context['loop']);
             $context = array_intersect_key($context, $_parent) + $_parent;
-            // line 118
+            // line 130
             echo "            </tbody>
             </table>
 
                 ";
-            // line 121
-            twig_get_attribute($this->env, $this->source, (isset($context["les_electricien"]) || array_key_exists("les_electricien", $context) ? $context["les_electricien"] : (function () { throw new RuntimeError('Variable "les_electricien" does not exist.', 121, $this->source); })()), "setPageRange", [0 => 1], "method", false, false, false, 121);
-            // line 122
+            // line 133
+            twig_get_attribute($this->env, $this->source, (isset($context["les_electricien"]) || array_key_exists("les_electricien", $context) ? $context["les_electricien"] : (function () { throw new RuntimeError('Variable "les_electricien" does not exist.', 133, $this->source); })()), "setPageRange", [0 => 1], "method", false, false, false, 133);
+            // line 134
             echo "                ";
-            echo $this->extensions['Knp\Bundle\PaginatorBundle\Twig\Extension\PaginationExtension']->render($this->env, (isset($context["les_electricien"]) || array_key_exists("les_electricien", $context) ? $context["les_electricien"] : (function () { throw new RuntimeError('Variable "les_electricien" does not exist.', 122, $this->source); })()), "pagination.html.twig");
+            echo $this->extensions['Knp\Bundle\PaginatorBundle\Twig\Extension\PaginationExtension']->render($this->env, (isset($context["les_electricien"]) || array_key_exists("les_electricien", $context) ? $context["les_electricien"] : (function () { throw new RuntimeError('Variable "les_electricien" does not exist.', 134, $this->source); })()), "pagination.html.twig");
             echo "
 
             ";
         }
-        // line 125
+        // line 137
         echo "        </div>
     </section>
 ";
@@ -314,7 +339,7 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
 
     }
 
-    // line 129
+    // line 141
     public function block_javascripts($context, array $blocks = [])
     {
         $macros = $this->macros;
@@ -324,32 +349,32 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 130
+        // line 142
         echo "<script>
     \$(document).ready(function () {
 
         ";
-        // line 133
+        // line 145
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable([0 => "localite"]);
         foreach ($context['_seq'] as $context["_key"] => $context["filtre"]) {
-            // line 134
+            // line 146
             echo "            \$('#val_";
             echo twig_escape_filter($this->env, $context["filtre"], "html", null, true);
             echo "').val(\$('#val_";
             echo twig_escape_filter($this->env, $context["filtre"], "html", null, true);
             echo "0').val())
             \$('#val_";
-            // line 135
+            // line 147
             echo twig_escape_filter($this->env, $context["filtre"], "html", null, true);
             echo "0').on('change', function() {
                 optSel=\$('#val_";
-            // line 136
+            // line 148
             echo twig_escape_filter($this->env, $context["filtre"], "html", null, true);
             echo "0').find(\"option:selected\");
                 valSel=optSel.val();
                 \$('#val_";
-            // line 138
+            // line 150
             echo twig_escape_filter($this->env, $context["filtre"], "html", null, true);
             echo "').val(valSel);
                 \$('#form_rech_list').submit();
@@ -359,7 +384,7 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['_key'], $context['filtre'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 142
+        // line 154
         echo "    });
 </script>
 ";
@@ -383,7 +408,7 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
 
     public function getDebugInfo()
     {
-        return array (  363 => 142,  353 => 138,  348 => 136,  344 => 135,  337 => 134,  333 => 133,  328 => 130,  318 => 129,  306 => 125,  299 => 122,  297 => 121,  292 => 118,  284 => 115,  277 => 111,  273 => 109,  270 => 108,  263 => 104,  257 => 102,  255 => 101,  249 => 98,  244 => 96,  241 => 95,  239 => 88,  235 => 86,  231 => 85,  227 => 84,  223 => 83,  215 => 82,  212 => 81,  208 => 80,  202 => 76,  200 => 75,  189 => 66,  186 => 65,  169 => 50,  167 => 49,  159 => 44,  154 => 42,  149 => 40,  141 => 37,  137 => 35,  122 => 33,  118 => 32,  109 => 25,  97 => 10,  89 => 4,  79 => 3,  60 => 2,  37 => 1,);
+        return array (  388 => 154,  378 => 150,  373 => 148,  369 => 147,  362 => 146,  358 => 145,  353 => 142,  343 => 141,  331 => 137,  324 => 134,  322 => 133,  317 => 130,  309 => 127,  302 => 123,  298 => 121,  295 => 120,  288 => 116,  282 => 114,  280 => 113,  274 => 110,  269 => 108,  266 => 107,  264 => 100,  260 => 98,  256 => 97,  252 => 96,  247 => 95,  240 => 91,  236 => 90,  233 => 89,  224 => 85,  220 => 84,  217 => 83,  215 => 82,  212 => 81,  208 => 80,  202 => 76,  200 => 75,  189 => 66,  186 => 65,  169 => 50,  167 => 49,  159 => 44,  154 => 42,  149 => 40,  141 => 37,  137 => 35,  122 => 33,  118 => 32,  109 => 25,  97 => 10,  89 => 4,  79 => 3,  60 => 2,  37 => 1,);
     }
 
     public function getSourceContext()
@@ -469,7 +494,19 @@ class __TwigTemplate_fb8c25b936b77a6be8ea81368c7e23bc extends Template
             <tbody>
                 {% for ag in les_electricien %}
                     <tr>
-                        <td scope=\"row\"><a href=\"{{ path('app_electricien_show', {'id': ag.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">{{ ag.telephone }} / {{ag.autreNumTelephone}}</a></td>
+                        {% if ag.autreNumTelephone != NULL  %}
+                        <td scope=\"row\">
+                                <a href=\"{{ path('app_electricien_show', {'id': ag.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">
+                                    {{ ag.telephone }} / {{ag.autreNumTelephone}}
+                                </a>
+                        </td>
+                        {% else %}
+                        <td scope=\"row\">
+                                <a href=\"{{ path('app_electricien_show', {'id': ag.id }) }}\" class=\"text-dark text-decoration-none fw-bold\">
+                                    {{ ag.telephone }}
+                                </a>
+                        </td>
+                        {% endif %}
                         <td>{{ ag.nom }}</td>
                         <td>{{ ag.prenom }}</td>
                         <td class=\"priority-4\">{{ ag.localite }}</td>

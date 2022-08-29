@@ -219,10 +219,34 @@
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.logement }}" id="form_logement">
                                         </div>
                                         <hr class="my-3" />
-                                        <div class="col-lg-6">
+                                        {% if installation.typeConstruction.nom == 'Maison' %}
+                                        <div class="col-lg-3">
                                             <label for="form_typeConstruction" >Type de construction</label>
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_typeConstruction">
                                         </div>
+                                            {% if installation.numeroMaison != NULL or installation.numeroMaison == " " %}   
+                                                <div class="col-lg-3">
+                                                    <label for="form_typeConstruction" >Numero Maison</label>
+                                                    <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.numeroMaison }}" id="form_typeConstruction">
+                                                </div>
+                                            {% endif %}
+                                        <div class="col-lg-3 typeConstruction1">
+                                            <label for="form_niveau" >Nombre de niveaux</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.niveau }}" id="form_niveau">
+                                        </div>
+                                        <div class="col-lg-3 typeConstruction3">
+                                            <label for="form_activite" >Activités</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.activite }}" id="form_activite">
+                                        </div>
+                                        <div class="col-lg-3 typeConstruction1 typeConstruction2">
+                                            <label for="form_priece" >Nombre de pièces</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.priece }}" id="form_priece">
+                                        </div>
+                                        {% else %}
+                                          <div class="col-lg-6">
+                                            <label for="form_typeConstruction" >Type de construction</label>
+                                            <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.typeConstruction.nom }}" id="form_typeConstruction">
+                                        </div>   
                                         <div class="col-lg-3 typeConstruction1">
                                             <label for="form_niveau" >Nombre de niveaux</label>
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.niveau }}" id="form_niveau">
@@ -235,6 +259,7 @@
                                             <label for="form_priece" >Nombre de pièces</label>
                                             <input type="text" disabled readonly class="form-control form-control-sm py-1" value="{{ installation.priece }}" id="form_priece">
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 {% endif %}
